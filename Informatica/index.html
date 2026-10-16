@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informática - Faculdade</title>
     <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -9,15 +10,22 @@
     
     .container {
         max-width: 900px;
-        margin: 40px auto;
-        padding: 24px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            margin: 40px auto;
+            padding: 24px;
+        }
     }
 
     .back-link {
         font-family: monospace;
         color: #ccff00;
         text-decoration: none;
-        font-size: 9pt;
+        font-size: 8.5pt;
         display: inline-block;
         margin-bottom: 20px;
         border: 1px solid rgba(204, 255, 0, 0.3);
@@ -31,21 +39,24 @@
     h1 {
         font-family: 'Courier New', Courier, monospace;
         color: #ccff00;
-        font-size: 20pt;
+        font-size: 18pt;
         border-bottom: 1px solid #333;
         padding-bottom: 12px;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
+    @media (min-width: 768px) {
+        h1 { font-size: 20pt; }
+    }
+
     p.subtitle {
         color: #8b949e;
         font-family: monospace;
         margin-bottom: 30px;
-        font-size: 10pt;
+        font-size: 9pt;
     }
 
-    /* GRID DOS TÓPICOS */
     .card-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -55,15 +66,24 @@
     .card {
         border: 1px solid #333;
         background: #111;
-        padding: 20px;
+        padding: 16px;
         border-radius: 6px;
         text-decoration: none;
         color: inherit;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        gap: 12px;
         border-left: 4px solid #ccff00;
         transition: transform 0.2s, background 0.2s;
+    }
+
+    @media (min-width: 600px) {
+        .card {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
     }
 
     .card:hover {
@@ -76,7 +96,7 @@
         font-family: 'Courier New', Courier, monospace;
         color: #ccff00;
         margin: 0 0 6px 0;
-        font-size: 11.5pt;
+        font-size: 11pt;
     }
 
     .card p {
@@ -90,15 +110,20 @@
         font-size: 8pt;
         color: #ccff00;
         border: 1px solid rgba(204, 255, 0, 0.4);
-        padding: 4px 8px;
+        padding: 6px 10px;
         background: rgba(204, 255, 0, 0.05);
-        white-space: nowrap;
+        text-align: center;
+        align-self: flex-start;
+    }
+
+    @media (min-width: 600px) {
+        .badge { align-self: center; }
     }
 
     footer {
         text-align: center;
-        margin-top: 50px;
-        font-size: 8.5pt;
+        margin-top: 40px;
+        font-size: 8pt;
         color: #484f58;
         font-family: monospace;
         border-top: 1px solid #222;
@@ -112,10 +137,10 @@
         <a href="../index.html" class="back-link">&larr; VOLTAR AO PAINEL PRINCIPAL</a>
         
         <h1>INFORMÁTICA // TÓPICOS</h1>
-        <p class="subtitle">&gt; MATERIAIS DE ESTUDO, RESUMOS E AULAS</p>
+        <p class="subtitle">&gt; MATERIAIS DE ESTUDO E RESUMOS</p>
 
         <div class="card-grid">
-            <!-- LINK PARA O SEU RESUMO DE REDES -->
+            <!-- LINK PARA O RESUMO DE REDES -->
             <a href="IntroducaoRedes_ProfessorJeyniglis.html" class="card">
                 <div>
                     <h3>01. Introdução à Redes de Computadores</h3>
