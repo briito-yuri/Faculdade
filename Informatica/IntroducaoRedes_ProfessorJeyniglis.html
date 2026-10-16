@@ -4,43 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Introdução à Rede de Computadores - Professor Jeyniglis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-    /* 0. PALETA (verde pastel + texto mais legível e confortável) */
+    /* 0. PALETA — OPÇÃO 3: SINALIZAÇÃO (tinta preta + amarelo de placa sobre papel branco) */
     :root {
-        --bg: #131816;            /* fundo suave, menos agressivo que preto puro */
-        --card: #1b2320;
-        --card-accent: #18211c;
-        --border: #34403a;
-        --accent: #b8e834;        /* verde neon um pouco mais suave que o original (#ccff00) */
-        --accent-2: #cdf06a;      /* variação mais clara para subtítulos */
-        --accent-rgb: 184, 232, 52;
-        --text: #e9eeeb;          /* texto principal: claro, mas não branco puro */
-        --text-strong: #ffffff;
-        --code-text: #e1e8e4;
+        --paper: #ffffff;         /* fundo da página */
+        --ink: #111111;           /* texto, réguas e blocos de número */
+        --wash: #f3f3f3;          /* fundo dos blocos de código */
+        --sign: #ffd21f;          /* amarelo de sinalização (destaques) */
+        --line: #333333;
+        --muted: #555555;         /* subtítulos e rodapé */
+        --desk: #2b2b2b;          /* fundo atrás das páginas (só na tela) */
+        --font-sans: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
+        --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
     }
 
     /* 1. CONFIGURAÇÕES RESPONSIVAS E BASE */
     *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    html, body { margin: 0; padding: 0; background-color: var(--desk); color: var(--ink); font-family: var(--font-sans); }
 
     body {
-        padding: 12px;
+        padding: 16px;
         margin: 0 auto;
         max-width: 900px;
     }
 
     @media (min-width: 768px) {
-        body { padding: 24px 0; }
+        body { padding: 32px 0; }
     }
 
-    /* ESTRUTURA DE PÁGINA ADAPTÁVEL (FLUIDA NO CELULAR, BLOCOS NO DESKTOP) */
+    /* ESTRUTURA DE PÁGINA ADAPTÁVEL (FLUIDA NO CELULAR, A4 NO DESKTOP) */
     .page {
         width: 100%;
-        margin: 0 auto 16px auto;
-        padding: 18px;
-        background-color: var(--bg);
-        border: 1px solid rgba(var(--accent-rgb), 0.25);
-        border-radius: 8px;
+        margin: 0 auto 24px auto;
+        padding: 24px 18px;
+        background-color: var(--paper);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -50,9 +50,7 @@
     @media (min-width: 768px) {
         .page {
             min-height: 297mm;
-            margin: 0 auto 16px auto;
-            padding: 18mm 18mm 12mm 18mm;
-            border-radius: 0;
+            padding: 20mm 20mm 12mm 20mm;
         }
     }
 
@@ -60,61 +58,77 @@
 
     /* O RODAPÉ */
     .page-footer {
-        flex-shrink: 0; margin-top: 20px; padding-top: 8px;
-        border-top: 1px solid var(--border);
+        flex-shrink: 0; margin-top: 24px; padding-top: 10px;
+        border-top: 3px solid var(--ink);
         display: flex; flex-direction: column; gap: 4px; justify-content: space-between; align-items: flex-start;
-        font-size: 8pt; color: var(--accent); font-family: monospace;
-        text-transform: uppercase;
+        font-family: var(--font-mono); font-size: 7.5pt; letter-spacing: 0.12em;
+        color: var(--muted); text-transform: uppercase;
     }
+    .page-footer span:last-child { background: var(--ink); color: var(--paper); padding: 2px 8px; }
 
     @media (min-width: 600px) {
-        .page-footer {
-            flex-direction: row;
-            align-items: center;
-            font-size: 8.5pt;
-        }
+        .page-footer { flex-direction: row; align-items: center; }
     }
 
-    /* TIPOGRAFIA: MAIOR, MAIS CLARA E COM BOM ESPAÇAMENTO */
-    h1, h2, h3, h4 {
-        font-family: 'Courier New', Courier, monospace;
-        color: var(--accent);
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    /* CABEÇALHO DO DOCUMENTO */
+    .doc-header { margin-bottom: 28px; }
+    .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .kicker .label {
+        background: var(--sign); color: var(--ink);
+        font-family: var(--font-mono); font-weight: 700; font-size: 8pt; letter-spacing: 0.12em;
+        padding: 4px 10px; text-transform: uppercase;
     }
-    h1 { font-size: 16pt; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px; text-align: center; }
-    h2 { font-size: 12.5pt; border-left: 4px solid var(--accent); padding-left: 10px; margin-top: 22px; margin-bottom: 12px; }
-    h3 { font-size: 10.5pt; color: var(--accent-2); margin-bottom: 6px; margin-top: 10px; }
+    .kicker .meta { font-family: var(--font-mono); font-size: 8pt; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; }
+    .subtitle { font-size: 11pt; color: var(--muted); margin: 0 0 22px 0; }
+    .doc-header::after { content: ""; display: block; height: 8px; background: var(--ink); }
+
+    /* TIPOGRAFIA */
+    h1, h2, h3, h4 { font-family: var(--font-sans); color: var(--ink); }
+    h1 { font-size: 26pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.08; margin: 0 0 10px 0; }
+
+    h2 {
+        display: flex; align-items: center; gap: 14px;
+        font-size: 15pt; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25;
+        margin-top: 30px; margin-bottom: 14px;
+    }
+    h2 .num {
+        flex-shrink: 0;
+        background: var(--ink); color: var(--paper);
+        font-family: var(--font-mono); font-weight: 500; font-size: 12pt; letter-spacing: 0.08em;
+        padding: 5px 11px;
+    }
+    .page-content > h2:first-child { margin-top: 0; }
+
+    h3 { font-size: 11.5pt; font-weight: 600; margin-bottom: 6px; margin-top: 10px; }
 
     @media (min-width: 768px) {
-        h1 { font-size: 20pt; }
-        h2 { font-size: 13.5pt; }
+        h1 { font-size: 34pt; }
+        h2 { font-size: 17pt; }
     }
 
     p {
-        font-size: 11pt;
-        line-height: 1.75;          /* mais respiro entre linhas */
-        color: var(--text);
+        font-size: 10.5pt;
+        line-height: 1.75;
+        color: var(--ink);
         margin-top: 0;
         margin-bottom: 12px;
-        letter-spacing: 0.1px;
     }
 
     @media (min-width: 768px) {
-        p { font-size: 11.5pt; }
+        p { font-size: 11pt; }
     }
 
-    strong { color: var(--text-strong); }
+    strong { color: var(--ink); font-weight: 700; }
+
+    /* DESTAQUES: texto "accent" vira marcação amarela, como uma placa */
+    .accent { color: var(--ink); }
+    strong.accent { background: var(--sign); padding: 1px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
     /* TAGS */
-    .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .tag {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 8pt; color: var(--accent);
-        border: 1px solid rgba(var(--accent-rgb), 0.55);
-        padding: 3px 7px; background: rgba(var(--accent-rgb), 0.1);
-        font-weight: bold;
+        font-family: var(--font-mono); font-weight: 700;
+        font-size: 7.5pt; letter-spacing: 0.08em; color: var(--ink);
+        background: var(--sign); padding: 3px 8px; white-space: nowrap;
     }
 
     /* CARDS EM GRID RESPONSIVO */
@@ -122,33 +136,33 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 12px;
-        margin-top: 12px;
+        margin-top: 14px;
     }
 
     @media (min-width: 650px) {
         .card-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    .card { border: 1px solid var(--border); background: var(--card) !important; padding: 14px 16px; border-radius: 6px; }
-    .card h3 { margin-top: 0; font-size: 10.5pt; margin-bottom: 6px; text-transform: none; }
-    .card p { margin-bottom: 0; font-size: 10.5pt; line-height: 1.7; }
+    .card { border: 2px solid var(--ink); background: var(--paper); padding: 16px 18px; }
+    .card h3 { margin-top: 0; margin-bottom: 8px; }
+    .card p { margin-bottom: 0; font-size: 10pt; line-height: 1.7; }
+    .card-grid .card h3 { border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
 
-    /* Cards de destaque (antes com estilos inline) */
-    .card-highlight { margin-top: 18px; border-left: 4px solid var(--accent); background: var(--card-accent) !important; }
-    .card-highlight h3 { color: var(--accent); }
-    .card-side { border-left: 4px solid var(--accent); margin-bottom: 14px; }
-    .card-note { background: rgba(var(--accent-rgb), 0.1) !important; border: 1px solid var(--accent); margin-bottom: 18px; }
-
-    /* CARDS ESTICADOS EM COLUNA */
-    .card-stacked { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
-    .card-stacked .card {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--accent);
-        background: var(--card-accent) !important;
-        padding: 14px 16px;
+    /* Cards de destaque */
+    .card-highlight { margin-top: 20px; }
+    .card-highlight h3, .card-side > h3 {
+        display: inline-block; background: var(--ink); color: var(--paper);
+        font-family: var(--font-mono); font-size: 8.5pt; font-weight: 500; letter-spacing: 0.08em;
+        padding: 4px 10px;
     }
-    .card-stacked .card p { margin-bottom: 8px; }
+    .card-side { margin-bottom: 14px; }
+    .card-note { background: var(--sign); border: none; margin-bottom: 20px; }
+    .card-note h3 { font-size: 11pt; font-weight: 700; }
+
+    /* CARDS EM COLUNA (EQUIPAMENTOS): cabeçalho preto como cabeçalho de tabela */
+    .card-stacked { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .card-stacked .card { width: 100%; padding: 0 0 16px 0; }
+    .card-stacked .card p { margin-bottom: 8px; padding: 0 18px; }
     .card-stacked .card p:last-child { margin-bottom: 0; }
 
     .card-header-flex {
@@ -156,46 +170,44 @@
         justify-content: space-between;
         align-items: flex-start;
         flex-direction: column;
-        gap: 6px;
-        margin-bottom: 8px;
-        border-bottom: 1px dashed var(--border);
-        padding-bottom: 6px;
+        gap: 8px;
+        background: var(--ink);
+        padding: 10px 18px;
+        margin-bottom: 14px;
     }
 
     @media (min-width: 500px) {
-        .card-header-flex {
-            flex-direction: row;
-            align-items: center;
-        }
+        .card-header-flex { flex-direction: row; align-items: center; }
     }
 
-    .card-header-flex h3 { margin: 0; font-size: 11pt; color: var(--accent); }
+    .card-header-flex h3 { margin: 0; font-size: 11.5pt; color: var(--paper); }
 
     /* BLOCOS DE CÓDIGO E DIAGRAMAS */
     .code-block {
-        background: var(--card) !important; border: 1px solid var(--border); padding: 14px;
-        font-family: 'Courier New', Courier, monospace; font-size: 9.5pt; line-height: 1.7; color: var(--code-text);
+        background: var(--wash); padding: 14px 16px;
+        font-family: var(--font-mono); font-size: 9pt; line-height: 1.8; color: var(--ink);
         white-space: pre-wrap; word-break: break-word;
-        border-left: 3px solid var(--accent); margin-bottom: 12px;
+        margin-bottom: 10px;
         overflow-x: auto;
     }
+    .code-block strong.accent { font-family: var(--font-sans); font-size: 10pt; }
 
     @media (min-width: 768px) {
-        .code-block { font-size: 10pt; }
+        .code-block { font-size: 9.5pt; }
     }
 
     .folder-tree {
         display: flex; flex-direction: column; gap: 8px;
-        background: var(--card) !important; border: 1px solid var(--border); padding: 16px;
-        font-family: 'Courier New', Courier, monospace; font-size: 10pt;
+        border: 2px solid var(--ink); padding: 18px;
+        font-family: var(--font-mono); font-size: 8.5pt; letter-spacing: 0.04em;
     }
-    .folder-tree p { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .accent { color: var(--accent); }
+    .folder-tree p { font-family: var(--font-sans); letter-spacing: 0; margin-bottom: 6px; }
 
     /* REGRAS PARA IMPRESSÃO EM PDF */
+    @page { size: A4; margin: 0; }
     @media print {
-        body { background-color: var(--bg) !important; padding: 0; }
-        .page { background-color: var(--bg) !important; border: none; min-height: 297mm; border-radius: 0; break-after: page; page-break-after: always; }
+        html, body { background-color: var(--paper) !important; padding: 0; max-width: none; }
+        .page { margin: 0; min-height: 297mm; break-after: page; page-break-after: always; }
     }
     </style>
 </head>
@@ -204,9 +216,13 @@
 <!-- PÁGINA 1 -->
 <section class="page">
     <div class="page-content">
-        <h1>INTRODUÇÃO À REDES DE COMPUTADORES</h1>
+        <header class="doc-header">
+            <div class="kicker"><span class="label">Resumo</span><span class="meta">Professor Jeyniglis</span></div>
+            <h1>Introdução às Redes de Computadores</h1>
+            <p class="subtitle">Conceitos, tipos de redes, topologias, equipamentos, modelo OSI e protocolos.</p>
+        </header>
 
-        <h2>01_ O QUE SÃO REDES DE COMPUTADORES?</h2>
+        <h2><span class="num">01</span>O que são redes de computadores?</h2>
         <p>Redes de Computadores refere-se a interconexão por meio de um sistema de comunicação baseado em transmissões e protocolos de vários computadores com o objetivo de trocar informações, além de outros recursos. Essa conexão é chamada de estações de trabalho (nós, pontos ou dispositivos de rede).</p>
 
         <p>Por exemplo, se dentro de uma casa, existe um computador no quarto e outro na sala e estes estão isolados, eles não se comunicam. Mas, por outro lado, se houver um cabo coaxial interligando-os de forma que eles entrem em contato com a internet, temos uma rede.</p>
@@ -233,7 +249,7 @@
 <!-- PÁGINA 2 -->
 <section class="page">
     <div class="page-content">
-        <h2>02_ ALGUNS TIPOS DE REDES DE COMPUTADORES</h2>
+        <h2><span class="num">02</span>Alguns tipos de redes de computadores</h2>
         <p>Antigamente, os computadores eram conectados em distâncias curtas, sendo conhecidas como redes locais. Mas, com a evolução das redes de computadores, foi necessário aumentar a distância da troca de informações entre as pessoas. As redes podem ser classificadas de acordo com sua <strong>arquitetura</strong> (Arcnet, Ethernet, DSL, Token ring, etc.), a <strong>extensão geográfica</strong> (LAN, PAN, MAN, WLAN, etc.), a <strong>topologia</strong> (anel, barramento, estrela, ponto-a-ponto, etc.) e o <strong>meio de transmissão</strong> (redes por cabo de fibra óptica, trançado, via rádio, etc.). Veja alguns tipos de redes:</p>
 
         <div class="card-grid">
@@ -263,7 +279,7 @@
             </div>
         </div>
 
-        <h2>03_ TOPOLOGIA DE REDES (FÍSICAS E LÓGICAS)</h2>
+        <h2><span class="num">03</span>Topologia de redes (físicas e lógicas)</h2>
         <p>As topologias das redes de computadores são as estruturas físicas dos cabos, computadores e componentes. Existem as <strong>topologias físicas</strong>, que são mapas que mostram a localização de cada componente da rede que serão tratadas a seguir, e as <strong>lógicas</strong>, representadas pelo modo que os dados trafegam na rede:</p>
 
         <div class="code-block"><strong class="accent">1. Topologia Ponto-a-ponto:</strong> Quando as máquinas estão interconectadas por pares através de um roteamento de dados.</div>
@@ -281,7 +297,7 @@
 <!-- PÁGINA 3 -->
 <section class="page">
     <div class="page-content">
-        <h2>04_ HARDWARE DE REDE E CABOS</h2>
+        <h2><span class="num">04</span>Hardware de rede e cabos</h2>
         <p>O hardware de rede de computadores varia de acordo com o tipo de conexão. Assim são formados por cabos, placas de redes, roteador, hubs e outros componentes.</p>
 
         <div class="card card-side">
@@ -297,7 +313,7 @@
             <p>Após montar o cabeamento de rede é necessário realizar um teste através dos <strong>testadores de cabos</strong>, adquirido em lojas especializadas. Apesar de testar o funcionamento, ele não detecta se existem ligações incorretas. É preciso que um técnico veja se os fios dos cabos estão na posição certa.</p>
         </div>
 
-        <h2>05_ SISTEMA DE CABEAMENTO ESTRUTURADO (CONTEXTUALIZADO)</h2>
+        <h2><span class="num">05</span>Sistema de cabeamento estruturado (contextualizado)</h2>
         <div class="folder-tree">
             <div><strong class="accent">[ POR QUE SURGIU E QUAL O BENEFÍCIO PRÁTICO? ]</strong></div>
             <p>Para que essa conexão não atrapalhe o ambiente de trabalho, se feito em uma grande empresa, são necessárias várias conexões e muitos cabos, assim surgiu o cabeamento estruturado. Através dele, um técnico irá poupar trabalho e tempo, tanto para fazer a instalação, quanto a remoção da rede.</p>
@@ -321,7 +337,7 @@
 <!-- PÁGINA 4 -->
 <section class="page">
     <div class="page-content">
-        <h2>06_ ENTENDENDO AS CAMADAS DO MODELO OSI NOS EQUIPAMENTOS</h2>
+        <h2><span class="num">06</span>Entendendo as camadas do modelo OSI nos equipamentos</h2>
         <p>A maioria das redes se organiza em <strong>camadas ou níveis (hierarquia)</strong> sobrepostos, onde cada camada tem sua função específica e oferece suporte às camadas superiores. O <strong>Modelo OSI (Open Systems Interconnection)</strong> foi estruturado para padronizar a interconexão de sistemas abertos e permitir que máquinas e hardwares de fabricantes diferentes consigam se comunicar:</p>
 
         <div class="code-block" style="margin-bottom: 14px;">
@@ -331,7 +347,7 @@
 • <strong>CAMADA 3 - REDE (L3):</strong> Responsável pelo endereçamento lógico (IP) e pela escolha da melhor rota entre redes distintas. Foi estruturada para permitir que pacotes saiam de uma rede local e atravessem múltiplas redes e arquiteturas diferentes até o destino. (Atuam: <em>Roteadores e Protocolo IP</em>).
 • <strong>CAMADAS 4 A 7 - TRANSPORTE E APLICAÇÃO (L4 / L7):</strong> A Camada 4 controla a entrega ponta a ponta (<em>TCP, UDP</em>), enquanto a Camada 7 entrega o serviço final ao usuário (<em>Servidores, HTTP, FTP, SMTP</em>).</div>
 
-        <h2>07_ EQUIPAMENTOS DE REDE (PARTE 1)</h2>
+        <h2><span class="num">07</span>Equipamentos de rede (parte 1)</h2>
         <div class="card-stacked">
             <div class="card">
                 <div class="card-header-flex">
@@ -379,7 +395,7 @@
 <!-- PÁGINA 5 -->
 <section class="page">
     <div class="page-content">
-        <h2>07_ EQUIPAMENTOS DE REDE (PARTE 2)</h2>
+        <h2><span class="num">07</span>Equipamentos de rede (parte 2)</h2>
         <div class="card-stacked">
             <div class="card">
                 <div class="card-header-flex">
@@ -427,7 +443,7 @@
 <!-- PÁGINA 6 -->
 <section class="page">
     <div class="page-content">
-        <h2>08_ SOFTWARE DE REDE, ARQUITETURA EM CAMADAS E PROTOCOLOS</h2>
+        <h2><span class="num">08</span>Software de rede, arquitetura em camadas e protocolos</h2>
         <p>As redes de computadores possuem vários componentes, quer sejam físicos ou lógicos baseadas em camadas e protocolos. A esse conjunto dá se o nome de <strong>arquitetura de rede</strong>. Cada sistema operacional possuem características específicas que oferecem suporte.</p>
         <p>A maioria das redes se organiza em <strong>camadas ou níveis (hierarquia)</strong>, que são colocadas sobrepostas, sendo que cada uma tem a sua função específica, oferecendo suporte as camadas superiores. Para estabelecerem comunicação entre camadas de máquinas diferentes existem os <strong>protocolos da camada n</strong>.</p>
         <p><strong>Protocolos:</strong> São códigos ou padrões específicos emitidos por meio de um sistema de pergunta e resposta, utilizado entre dispositivos diferentes. Esses padrões permitem que haja uma interação entre software e hardware, sendo regras de comunicação. Exemplo prático: quando digitamos o endereço de uma página da web, o computador envia uma mensagem pedindo a conexão com um servidor remoto; este responde positivamente à mensagem e, feita a conexão, a página digitada é encontrada e o servidor envia o arquivo correspondente.</p>
