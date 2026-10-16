@@ -216,12 +216,42 @@
     .back-link:hover { background: var(--sign); }
     .back-link:focus-visible { outline: 3px solid var(--sign); outline-offset: 3px; }
 
+    /* BOTÃO DE GERAR PDF: amarelo de placa, empurrado para a direita */
+    .pdf-btn {
+        margin-left: auto;
+        border: none; cursor: pointer;
+        background: var(--sign); font-weight: 700;
+    }
+    .pdf-btn:hover { background: var(--ink); color: var(--sign); }
+
     /* REGRAS PARA IMPRESSÃO EM PDF */
-    @page { size: A4; margin: 0; }
+    /* O conteúdo de cada seção passa de uma folha A4, então na impressão ele flui
+       contínuo com margens reais e nenhum card ou bloco é cortado ao meio */
+    @page {
+        size: A4;
+        margin: 16mm 16mm 18mm 16mm;
+        @bottom-left {
+            content: "Introdução às Redes de Computadores // Prof. Jeyniglis";
+            font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #555555;
+        }
+        @bottom-right {
+            content: "Página " counter(page) " de " counter(pages);
+            font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #111111;
+        }
+    }
     @media print {
-        .doc-nav { display: none; }
-        html, body { background-color: var(--paper) !important; padding: 0; max-width: none; }
-        .page { margin: 0; min-height: 297mm; break-after: page; page-break-after: always; }
+        .doc-nav, .page-footer { display: none; }
+        html, body { background-color: var(--paper) !important; padding: 0; margin: 0; max-width: none; }
+        .page { margin: 0; padding: 0; min-height: 0; display: block; }
+        .page + .page { margin-top: 10mm; }
+        h1 { font-size: 30pt; }
+        h2 { font-size: 16pt; break-after: avoid; page-break-after: avoid; }
+        h3 { break-after: avoid; }
+        p { font-size: 10.5pt; orphans: 3; widows: 3; }
+        .card, .code-block, .card-header-flex, .folder-tree > div { break-inside: avoid; page-break-inside: avoid; }
+        .folder-tree > div { break-after: avoid; }
     }
     </style>
 </head>
@@ -230,7 +260,18 @@
 <nav class="doc-nav">
     <a href="index.html" class="back-link">&larr; Voltar para Informática</a>
     <a href="../index.html" class="back-link">Painel principal</a>
+    <button type="button" class="back-link pdf-btn" id="gerar-pdf">&darr; Gerar PDF</button>
 </nav>
+
+<script>
+    // Abre a janela de impressão já no layout A4; o título vira o nome sugerido do arquivo
+    document.getElementById('gerar-pdf').addEventListener('click', function () {
+        var tituloOriginal = document.title;
+        document.title = 'Resumo - Introducao as Redes de Computadores - Prof Jeyniglis';
+        window.addEventListener('afterprint', function () { document.title = tituloOriginal; }, { once: true });
+        window.print();
+    });
+</script>
 
 <!-- PÁGINA 1 -->
 <section class="page">
