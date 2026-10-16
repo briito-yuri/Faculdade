@@ -5,10 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Introdução à Rede de Computadores - Professor Jeyniglis</title>
     <style>
+    /* 0. PALETA (verde pastel + texto mais legível e confortável) */
+    :root {
+        --bg: #131816;            /* fundo suave, menos agressivo que preto puro */
+        --card: #1b2320;
+        --card-accent: #18211c;
+        --border: #34403a;
+        --accent: #b8e834;        /* verde neon um pouco mais suave que o original (#ccff00) */
+        --accent-2: #cdf06a;      /* variação mais clara para subtítulos */
+        --accent-rgb: 184, 232, 52;
+        --text: #e9eeeb;          /* texto principal: claro, mas não branco puro */
+        --text-strong: #ffffff;
+        --code-text: #e1e8e4;
+    }
+
     /* 1. CONFIGURAÇÕES RESPONSIVAS E BASE */
     *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    html, body { margin: 0; padding: 0; background-color: #0a0a0a; color: #d2d8dc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    
+    html, body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
     body {
         padding: 12px;
         margin: 0 auto;
@@ -18,14 +32,14 @@
     @media (min-width: 768px) {
         body { padding: 24px 0; }
     }
-    
+
     /* ESTRUTURA DE PÁGINA ADAPTÁVEL (FLUIDA NO CELULAR, BLOCOS NO DESKTOP) */
     .page {
         width: 100%;
         margin: 0 auto 16px auto;
-        padding: 16px;
-        background-color: #0a0a0a; 
-        border: 1px solid rgba(204, 255, 0, 0.2);
+        padding: 18px;
+        background-color: var(--bg);
+        border: 1px solid rgba(var(--accent-rgb), 0.25);
         border-radius: 8px;
         display: flex;
         flex-direction: column;
@@ -41,15 +55,15 @@
             border-radius: 0;
         }
     }
-    
+
     .page-content { flex: 1 1 auto; }
-    
+
     /* O RODAPÉ */
     .page-footer {
         flex-shrink: 0; margin-top: 20px; padding-top: 8px;
-        border-top: 1px solid #222;
+        border-top: 1px solid var(--border);
         display: flex; flex-direction: column; gap: 4px; justify-content: space-between; align-items: flex-start;
-        font-size: 7.5pt; color: #ccff00; font-family: monospace;
+        font-size: 8pt; color: var(--accent); font-family: monospace;
         text-transform: uppercase;
     }
 
@@ -61,74 +75,82 @@
         }
     }
 
-    /* TIPOGRAFIA OTIMIZADA PARA REDUZIR O CANSAÇO VISUAL */
+    /* TIPOGRAFIA: MAIOR, MAIS CLARA E COM BOM ESPAÇAMENTO */
     h1, h2, h3, h4 {
         font-family: 'Courier New', Courier, monospace;
-        color: #ccff00;
+        color: var(--accent);
         font-weight: bold;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    h1 { font-size: 16pt; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 16px; text-align: center; }
-    h2 { font-size: 12pt; border-left: 4px solid #ccff00; padding-left: 10px; margin-top: 20px; margin-bottom: 10px; }
-    h3 { font-size: 10pt; color: #aaff00; margin-bottom: 6px; margin-top: 10px; }
-    
+    h1 { font-size: 16pt; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px; text-align: center; }
+    h2 { font-size: 12.5pt; border-left: 4px solid var(--accent); padding-left: 10px; margin-top: 22px; margin-bottom: 12px; }
+    h3 { font-size: 10.5pt; color: var(--accent-2); margin-bottom: 6px; margin-top: 10px; }
+
     @media (min-width: 768px) {
         h1 { font-size: 20pt; }
-        h2 { font-size: 13pt; }
-    }
-    
-    p { 
-        font-size: 9.5pt; 
-        line-height: 1.55; /* Aumentado para dar respiro e aliviar a vista */
-        color: #d2d8dc;    /* Tom cinza-claro neutro, evita o contraste agressivo do branco puro */
-        margin-bottom: 10px; 
-    }
-    
-    @media (min-width: 768px) {
-        p { font-size: 10pt; }
+        h2 { font-size: 13.5pt; }
     }
 
-    strong { color: #ffffff; }
+    p {
+        font-size: 11pt;
+        line-height: 1.75;          /* mais respiro entre linhas */
+        color: var(--text);
+        margin-top: 0;
+        margin-bottom: 12px;
+        letter-spacing: 0.1px;
+    }
+
+    @media (min-width: 768px) {
+        p { font-size: 11.5pt; }
+    }
+
+    strong { color: var(--text-strong); }
 
     /* TAGS */
     .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .tag {
         font-family: 'Courier New', Courier, monospace;
-        font-size: 7.5pt; color: #ccff00;
-        border: 1px solid rgba(204, 255, 0, 0.5);
-        padding: 3px 6px; background: rgba(204, 255, 0, 0.08);
+        font-size: 8pt; color: var(--accent);
+        border: 1px solid rgba(var(--accent-rgb), 0.55);
+        padding: 3px 7px; background: rgba(var(--accent-rgb), 0.1);
         font-weight: bold;
     }
 
     /* CARDS EM GRID RESPONSIVO */
-    .card-grid { 
-        display: grid; 
-        grid-template-columns: 1fr; 
-        gap: 12px; 
-        margin-top: 12px; 
+    .card-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 12px;
     }
 
     @media (min-width: 650px) {
         .card-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    .card { border: 1px solid #333; background: #111 !important; padding: 14px; border-radius: 4px; }
-    .card h3 { margin-top: 0; font-size: 10pt; margin-bottom: 6px; text-transform: none; }
-    .card p { margin-bottom: 0; font-size: 9pt; }
+    .card { border: 1px solid var(--border); background: var(--card) !important; padding: 14px 16px; border-radius: 6px; }
+    .card h3 { margin-top: 0; font-size: 10.5pt; margin-bottom: 6px; text-transform: none; }
+    .card p { margin-bottom: 0; font-size: 10.5pt; line-height: 1.7; }
+
+    /* Cards de destaque (antes com estilos inline) */
+    .card-highlight { margin-top: 18px; border-left: 4px solid var(--accent); background: var(--card-accent) !important; }
+    .card-highlight h3 { color: var(--accent); }
+    .card-side { border-left: 4px solid var(--accent); margin-bottom: 14px; }
+    .card-note { background: rgba(var(--accent-rgb), 0.1) !important; border: 1px solid var(--accent); margin-bottom: 18px; }
 
     /* CARDS ESTICADOS EM COLUNA */
-    .card-stacked { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+    .card-stacked { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
     .card-stacked .card {
         width: 100%;
-        border: 1px solid #333;
-        border-left: 4px solid #ccff00;
-        background: #0d1208 !important;
-        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        background: var(--card-accent) !important;
+        padding: 14px 16px;
     }
-    .card-stacked .card p { margin-bottom: 6px; }
+    .card-stacked .card p { margin-bottom: 8px; }
     .card-stacked .card p:last-child { margin-bottom: 0; }
-    
+
     .card-header-flex {
         display: flex;
         justify-content: space-between;
@@ -136,7 +158,7 @@
         flex-direction: column;
         gap: 6px;
         margin-bottom: 8px;
-        border-bottom: 1px dashed #2a3320;
+        border-bottom: 1px dashed var(--border);
         padding-bottom: 6px;
     }
 
@@ -147,32 +169,33 @@
         }
     }
 
-    .card-header-flex h3 { margin: 0; font-size: 10.5pt; color: #ccff00; }
+    .card-header-flex h3 { margin: 0; font-size: 11pt; color: var(--accent); }
 
     /* BLOCOS DE CÓDIGO E DIAGRAMAS */
     .code-block {
-        background: #111 !important; border: 1px solid #333; padding: 12px;
-        font-family: 'Courier New', Courier, monospace; font-size: 8pt; color: #c9d1d9;
+        background: var(--card) !important; border: 1px solid var(--border); padding: 14px;
+        font-family: 'Courier New', Courier, monospace; font-size: 9.5pt; line-height: 1.7; color: var(--code-text);
         white-space: pre-wrap; word-break: break-word;
-        border-left: 3px solid #ccff00; margin-bottom: 10px;
+        border-left: 3px solid var(--accent); margin-bottom: 12px;
         overflow-x: auto;
     }
 
     @media (min-width: 768px) {
-        .code-block { font-size: 8.5pt; }
+        .code-block { font-size: 10pt; }
     }
 
     .folder-tree {
         display: flex; flex-direction: column; gap: 8px;
-        background: #111 !important; border: 1px solid #333; padding: 14px;
-        font-family: 'Courier New', Courier, monospace; font-size: 8.5pt;
+        background: var(--card) !important; border: 1px solid var(--border); padding: 16px;
+        font-family: 'Courier New', Courier, monospace; font-size: 10pt;
     }
-    .accent { color: #ccff00; }
+    .folder-tree p { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .accent { color: var(--accent); }
 
     /* REGRAS PARA IMPRESSÃO EM PDF */
     @media print {
-        body { background-color: #0a0a0a !important; padding: 0; }
-        .page { background-color: #0a0a0a !important; border: none; min-height: 297mm; border-radius: 0; break-after: page; page-break-after: always; }
+        body { background-color: var(--bg) !important; padding: 0; }
+        .page { background-color: var(--bg) !important; border: none; min-height: 297mm; border-radius: 0; break-after: page; page-break-after: always; }
     }
     </style>
 </head>
@@ -182,22 +205,22 @@
 <section class="page">
     <div class="page-content">
         <h1>INTRODUÇÃO À REDES DE COMPUTADORES</h1>
-        
+
         <h2>01_ O QUE SÃO REDES DE COMPUTADORES?</h2>
         <p>Redes de Computadores refere-se a interconexão por meio de um sistema de comunicação baseado em transmissões e protocolos de vários computadores com o objetivo de trocar informações, além de outros recursos. Essa conexão é chamada de estações de trabalho (nós, pontos ou dispositivos de rede).</p>
-        
+
         <p>Por exemplo, se dentro de uma casa, existe um computador no quarto e outro na sala e estes estão isolados, eles não se comunicam. Mas, por outro lado, se houver um cabo coaxial interligando-os de forma que eles entrem em contato com a internet, temos uma rede.</p>
-        
+
         <p>Atualmente, existe uma interconexão entre computadores espalhados pelo mundo que permite a comunicação entre os indivíduos, quer seja quando eles navegam pela internet ou assiste televisão. Diariamente, é necessário utilizar recursos como impressoras para imprimir documentos, reuniões através de videoconferência, trocar e-mails, acessar às redes sociais ou se entreter por meio de jogos RPG, etc.</p>
-        
+
         <p>Hoje, não é preciso estar em casa para enviar e-mails, basta ter um tablet ou smartphone com acesso à internet em dispositivos móveis. Apesar de tantas vantagens, o crescimento das redes de computadores também tem seu lado negativo. A cada dia surgem problemas que prejudicam as relações entre os indivíduos, como pirataria, espionagem, roubos de identidade (phishing), assuntos polêmicos como racismo, sexo, pornografia, sendo destacados com mais ênfase, entre outros problemas.</p>
-        
+
         <p>Desde muito tempo, o ser humano sentiu a necessidade de compartilhar conhecimento e estabelecer relações com pessoas distantes. Na década de 1960, durante a Guerra Fria, as redes de computadores surgiram com objetivos militares: interconectar os centros de comando dos EUA para proteção e envio de dados.</p>
-        
+
         <p>A experiência com redes iniciaram através dos cientistas Lawrence Roberts e Thomas Merril, que fizeram uma conexão entre os centros de pesquisa na Califórnia e Massachusetts. Esses experimentos com redes se deu por causa da corrida espacial durante o programa da Advanced Research Projects Agency (ARPA), renomeada posteriormente para DARPA. A partir daí, vários conceitos relacionados a redes de computadores, como transferência de pacotes de dados, protocolo TCP/IP, entre outros, surgiram estando relacionados à criação da internet. Após isso, as redes tiveram propósitos acadêmicos e pesquisa em várias universidades.</p>
 
-        <div class="card" style="margin-top: 18px; border-left: 4px solid #ccff00; background: #0a0f05 !important;">
-            <h3 style="color: #ccff00;">💡 SAIBA MAIS: ARPA / DARPA</h3>
+        <div class="card card-highlight">
+            <h3>💡 SAIBA MAIS: ARPA / DARPA</h3>
             <p><strong>Advanced Research Project Agency (ARPA)</strong>, agência norte-americana que surgiu na década de 50 e contribuiu para a criação da rede de longa distância ARPANET em conjunto com universidades conceituadas e centros de pesquisas. Seu objetivo era trabalhar com pesquisas sobre a comunicação e transmissão rápida de dados. Posteriormente seu nome foi alterado para <strong>Defense Advanced Research Project Agency (DARPA)</strong>.</p>
         </div>
     </div>
@@ -261,15 +284,15 @@
         <h2>04_ HARDWARE DE REDE E CABOS</h2>
         <p>O hardware de rede de computadores varia de acordo com o tipo de conexão. Assim são formados por cabos, placas de redes, roteador, hubs e outros componentes.</p>
 
-        <div class="card" style="border-left: 4px solid #ccff00; margin-bottom: 14px;">
+        <div class="card card-side">
             <h3 class="accent">📦 CABOS DE REDE</h3>
-            <p style="margin-bottom: 8px;">Os cabos ou cabeamentos fazem parte da estrutura física utilizada para conectar computadores em rede, estando relacionados a largura de banda, a taxa de transmissão, padrões internacionais, etc. Há vantagens e desvantagens para a conexão feita por meio de cabeamento. Os mais utilizados são:</p>
-            <p style="margin-bottom: 6px;"><strong>• Cabos de Par Trançado:</strong> Cabos caracterizados por sua velocidade, pode ser feito sob medida, comprados em lojas de informática ou produzidos pelo usuário;</p>
-            <p style="margin-bottom: 6px;"><strong>• Cabos Coaxiais:</strong> Cabos que permitem uma distância maior na transmissão de dados, apesar de serem flexíveis, são caros e frágeis. Eles necessitam de barramento ISA, suporte não encontrado em computadores mais novos;</p>
+            <p style="margin-bottom: 10px;">Os cabos ou cabeamentos fazem parte da estrutura física utilizada para conectar computadores em rede, estando relacionados a largura de banda, a taxa de transmissão, padrões internacionais, etc. Há vantagens e desvantagens para a conexão feita por meio de cabeamento. Os mais utilizados são:</p>
+            <p style="margin-bottom: 8px;"><strong>• Cabos de Par Trançado:</strong> Cabos caracterizados por sua velocidade, pode ser feito sob medida, comprados em lojas de informática ou produzidos pelo usuário;</p>
+            <p style="margin-bottom: 8px;"><strong>• Cabos Coaxiais:</strong> Cabos que permitem uma distância maior na transmissão de dados, apesar de serem flexíveis, são caros e frágeis. Eles necessitam de barramento ISA, suporte não encontrado em computadores mais novos;</p>
             <p><strong>• Cabos de Fibra Óptica:</strong> Cabos complexos, caros e de difícil instalação. São velozes e imunes a interferências eletromagnéticas.</p>
         </div>
 
-        <div class="card" style="background: rgba(204, 255, 0, 0.06) !important; border: 1px solid #ccff00; margin-bottom: 18px;">
+        <div class="card card-note">
             <h3 class="accent">⚠️ OBSERVAÇÃO: APÓS MONTAR O CABEAMENTO DE REDE</h3>
             <p>Após montar o cabeamento de rede é necessário realizar um teste através dos <strong>testadores de cabos</strong>, adquirido em lojas especializadas. Apesar de testar o funcionamento, ele não detecta se existem ligações incorretas. É preciso que um técnico veja se os fios dos cabos estão na posição certa.</p>
         </div>
@@ -278,7 +301,7 @@
         <div class="folder-tree">
             <div><strong class="accent">[ POR QUE SURGIU E QUAL O BENEFÍCIO PRÁTICO? ]</strong></div>
             <p>Para que essa conexão não atrapalhe o ambiente de trabalho, se feito em uma grande empresa, são necessárias várias conexões e muitos cabos, assim surgiu o cabeamento estruturado. Através dele, um técnico irá poupar trabalho e tempo, tanto para fazer a instalação, quanto a remoção da rede.</p>
-            
+
             <div><strong class="accent">[ SUBSISTEMA DE TOMADAS RJ-45 (ÁREA DE TRABALHO) ]</strong></div>
             <p>Ele é feito através das tomadas RJ-45 que possibilitam que vários conectores possam ser encaixados num mesmo local, sem a necessidade de serem conectados diretamente no hub.</p>
 
