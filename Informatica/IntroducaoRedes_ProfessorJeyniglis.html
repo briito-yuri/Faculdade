@@ -2,129 +2,183 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Introdução à Rede de Computadores - Professor Jeyniglis</title>
     <style>
-    /* 1. CONFIGURAÇÕES DA PÁGINA A4 (O MOTOR DO PDF) */
-    @page { size: A4; margin: 0; }
-    *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; }
-    html, body { margin: 0; padding: 0; background-color: #0a0a0a; }
+    /* 1. CONFIGURAÇÕES RESPONSIVAS E BASE */
+    *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    html, body { margin: 0; padding: 0; background-color: #0a0a0a; color: #d2d8dc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     
     body {
-        padding: 24px 0;
+        padding: 12px;
         margin: 0 auto;
-        max-width: 900px !important;
+        max-width: 900px;
+    }
+
+    @media (min-width: 768px) {
+        body { padding: 24px 0; }
     }
     
+    /* ESTRUTURA DE PÁGINA ADAPTÁVEL (FLUIDA NO CELULAR, BLOCOS NO DESKTOP) */
     .page {
-        min-height: 297mm;
-        margin: 0 auto 12px auto;
-        padding: 15mm 18mm 12mm 18mm;
+        width: 100%;
+        margin: 0 auto 16px auto;
+        padding: 16px;
         background-color: #0a0a0a; 
         border: 1px solid rgba(204, 255, 0, 0.2);
+        border-radius: 8px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        color: #c9d1d9;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    @media (min-width: 768px) {
+        .page {
+            min-height: 297mm;
+            margin: 0 auto 16px auto;
+            padding: 18mm 18mm 12mm 18mm;
+            border-radius: 0;
+        }
     }
     
     .page-content { flex: 1 1 auto; }
     
-    /* O RODAPÉ OFICIAL */
+    /* O RODAPÉ */
     .page-footer {
-        flex-shrink: 0; margin-top: 16px; padding-top: 4mm;
+        flex-shrink: 0; margin-top: 20px; padding-top: 8px;
         border-top: 1px solid #222;
-        display: flex; justify-content: space-between; align-items: center;
-        font-size: 8.5pt; color: #ccff00; font-family: monospace;
+        display: flex; flex-direction: column; gap: 4px; justify-content: space-between; align-items: flex-start;
+        font-size: 7.5pt; color: #ccff00; font-family: monospace;
         text-transform: uppercase;
     }
 
-    /* 2. O ESTILO VISUAL (DARK MODE HACKER) */
+    @media (min-width: 600px) {
+        .page-footer {
+            flex-direction: row;
+            align-items: center;
+            font-size: 8.5pt;
+        }
+    }
+
+    /* TIPOGRAFIA OTIMIZADA PARA REDUZIR O CANSAÇO VISUAL */
     h1, h2, h3, h4 {
         font-family: 'Courier New', Courier, monospace;
-        color: #ccff00; /* Verde Neon */
+        color: #ccff00;
         font-weight: bold;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    h1 { font-size: 20pt; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 18px; text-align: center; }
-    h2 { font-size: 13pt; border-left: 4px solid #ccff00; padding-left: 12px; margin-top: 18px; margin-bottom: 12px; }
-    h3 { font-size: 10.5pt; color: #aaff00; margin-bottom: 6px; margin-top: 12px; }
+    h1 { font-size: 16pt; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 16px; text-align: center; }
+    h2 { font-size: 12pt; border-left: 4px solid #ccff00; padding-left: 10px; margin-top: 20px; margin-bottom: 10px; }
+    h3 { font-size: 10pt; color: #aaff00; margin-bottom: 6px; margin-top: 10px; }
     
-    p { font-size: 9.8pt; line-height: 1.42; color: #a1b0c0; margin-bottom: 8px; }
-    strong { color: #e2e8f0; }
+    @media (min-width: 768px) {
+        h1 { font-size: 20pt; }
+        h2 { font-size: 13pt; }
+    }
+    
+    p { 
+        font-size: 9.5pt; 
+        line-height: 1.55; /* Aumentado para dar respiro e aliviar a vista */
+        color: #d2d8dc;    /* Tom cinza-claro neutro, evita o contraste agressivo do branco puro */
+        margin-bottom: 10px; 
+    }
+    
+    @media (min-width: 768px) {
+        p { font-size: 10pt; }
+    }
 
-    /* TAGS DE CAMADAS E DESTAQUES */
-    .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    strong { color: #ffffff; }
+
+    /* TAGS */
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .tag {
         font-family: 'Courier New', Courier, monospace;
-        font-size: 8pt; color: #ccff00;
+        font-size: 7.5pt; color: #ccff00;
         border: 1px solid rgba(204, 255, 0, 0.5);
-        padding: 3px 8px; background: rgba(204, 255, 0, 0.08);
+        padding: 3px 6px; background: rgba(204, 255, 0, 0.08);
         font-weight: bold;
     }
 
-    /* CARDS EM GRID */
-    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-    .card { border: 1px solid #333; background: #111; padding: 12px; border-radius: 4px; }
-    .card h3 { margin-top: 0; font-size: 10.5pt; margin-bottom: 6px; text-transform: none; }
-    .card p { margin-bottom: 0; font-size: 9.2pt; }
+    /* CARDS EM GRID RESPONSIVO */
+    .card-grid { 
+        display: grid; 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+        margin-top: 12px; 
+    }
 
-    /* CARDS ESTICADOS E DESCENDO (100% LARGURA) */
+    @media (min-width: 650px) {
+        .card-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .card { border: 1px solid #333; background: #111 !important; padding: 14px; border-radius: 4px; }
+    .card h3 { margin-top: 0; font-size: 10pt; margin-bottom: 6px; text-transform: none; }
+    .card p { margin-bottom: 0; font-size: 9pt; }
+
+    /* CARDS ESTICADOS EM COLUNA */
     .card-stacked { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
     .card-stacked .card {
         width: 100%;
         border: 1px solid #333;
         border-left: 4px solid #ccff00;
-        background: #0d1208;
+        background: #0d1208 !important;
         padding: 12px 14px;
     }
     .card-stacked .card p { margin-bottom: 6px; }
     .card-stacked .card p:last-child { margin-bottom: 0; }
+    
     .card-header-flex {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
         margin-bottom: 8px;
         border-bottom: 1px dashed #2a3320;
         padding-bottom: 6px;
     }
-    .card-header-flex h3 { margin: 0; font-size: 11pt; color: #ccff00; }
 
-    /* BLOCOS DE CÓDIGO TERMINAL */
-    .code-block {
-        background: #111; border: 1px solid #333; padding: 10px 12px;
-        font-family: 'Courier New', Courier, monospace; font-size: 8.6pt; color: #a1b0c0;
-        white-space: pre-wrap; word-break: break-word;
-        border-left: 3px solid #ccff00; margin-bottom: 10px;
+    @media (min-width: 500px) {
+        .card-header-flex {
+            flex-direction: row;
+            align-items: center;
+        }
     }
 
-    /* ÁRVORE DE PASTAS / ESTRUTURA */
+    .card-header-flex h3 { margin: 0; font-size: 10.5pt; color: #ccff00; }
+
+    /* BLOCOS DE CÓDIGO E DIAGRAMAS */
+    .code-block {
+        background: #111 !important; border: 1px solid #333; padding: 12px;
+        font-family: 'Courier New', Courier, monospace; font-size: 8pt; color: #c9d1d9;
+        white-space: pre-wrap; word-break: break-word;
+        border-left: 3px solid #ccff00; margin-bottom: 10px;
+        overflow-x: auto;
+    }
+
+    @media (min-width: 768px) {
+        .code-block { font-size: 8.5pt; }
+    }
+
     .folder-tree {
         display: flex; flex-direction: column; gap: 8px;
-        background: #111; border: 1px solid #333; padding: 14px;
-        font-family: 'Courier New', Courier, monospace; font-size: 9.2pt;
+        background: #111 !important; border: 1px solid #333; padding: 14px;
+        font-family: 'Courier New', Courier, monospace; font-size: 8.5pt;
     }
     .accent { color: #ccff00; }
 
     /* REGRAS PARA IMPRESSÃO EM PDF */
     @media print {
-        *, *::before, *::after {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        body { padding: 0; background: #0a0a0a; }
-        .page { margin: 0; border: none; min-height: 297mm; break-after: page; page-break-after: always; }
-        .page:last-child { break-after: auto; page-break-after: auto; }
+        body { background-color: #0a0a0a !important; padding: 0; }
+        .page { background-color: #0a0a0a !important; border: none; min-height: 297mm; border-radius: 0; break-after: page; page-break-after: always; }
     }
     </style>
 </head>
 <body>
 
-<!-- ==================== PÁGINA 1: INTRODUÇÃO ==================== -->
+<!-- PÁGINA 1 -->
 <section class="page">
     <div class="page-content">
         <h1>INTRODUÇÃO À REDES DE COMPUTADORES</h1>
@@ -142,7 +196,7 @@
         
         <p>A experiência com redes iniciaram através dos cientistas Lawrence Roberts e Thomas Merril, que fizeram uma conexão entre os centros de pesquisa na Califórnia e Massachusetts. Esses experimentos com redes se deu por causa da corrida espacial durante o programa da Advanced Research Projects Agency (ARPA), renomeada posteriormente para DARPA. A partir daí, vários conceitos relacionados a redes de computadores, como transferência de pacotes de dados, protocolo TCP/IP, entre outros, surgiram estando relacionados à criação da internet. Após isso, as redes tiveram propósitos acadêmicos e pesquisa em várias universidades.</p>
 
-        <div class="card" style="margin-top: 18px; border-left: 4px solid #ccff00; background: #0a0f05;">
+        <div class="card" style="margin-top: 18px; border-left: 4px solid #ccff00; background: #0a0f05 !important;">
             <h3 style="color: #ccff00;">💡 SAIBA MAIS: ARPA / DARPA</h3>
             <p><strong>Advanced Research Project Agency (ARPA)</strong>, agência norte-americana que surgiu na década de 50 e contribuiu para a criação da rede de longa distância ARPANET em conjunto com universidades conceituadas e centros de pesquisas. Seu objetivo era trabalhar com pesquisas sobre a comunicação e transmissão rápida de dados. Posteriormente seu nome foi alterado para <strong>Defense Advanced Research Project Agency (DARPA)</strong>.</p>
         </div>
@@ -153,7 +207,7 @@
     </footer>
 </section>
 
-<!-- ==================== PÁGINA 2: TIPOS E TOPOLOGIAS ==================== -->
+<!-- PÁGINA 2 -->
 <section class="page">
     <div class="page-content">
         <h2>02_ ALGUNS TIPOS DE REDES DE COMPUTADORES</h2>
@@ -201,7 +255,7 @@
     </footer>
 </section>
 
-<!-- ==================== PÁGINA 3: CABOS E CABEAMENTO ESTRUTURADO ==================== -->
+<!-- PÁGINA 3 -->
 <section class="page">
     <div class="page-content">
         <h2>04_ HARDWARE DE REDE E CABOS</h2>
@@ -215,7 +269,7 @@
             <p><strong>• Cabos de Fibra Óptica:</strong> Cabos complexos, caros e de difícil instalação. São velozes e imunes a interferências eletromagnéticas.</p>
         </div>
 
-        <div class="card" style="background: rgba(204, 255, 0, 0.06); border: 1px solid #ccff00; margin-bottom: 18px;">
+        <div class="card" style="background: rgba(204, 255, 0, 0.06) !important; border: 1px solid #ccff00; margin-bottom: 18px;">
             <h3 class="accent">⚠️ OBSERVAÇÃO: APÓS MONTAR O CABEAMENTO DE REDE</h3>
             <p>Após montar o cabeamento de rede é necessário realizar um teste através dos <strong>testadores de cabos</strong>, adquirido em lojas especializadas. Apesar de testar o funcionamento, ele não detecta se existem ligações incorretas. É preciso que um técnico veja se os fios dos cabos estão na posição certa.</p>
         </div>
@@ -241,7 +295,7 @@
     </footer>
 </section>
 
-<!-- ==================== PÁGINA 4: CAMADAS OSI + EQUIPAMENTOS (PARTE 1) ==================== -->
+<!-- PÁGINA 4 -->
 <section class="page">
     <div class="page-content">
         <h2>06_ ENTENDENDO AS CAMADAS DO MODELO OSI NOS EQUIPAMENTOS</h2>
@@ -254,7 +308,7 @@
 • <strong>CAMADA 3 - REDE (L3):</strong> Responsável pelo endereçamento lógico (IP) e pela escolha da melhor rota entre redes distintas. Foi estruturada para permitir que pacotes saiam de uma rede local e atravessem múltiplas redes e arquiteturas diferentes até o destino. (Atuam: <em>Roteadores e Protocolo IP</em>).
 • <strong>CAMADAS 4 A 7 - TRANSPORTE E APLICAÇÃO (L4 / L7):</strong> A Camada 4 controla a entrega ponta a ponta (<em>TCP, UDP</em>), enquanto a Camada 7 entrega o serviço final ao usuário (<em>Servidores, HTTP, FTP, SMTP</em>).</div>
 
-        <h2>07_ EQUIPAMENTOS DE REDE (PARTE 1 - ESTICADOS E DESCENDO)</h2>
+        <h2>07_ EQUIPAMENTOS DE REDE (PARTE 1)</h2>
         <div class="card-stacked">
             <div class="card">
                 <div class="card-header-flex">
@@ -299,10 +353,10 @@
     </footer>
 </section>
 
-<!-- ==================== PÁGINA 5: EQUIPAMENTOS (PARTE 2) ==================== -->
+<!-- PÁGINA 5 -->
 <section class="page">
     <div class="page-content">
-        <h2>07_ EQUIPAMENTOS DE REDE (PARTE 2 - ESTICADOS E DESCENDO)</h2>
+        <h2>07_ EQUIPAMENTOS DE REDE (PARTE 2)</h2>
         <div class="card-stacked">
             <div class="card">
                 <div class="card-header-flex">
@@ -347,7 +401,7 @@
     </footer>
 </section>
 
-<!-- ==================== PÁGINA 6: SOFTWARE DE REDE E PROTOCOLOS ==================== -->
+<!-- PÁGINA 6 -->
 <section class="page">
     <div class="page-content">
         <h2>08_ SOFTWARE DE REDE, ARQUITETURA EM CAMADAS E PROTOCOLOS</h2>
@@ -357,27 +411,27 @@
 
         <div class="code-block"><strong class="accent">1. Protocolo TCP/IP (Transmission Control Protocol / Internet Protocol) [Camadas 3 e 4]:</strong>
 Tipo de protocolo de aplicação de rede para internet. Ele organiza a transmissão de informações e estabelece o tipo de endereçamento e envio de dados.
-[ DADOS ] ──> [ TCP (Camada 4): Organiza a Transmissão ] ──> [ IP (Camada 3): Define Endereçamento e Envio ]</div>
+[ DADOS ] &rarr; [ TCP (Camada 4): Organiza a Transmissão ] &rarr; [ IP (Camada 3): Define Endereçamento e Envio ]</div>
 
         <div class="code-block"><strong class="accent">2. Protocolo TCP (Transmission Control Protocol) [Camada 4 - Transporte]:</strong>
 Realiza a transferência de dados de modo seguro e full-duplex (é preciso haver conexão antes da transferência dos dados).
-[ MÁQUINA A ] ──(1. Pede Conexão)──> [ MÁQUINA B ] ──(2. Aceita)──> <══(3. Dados Seguros e Full-Duplex)══></div>
+[ MÁQUINA A ] &rarr; (1. Pede Conexão) &rarr; [ MÁQUINA B ] &rarr; (2. Aceita) &hArr; (3. Dados Seguros e Full-Duplex)</div>
 
         <div class="code-block"><strong class="accent">3. Protocolo UDP (User Datagram Protocol) [Camada 4 - Transporte]:</strong>
 Protocolo não tão confiável e rápido. É utilizado para o transporte de informações, sem garantia da entrega dos dados.
-[ MÁQUINA A ] ══(Envio Direto e Rápido de Pacotes / Sem Conexão Prévia e Sem Garantia de Entrega)══> [ MÁQUINA B ]</div>
+[ MÁQUINA A ] &hArr; (Envio Direto e Rápido de Pacotes / Sem Conexão Prévia e Sem Garantia de Entrega) &hArr; [ MÁQUINA B ]</div>
 
         <div class="code-block"><strong class="accent">4. Protocolo HTTP (Hypertext Transfer Protocol) [Camada 7 - Aplicação]:</strong>
 Faz a transferência do hipertexto, áudio, vídeo, textos, etc. para que haja comunicação entre as páginas da internet e os usuários.
-[ USUÁRIO ] ──(1. Digita URL / Pede Conexão)──> [ SERVIDOR REMOTO ] ──(2. Envia Hipertexto, Áudio, Vídeo)──> [ USUÁRIO ]</div>
+[ USUÁRIO ] &rarr; (1. Digita URL / Pede Conexão) &rarr; [ SERVIDOR REMOTO ] &rarr; (2. Envia Hipertexto, Áudio, Vídeo) &rarr; [ USUÁRIO ]</div>
 
         <div class="code-block"><strong class="accent">5. Protocolo FTP (File Transfer Protocol) [Camada 7 - Aplicação]:</strong>
 Protocolo utilizado para a transmissão de arquivos entre computadores portáteis e locais, na realização de download e upload.
-[ PC PORTÁTIL / LOCAL ] <══(Download: Recebe Arquivo / Upload: Envia Arquivo via FTP)══> [ SERVIDOR / PC LOCAL ]</div>
+[ PC PORTÁTIL / LOCAL ] &hArr; (Download: Recebe Arquivo / Upload: Envia Arquivo via FTP) &hArr; [ SERVIDOR / PC LOCAL ]</div>
 
         <div class="code-block"><strong class="accent">6. Protocolo SMTP (Simple Mail Transfer Protocol) [Camada 7 - Aplicação sobre TCP]:</strong>
 É um protocolo essencial para a trocas de mensagens eletrônicas. Ele utiliza o serviço do TCP, ideal para a segurança na transferência de e-mail entre o remetente e o destinatário, entre outros.
-[ REMETENTE ] ══(Mensagem de E-mail via SMTP trafegando sobre conexão segura TCP)══> [ DESTINATÁRIO ]</div>
+[ REMETENTE ] &hArr; (Mensagem de E-mail via SMTP trafegando sobre conexão segura TCP) &hArr; [ DESTINATÁRIO ]</div>
     </div>
     <footer class="page-footer">
         <span>INTRODUÇÃO À REDE DE COMPUTADORES PROFESSOR JEYNIGLIS</span>
