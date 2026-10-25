@@ -6,7 +6,7 @@
     <title>Painel de Estudos - Faculdade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
     /* PALETA — OPÇÃO 3: SINALIZAÇÃO (tinta preta + amarelo de placa sobre papel branco) */
     :root {
@@ -146,6 +146,32 @@
     }
     .card:hover .badge { background: var(--ink); color: var(--sign); }
 
+    /* CARD NO ESTILO EDITORIAL SUÍÇO (Programação: o mesmo visual das apostilas) */
+    .card.suico {
+        --blue: #1f3fd1;
+        --blue-wash: #e6eafb;
+        font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    .card.suico:hover { background: var(--blue-wash); }
+    .card.suico:focus-visible { outline-color: var(--blue); }
+    .card.suico .sw-head {
+        display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+        padding-bottom: 10px; border-bottom: 1px solid var(--ink);
+    }
+    .card.suico .sw-num {
+        font-size: 56px; line-height: 0.8; font-weight: 900; letter-spacing: -0.06em; color: var(--blue);
+    }
+    .card.suico .sw-kicker {
+        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em;
+        text-transform: uppercase; color: var(--muted); text-align: right;
+    }
+    .card.suico h3 { font-size: clamp(24px, 3.6vw, 30px); font-weight: 900; letter-spacing: -0.04em; line-height: 1.05; }
+    .card.suico p { font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .card.suico .card-footer { border-top-width: 1px; }
+    .card.suico .badge { background: var(--blue); color: var(--paper); }
+    .card.suico:hover .badge { background: var(--ink); color: var(--paper); }
+
     /* CARD AINDA NÃO DISPONÍVEL */
     .card.is-soon { border-style: dashed; color: var(--muted); pointer-events: none; }
     .card.is-soon .num { background: var(--muted); }
@@ -201,15 +227,18 @@
                 </div>
             </a>
 
-            <!-- CARD DE PROGRAMAÇÃO (EXEMPLO FUTURO) -->
-            <a href="#" class="card is-soon" aria-disabled="true" tabindex="-1">
-                <span class="num">02</span>
+            <!-- CARD DE PROGRAMAÇÃO (estilo editorial suíço) -->
+            <a href="Programacao/index.html" class="card suico">
+                <div class="sw-head">
+                    <span class="sw-num">02</span>
+                    <span class="sw-kicker">Apostilas<br>Java 21 LTS</span>
+                </div>
                 <div>
                     <h3>Programação</h3>
-                    <p>Estruturas de dados, Java, lógica, algoritmos e projetos práticos.</p>
+                    <p>Java do zero às APIs REST: ambiente e JVM, lógica, orientação a objetos e web, com código comentado e figuras.</p>
                 </div>
                 <div class="card-footer">
-                    <span class="badge">EM BREVE</span>
+                    <span class="badge">ACESSAR PASTA &rarr;</span>
                 </div>
             </a>
         </div>
