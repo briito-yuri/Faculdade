@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
     <style>
     /* 0. PALETA — OPÇÃO 3: SINALIZAÇÃO (tinta preta + amarelo de placa sobre papel branco) */
     :root {
@@ -19,7 +20,19 @@
         --desk: #2b2b2b;          /* fundo atrás das páginas (só na tela) */
         --font-sans: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
         --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+        --sign-text: #ffd21f;
+        color-scheme: light;
     }
+
+    /* TEMA ESCURO: segue o sistema, ou a escolha feita no botão "Tema" */
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
+    }
+    :root[data-theme="dark"] { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
+
+    /* No amarelo de placa o texto continua preto, em qualquer tema */
+    .card-note, strong.accent, .tag, .kicker .label { --ink: #111111; --line: #333333; --muted: #555555; --wash: #f3f3f3; --paper: #ffffff; color: var(--ink); }
+    .badge, .pdf-btn, .back-link:hover { color: #111111; }
 
     /* 1. CONFIGURAÇÕES RESPONSIVAS E BASE */
     *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -222,7 +235,10 @@
         border: none; cursor: pointer;
         background: var(--sign); font-weight: 700;
     }
-    .pdf-btn:hover { background: var(--ink); color: var(--sign); }
+    .pdf-btn:hover { background: var(--ink); color: var(--sign-text); }
+
+    /* BOTÃO DE TEMA: ao lado do PDF */
+    .tema-btn { border: none; cursor: pointer; }
 
 
     /* SUBTÍTULOS NUMERADOS (2.1, 2.2...): número com contorno, como placa secundária */
@@ -285,7 +301,7 @@
         font-family: var(--font-mono); font-weight: 500; font-size: 8.5pt; letter-spacing: 0.06em;
         text-align: left; padding: 6px 12px;
     }
-    th.key { color: var(--sign); }
+    th.key { color: var(--sign-text); }
     td { padding: 6px 12px; border-top: 1px solid var(--ink); font-family: var(--font-mono); }
     td.key { font-weight: 700; }
     .text-table td { font-family: var(--font-sans); }
@@ -319,6 +335,7 @@
         }
     }
     @media print {
+        :root, :root[data-theme="dark"], :root:not([data-theme="light"]) { --paper: #ffffff; --ink: #111111; --wash: #f3f3f3; --line: #333333; --muted: #555555; --sign-text: #ffd21f; color-scheme: light; }
         .doc-nav, .page-footer { display: none; }
         html, body { background-color: var(--paper) !important; padding: 0; margin: 0; max-width: none; }
         .page { margin: 0; padding: 0; min-height: 0; display: block; }
@@ -339,6 +356,7 @@
     <a href="index.html" class="back-link">&larr; Voltar para Informática</a>
     <a href="../index.html" class="back-link">Painel principal</a>
     <button type="button" class="back-link pdf-btn" id="gerar-pdf">&darr; Gerar PDF</button>
+    <button type="button" class="back-link tema-btn">Tema claro/escuro</button>
 </nav>
 
 <script>
@@ -901,6 +919,16 @@ posições:  2   1   0</pre>
         <span>PAGE 9</span>
     </footer>
 </section>
+
+<script>
+    // Tema claro/escuro: a escolha fica salva e vale para todas as páginas do site
+    document.querySelector('.tema-btn').addEventListener('click', function () {
+        var r = document.documentElement;
+        var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        r.dataset.theme = escuro ? 'light' : 'dark';
+        try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    });
+</script>
 
 </body>
 </html>
