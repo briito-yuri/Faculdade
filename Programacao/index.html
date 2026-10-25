@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
     <style>
     /* PALETA — EDITORIAL SUÍÇO (tinta preta + azul-cobalto sobre papel branco), a mesma das apostilas */
     :root {
@@ -20,7 +21,15 @@
         --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
         --col: 112px;
         --gap: 24px;
+        --text-2: #333333;
+        color-scheme: light;
     }
+
+    /* TEMA ESCURO: segue o sistema, ou a escolha feita no botão "Tema" */
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) { --paper: #121212; --ink: #f2f2f2; --blue: #7d93ff; --blue-wash: #1b2140; --line: #333333; --muted: #a3a3a3; --text-2: #d6d6d6; color-scheme: dark; }
+    }
+    :root[data-theme="dark"] { --paper: #121212; --ink: #f2f2f2; --blue: #7d93ff; --blue-wash: #1b2140; --line: #333333; --muted: #a3a3a3; --text-2: #d6d6d6; color-scheme: dark; }
 
     *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; }
     html, body { margin: 0; padding: 0; background-color: var(--paper); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
@@ -137,7 +146,7 @@
         letter-spacing: -0.02em;
     }
     .item .sub { margin: 0 0 10px; font-size: 16px; color: var(--muted); }
-    .item p { margin: 0; max-width: 40em; font-size: 15px; line-height: 1.6; color: #333333; }
+    .item p { margin: 0; max-width: 40em; font-size: 15px; line-height: 1.6; color: var(--text-2); }
     .item .meta {
         margin-top: 12px;
         font-family: var(--font-mono);
@@ -170,6 +179,15 @@
         .item .badge { justify-self: start; }
     }
 
+    /* BOTÃO DE TEMA */
+    .topo { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; }
+    .tema-btn {
+        margin-left: auto; padding: 8px 12px; min-height: 40px; cursor: pointer;
+        background: none; color: var(--ink); border: 2px solid var(--ink);
+        font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .tema-btn:hover { background: var(--ink); color: var(--paper); }
+
     /* RODAPÉ */
     footer {
         width: 100%;
@@ -198,7 +216,10 @@
 <body>
 
     <div class="container">
-        <a href="../index.html" class="back-link">&larr; Voltar ao painel principal</a>
+        <div class="topo">
+            <a href="../index.html" class="back-link">&larr; Voltar ao painel principal</a>
+            <button type="button" class="tema-btn">Tema claro/escuro</button>
+        </div>
 
         <header>
             <p class="kicker"><span>Programação</span><span>Apostilas</span>Editorial suíço</p>
@@ -230,6 +251,16 @@
             <span>Sistemas de Informação // CESMAC</span>
         </div>
     </footer>
+
+<script>
+    // Tema claro/escuro: a escolha fica salva e vale para todas as páginas do site
+    document.querySelector('.tema-btn').addEventListener('click', function () {
+        var r = document.documentElement;
+        var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        r.dataset.theme = escuro ? 'light' : 'dark';
+        try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    });
+</script>
 
 </body>
 </html>

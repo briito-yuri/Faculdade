@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
     <style>
     /* PALETA — OPÇÃO 3: SINALIZAÇÃO (tinta preta + amarelo de placa sobre papel branco) */
     :root {
@@ -18,7 +19,21 @@
         --muted: #555555;
         --font-sans: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
         --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+        --sign-text: #ffd21f;
+        color-scheme: light;
     }
+
+    /* TEMA ESCURO: segue o sistema, ou a escolha feita no botão "Tema" */
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
+        :root:not([data-theme="light"]) .card.suico { --blue: #7d93ff; --blue-wash: #1b2140; }
+    }
+    :root[data-theme="dark"] { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
+    :root[data-theme="dark"] .card.suico { --blue: #7d93ff; --blue-wash: #1b2140; }
+
+    /* No amarelo de placa o texto continua preto, em qualquer tema */
+    .card-note, strong.accent, .tag, .kicker .label { --ink: #111111; --line: #333333; --muted: #555555; --wash: #f3f3f3; --paper: #ffffff; color: var(--ink); }
+    .badge, .pdf-btn, .back-link:hover { color: #111111; }
 
     *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; }
     html, body { margin: 0; padding: 0; background-color: var(--paper); color: var(--ink); font-family: var(--font-sans); }
@@ -144,7 +159,7 @@
         white-space: nowrap;
         transition: background 0.15s, color 0.15s;
     }
-    .card:hover .badge { background: var(--ink); color: var(--sign); }
+    .card:hover .badge { background: var(--ink); color: var(--sign-text); }
 
     /* CARD NO ESTILO EDITORIAL SUÍÇO (Programação: o mesmo visual das apostilas) */
     .card.suico {
@@ -179,6 +194,15 @@
     .card.is-soon .card-footer { border-top-style: dashed; }
     .card.is-soon .badge { background: var(--wash); color: var(--muted); }
 
+    /* BOTÃO DE TEMA */
+    .topo { margin-bottom: 24px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; }
+    .tema-btn {
+        margin-left: auto; padding: 8px 12px; min-height: 40px; cursor: pointer;
+        background: none; color: var(--ink); border: 2px solid var(--ink);
+        font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .tema-btn:hover { background: var(--ink); color: var(--paper); }
+
     /* RODAPÉ */
     footer {
         width: 100%;
@@ -207,6 +231,8 @@
 <body>
 
     <div class="container">
+        <div class="topo"><button type="button" class="tema-btn">Tema claro/escuro</button></div>
+
         <header>
             <div class="kicker"><span class="label">Faculdade</span><span class="meta">Portfólio de estudos</span></div>
             <h1>Painel de Estudos</h1>
@@ -250,6 +276,16 @@
             <span>Sistemas de Informação // CESMAC</span>
         </div>
     </footer>
+
+<script>
+    // Tema claro/escuro: a escolha fica salva e vale para todas as páginas do site
+    document.querySelector('.tema-btn').addEventListener('click', function () {
+        var r = document.documentElement;
+        var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        r.dataset.theme = escuro ? 'light' : 'dark';
+        try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    });
+</script>
 
 </body>
 </html>
