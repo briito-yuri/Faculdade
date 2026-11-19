@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartilha de Estudo — Computação em Nuvem e Virtualização de SO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <style>
+    :root {
+      --desk: #E5ECF1;
+      --paper: #FFFFFF;
+      --canvas: #F7FAFB;
+      --ink: #0F1D26;
+      --ink-body: #334652;
+      --ink-muted: #647987;
+      --divider: #E1EBF0;
+      --stroke: #1E2D38;
+
+      --blue: #1D6FA8;
+      --blue-dark: #124970;
+      --blue-soft: #EAF4FB;
+      --blue-tint: #F3F9FD;
+      --blue-border: #C5DFEF;
+
+      --green: #178866;
+      --green-dark: #0F5943;
+      --green-soft: #E7F6F1;
+      --green-tint: #F2FAF7;
+      --green-border: #BEE3D6;
+
+      --alert: #B84A39;
+      --alert-soft: #FDF0ED;
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--desk);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.56;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 66px;
+      padding-bottom: 48px;
+    }
+
+    /* Top utility bar (hidden in print) */
+    .toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--divider);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .toolbar-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+    }
+
+    .toolbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--ink-body);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 11px;
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-link:hover { background: var(--blue-soft); color: var(--blue-dark); }
+    .nav-link.focus { background: var(--blue-soft); color: var(--blue-dark); }
+
+    .btn-print {
+      appearance: none;
+      border: none;
+      background: var(--blue);
+      color: #FFFFFF;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 8px 15px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .btn-print:hover { background: var(--blue-dark); }
+
+    /* A4 Sheet Container */
+    .sheets {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 12px 16px;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--paper);
+      border-radius: 6px;
+      box-shadow: 0 10px 30px rgba(15, 29, 38, 0.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .page-bar {
+      height: 6px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .page-inner {
+      flex: 1;
+      padding: 16mm 17mm 13mm 17mm;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .page-footer {
+      margin-top: 16px;
+      padding-top: 9px;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--ink-muted);
+      letter-spacing: 0.4px;
+    }
+
+    /* Typography & Pills */
+    .kicker-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .pill-blue { background: var(--blue-soft); color: var(--blue-dark); }
+    .pill-green { background: var(--green-soft); color: var(--green-dark); }
+    .pill-uni { background: #EBF2F5; color: #1F3B4A; }
+    .pill-focus { background: var(--blue); color: #FFFFFF; }
+
+    .mono-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    h1.doc-title {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      line-height: 1.18;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    h2.sec-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      line-height: 1.22;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    h3.sub-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    p.lead {
+      font-size: 13.5px;
+      color: var(--ink-body);
+      line-height: 1.56;
+    }
+
+    p { color: var(--ink-body); }
+
+    /* Cards & Callouts */
+    .card {
+      background: var(--canvas);
+      border: 1.2px solid var(--blue-border);
+      border-radius: 12px;
+      padding: 13px 15px;
+    }
+
+    .card.white { background: #FFFFFF; }
+    .card.green { border-color: var(--green-border); background: var(--green-tint); }
+    .card.blue { border-color: var(--blue-border); background: var(--blue-tint); }
+    .card.accent-left {
+      background: #FFFFFF;
+      border-left: 4px solid var(--blue);
+    }
+    .card.accent-left.green { border-left-color: var(--green); border-color: var(--green-border); border-left-width: 4px; }
+    .card.accent-left.alert { border-left-color: var(--alert); border-color: #E8C5BF; border-left-width: 4px; background: var(--alert-soft); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.2px;
+      background: #FFFFFF;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.2px solid var(--blue-border);
+    }
+
+    table.green-tbl { border-color: var(--green-border); }
+
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      background: var(--blue-tint);
+      color: var(--blue-dark);
+      font-weight: 700;
+      font-size: 11.5px;
+      border-bottom: 1.2px solid var(--blue-border);
+    }
+
+    table.green-tbl th {
+      background: var(--green-tint);
+      color: var(--green-dark);
+      border-bottom-color: var(--green-border);
+    }
+
+    td {
+      padding: 7.5px 10px;
+      border-bottom: 1px solid var(--divider);
+      color: var(--ink-body);
+      vertical-align: top;
+      line-height: 1.44;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    td strong { color: var(--ink); }
+
+    /* Speaking Script Box */
+    .script-box {
+      background: #FFFFFF;
+      border: 1.5px solid var(--blue);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .script-head {
+      background: var(--blue);
+      color: #FFFFFF;
+      padding: 7px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .script-body {
+      padding: 11px 14px;
+      font-size: 12.8px;
+      color: var(--ink-body);
+      line-height: 1.54;
+    }
+
+    .script-body ul, .clean-list {
+      padding-left: 17px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .script-body li strong, .clean-list li strong { color: var(--ink); }
+
+    /* Diagram Container */
+    .fig-box {
+      background: #FFFFFF;
+      border: 1.2px solid var(--blue-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .fig-box.green { border-color: var(--green-border); }
+
+    .fig-cap {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--blue-dark);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .fig-box.green .fig-cap { color: var(--green-dark); }
+
+    .fig-box svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Q&A cards */
+    .qa-item {
+      background: #FFFFFF;
+      border: 1.2px solid var(--divider);
+      border-left: 3.5px solid var(--blue);
+      border-radius: 10px;
+      padding: 9px 12px;
+    }
+
+    .qa-item.green { border-left-color: var(--green); }
+    .qa-item.focus-qa { border-color: var(--blue-border); border-left: 4px solid var(--blue); background: var(--blue-tint); }
+
+    .qa-q {
+      font-size: 12.6px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .qa-a {
+      font-size: 12.2px;
+      color: var(--ink-body);
+      line-height: 1.46;
+    }
+
+    /* Glossary compact */
+    .gloss-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      font-size: 12.2px;
+    }
+
+    .gloss-item {
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--divider);
+    }
+
+    .gloss-term {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 11.5px;
+      color: var(--blue-dark);
+    }
+
+    .gloss-term.g { color: var(--green-dark); }
+
+    /* Mobile responsiveness */
+    @media (max-width: 860px) {
+      body { padding-top: 60px; background: var(--canvas); }
+      .sheets { padding: 8px; gap: 16px; }
+      .page { width: 100%; min-height: auto; border-radius: 10px; }
+      .page-inner { padding: 18px 16px; }
+      .grid-2, .grid-3, .grid-4, .gloss-grid { grid-template-columns: 1fr; }
+      .toolbar-left span { display: none; }
+      h1.doc-title { font-size: 22px; }
+    }
+
+    /* Exact A4 Print Styles */
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body {
+        background: #FFFFFF;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .toolbar { display: none !important; }
+      .sheets { padding: 0; gap: 0; display: block; }
+      .page {
+        width: 210mm;
+        height: 297mm;
+        min-height: 297mm;
+        border-radius: 0;
+        box-shadow: none;
+        page-break-after: always;
+        break-after: page;
+      }
+      .page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+    }
+
+    /* === Melhorias de responsividade, layout fluido e tema claro/escuro === */
+    :root {
+      --toolbar-bg: rgba(255, 255, 255, 0.94);
+      --card-surface: #FFFFFF;
+      --uni-bg: #EBF2F5;
+      --uni-ink: #1F3B4A;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --desk: #0E1720;
+        --paper: #15222E;
+        --canvas: #1A2A38;
+        --card-surface: #182734;
+        --ink: #EAF2F7;
+        --ink-body: #C2D4E0;
+        --ink-muted: #8FA8B8;
+        --divider: #273B4C;
+        --stroke: #8FA8B8;
+        --blue: #4BA8E6;
+        --blue-dark: #8CCCF7;
+        --blue-soft: #173046;
+        --blue-tint: #162B3D;
+        --blue-border: #254865;
+        --green: #2CC093;
+        --green-dark: #7CE5C3;
+        --green-soft: #14362D;
+        --green-tint: #132F28;
+        --green-border: #1F5445;
+        --alert: #F08C78;
+        --alert-soft: #361E1B;
+        --uni-bg: #1D3140;
+        --uni-ink: #C9DFEE;
+        --toolbar-bg: rgba(14, 23, 32, 0.94);
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --desk: #0E1720;
+      --paper: #15222E;
+      --canvas: #1A2A38;
+      --card-surface: #182734;
+      --ink: #EAF2F7;
+      --ink-body: #C2D4E0;
+      --ink-muted: #8FA8B8;
+      --divider: #273B4C;
+      --stroke: #8FA8B8;
+      --blue: #4BA8E6;
+      --blue-dark: #8CCCF7;
+      --blue-soft: #173046;
+      --blue-tint: #162B3D;
+      --blue-border: #254865;
+      --green: #2CC093;
+      --green-dark: #7CE5C3;
+      --green-soft: #14362D;
+      --green-tint: #132F28;
+      --green-border: #1F5445;
+      --alert: #F08C78;
+      --alert-soft: #361E1B;
+      --uni-bg: #1D3140;
+      --uni-ink: #C9DFEE;
+      --toolbar-bg: rgba(14, 23, 32, 0.94);
+      color-scheme: dark;
+    }
+
+    html, body { overflow-x: hidden; }
+    body { padding-top: 68px; }
+
+    .toolbar {
+      background: var(--toolbar-bg);
+      padding: 10px 16px;
+      gap: 10px;
+    }
+    .toolbar-nav {
+      flex: 1 1 auto;
+      min-width: 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .toolbar-nav::-webkit-scrollbar { display: none; }
+
+    .btn-back, .btn-theme {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 7px 13px;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s, filter 0.15s;
+    }
+    .btn-back {
+      background: var(--blue);
+      color: #FFFFFF;
+      border: none;
+    }
+    .btn-back:hover { filter: brightness(1.08); }
+    .btn-theme {
+      background: var(--card-surface);
+      color: var(--ink);
+      border: 1.5px solid var(--blue-border);
+    }
+    .btn-theme:hover { background: var(--blue-soft); border-color: var(--blue); }
+
+    /* Layout fluido em vez de folha A4 rígida */
+    .sheets {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 20px 32px;
+      gap: 24px;
+    }
+    .page {
+      width: 100%;
+      min-height: auto;
+      border-radius: 16px;
+      border: 1px solid var(--divider);
+      scroll-margin-top: 76px;
+    }
+    .page-inner {
+      padding: clamp(20px, 3.5vw, 36px) clamp(16px, 4vw, 40px) clamp(18px, 3vw, 28px);
+    }
+    .page-body, .card, .qa-item, .script-box, .fig-box, .grid-2 > *, .grid-3 > *, .grid-4 > *, .gloss-grid > * {
+      min-width: 0;
+    }
+
+    /* Superfícies compatíveis com tema escuro */
+    .card.white, .card.accent-left, table, .script-box, .qa-item { background: var(--card-surface); }
+    .card.accent-left.alert { background: var(--alert-soft); }
+    .qa-item.focus-qa { background: var(--blue-tint); }
+    .pill-uni { background: var(--uni-bg); color: var(--uni-ink); }
+    .fig-box { background: #FFFFFF; }
+    .fig-box .fig-cap { color: #124970; }
+    .fig-box.green .fig-cap { color: #0F5943; }
+
+    /* Tabelas com rolagem horizontal segura no celular */
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 10px;
+    }
+    .table-scroll table { min-width: 100%; }
+
+    .kicker-row, .script-head, .page-footer { flex-wrap: wrap; gap: 6px 12px; }
+    h1.doc-title { font-size: clamp(22px, 4.4vw, 30px); }
+    h2.sec-title { font-size: clamp(18px, 3.4vw, 22px); }
+
+    @media (max-width: 900px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      body { padding-top: 62px; padding-bottom: 32px; font-size: 14px; }
+      .toolbar { padding: 8px 12px; gap: 8px; }
+      .btn-back, .btn-theme { padding: 6px 11px; font-size: 12px; }
+      .nav-link { padding: 5px 10px; font-size: 12px; }
+      .sheets { padding: 10px 10px 24px; gap: 16px; }
+      .page { border-radius: 12px; }
+      .grid-2, .grid-3, .grid-4, .gloss-grid { grid-template-columns: 1fr; }
+      .table-scroll table th { width: auto !important; white-space: nowrap; }
+      .table-scroll table { min-width: 460px; font-size: 12.5px; }
+      .fig-box { padding: 10px 8px; }
+      .fig-box svg { min-width: 0; }
+    }
+    @media (max-width: 420px) {
+      .pill { font-size: 9.5px; padding: 4px 9px; }
+      .mono-tag { font-size: 9.5px; }
+      .page-footer { font-size: 9.5px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Navegação e Impressão (oculta ao imprimir em A4) -->
+  <header class="toolbar">
+    <div class="toolbar-left">
+      <a class="btn-back" href="index.html">&larr; Trabalho J</a>
+    </div>
+    <nav class="toolbar-nav" aria-label="Seções da cartilha">
+      <a class="nav-link" href="#p1">Visão Geral</a>
+      <a class="nav-link focus" href="#p2">★ Slide 04 (IaaS/PaaS/SaaS)</a>
+      <a class="nav-link focus" href="#p3">★ Slide 05 (Implantação)</a>
+      <a class="nav-link" href="#p4">Restante Nuvem</a>
+      <a class="nav-link" href="#p5">Virtualização de SO</a>
+      <a class="nav-link" href="#p6">Perguntas do Prof.</a>
+    </nav>
+    <button type="button" class="btn-theme" id="btnTheme">Tema</button>
+  </header>
+
+  <main class="sheets">
+
+    <!-- =====================================================================
+         PÁGINA 1 — CAPA EDITORIAL + MAPA DO TRABALHO + GLOSSÁRIO RÁPIDO
+         ===================================================================== -->
+    <article class="page" id="p1">
+      <div class="page-bar" style="background: linear-gradient(90deg, #1D6FA8, #178866);"></div>
+      <div class="page-inner">
+        <div class="page-body">
+
+          <div class="kicker-row">
+            <span class="pill pill-uni">Informática Básica · Prof. Jeyniglis Matos</span>
+            <span class="mono-tag">Cartilha de Estudo</span>
+          </div>
+
+          <div>
+            <h1 class="doc-title">Computação em Nuvem e Virtualização de Sistemas Operacionais</h1>
+            <p class="lead">Guia direto e organizado para dominar <strong>toda a apresentação</strong>, com <strong>foco principal nos Slides 04 e 05</strong> (Modelos de Serviço e Modelos de Implantação) e respostas prontas caso o professor faça perguntas.</p>
+          </div>
+
+          <!-- Resumo em 1 minuto -->
+          <div class="card blue">
+            <h3 class="sub-title" style="color:var(--blue-dark);">A Ideia Central do Trabalho em 30 Segundos</h3>
+            <p style="font-size:13px;">
+              <strong>Virtualização de SO</strong> é a tecnologia de base que permite dividir <strong>um único servidor físico</strong> em várias máquinas virtuais (ou containers) isoladas usando um <em>Hypervisor</em>.
+              Já a <strong>Computação em Nuvem</strong> pega essa camada virtualizada em escala gigante, conecta tudo pela internet (via VPC, SDN e NFV) e entrega ao usuário como <strong>serviço sob demanda</strong> — sem precisar comprar servidores próprios.
+            </p>
+          </div>
+
+          <!-- Mapa do Seminário -->
+          <div>
+            <h3 class="sub-title">Mapa Completo da Apresentação (14 Slides)</h3>
+            <div class="table-scroll"><table>
+              <thead>
+                <tr>
+                  <th style="width:76px;">Slides</th>
+                  <th style="width:170px;">Bloco</th>
+                  <th>O que cada parte explica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>01 – 03</strong></td>
+                  <td>Abertura &amp; Base Nuvem</td>
+                  <td>Capa, roteiro da Parte 01, definição oficial do <strong>NIST SP 800-145</strong> e os 5 pilares da nuvem.</td>
+                </tr>
+                <tr style="background: var(--blue-tint);">
+                  <td><strong style="color:var(--blue-dark);">★ 04 – 05</strong></td>
+                  <td><strong style="color:var(--blue-dark);">SUA APRESENTAÇÃO</strong></td>
+                  <td><strong>Slide 04:</strong> Modelos de Serviço (<em>IaaS, PaaS e SaaS</em>). <strong>Slide 05:</strong> Modelos de Implantação (<em>Pública, Privada, Híbrida e Multicloud</em>).</td>
+                </tr>
+                <tr>
+                  <td><strong>06 – 07</strong></td>
+                  <td>Redes &amp; Operação Nuvem</td>
+                  <td>Como a rede funciona na nuvem (<strong>VPC, SDN, NFV</strong>), latência/CDN, segurança compartilhada e custos.</td>
+                </tr>
+                <tr>
+                  <td><strong>08 – 12</strong></td>
+                  <td>Virtualização de SO</td>
+                  <td>Camadas (VM → Hypervisor → Hardware), Tipo 1 vs Tipo 2 vs Containers, <strong>vSwitch/Bridge/NAT/Host-Only</strong> e prós/contras.</td>
+                </tr>
+                <tr>
+                  <td><strong>13 – 14</strong></td>
+                  <td>Fechamento &amp; Fontes</td>
+                  <td>Integração entre Nuvem e Virtualização em 4 camadas + Referências bibliográficas ABNT.</td>
+                </tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <!-- Glossário Rápido -->
+          <div>
+            <h3 class="sub-title">Glossário de Bolso (Termos que Sempre Aparecem)</h3>
+            <div class="card white">
+              <div class="gloss-grid">
+                <div class="gloss-item"><span class="gloss-term">CAPEX vs. OPEX</span><br/>CAPEX = comprar hardware caro adiantado. OPEX = pagar mensalmente só pelo uso (modelo da nuvem).</div>
+                <div class="gloss-item"><span class="gloss-term">Multi-tenant</span><br/>Vários clientes diferentes usando o mesmo hardware físico do provedor, mas totalmente isolados entre si.</div>
+                <div class="gloss-item"><span class="gloss-term">Vendor Lock-in</span><br/>Ficar "preso" a um único provedor de nuvem por custo alto ou dificuldade técnica de migrar para outro.</div>
+                <div class="gloss-item"><span class="gloss-term">Cloud Bursting</span><br/>Quando a nuvem privada lota num pico de acesso e "transborda" o excesso temporariamente para a nuvem pública.</div>
+                <div class="gloss-item"><span class="gloss-term g">Hypervisor (VMM)</span><br/>Software que cria e gerencia máquinas virtuais, distribuindo CPU, RAM, disco e rede física.</div>
+                <div class="gloss-item"><span class="gloss-term g">vSwitch / vNIC</span><br/>Switch e placa de rede feitos em software dentro do hypervisor para conectar as VMs à rede.</div>
+                <div class="gloss-item"><span class="gloss-term">VPC</span><br/><em>Virtual Private Cloud</em>: sua rede virtual privada e isolada dentro de uma nuvem pública.</div>
+                <div class="gloss-item"><span class="gloss-term">SDN e NFV</span><br/>SDN separa o "cérebro" (controle) do envio de dados; NFV transforma firewalls e roteadores em software.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card accent-left">
+            <h3 class="sub-title" style="margin-bottom:3px;">Como usar esta cartilha para estudar rápido</h3>
+            <p style="font-size:12.5px;">Leia primeiro as <strong>Páginas 2 e 3</strong> com calma (elas detalham os <strong>Slides 04 e 05</strong> com analogias e roteiro de fala). Depois passe pelas <strong>Páginas 4 e 5</strong> para dominar a parte dos colegas e finalize testando sua memória nas <strong>10 perguntas da Página 6</strong>.</p>
+          </div>
+
+        </div>
+        <div class="page-footer">
+          <span>INFORMÁTICA BÁSICA · CARTILHA DE ESTUDO</span>
+          <span>PÁGINA 01 / 06</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- =====================================================================
+         PÁGINA 2 — FOCO PRINCIPAL: SLIDE 04 (MODELOS DE SERVIÇO — IAAS/PAAS/SAAS)
+         ===================================================================== -->
+    <article class="page" id="p2">
+      <div class="page-bar" style="background: #1D6FA8;"></div>
+      <div class="page-inner">
+        <div class="page-body">
+
+          <div class="kicker-row">
+            <span class="pill pill-focus">★ Foco Principal · Sua Apresentação (Slide 04)</span>
+            <span class="mono-tag">Computação em Nuvem</span>
+          </div>
+
+          <div>
+            <h2 class="sec-title">Slide 04 — Modelos de Serviço: IaaS, PaaS e SaaS</h2>
+            <p class="lead">Na computação em nuvem, nem todo mundo precisa do mesmo nível de controle. Os três modelos definem <strong>o que você administra</strong> e <strong>o que o provedor administra por você</strong>.</p>
+          </div>
+
+          <!-- Analogia fácil de explicar -->
+          <div class="card blue">
+            <h3 class="sub-title" style="color:var(--blue-dark);">Analogia Infalível para Explicar na Hora (Transporte)</h3>
+            <div class="grid-2" style="gap:8px; font-size:12.5px; margin-top:6px;">
+              <div><strong>On-Premises (Comprar carro):</strong> você paga o carro, manutenção, seguro, gasolina e ainda dirige. Controle total, trabalho total.</div>
+              <div><strong>IaaS (Alugar carro):</strong> a locadora cuida do carro (infraestrutura), mas você escolhe a rota e dirige (instala SO e apps).</div>
+              <div><strong>PaaS (Táxi / Uber):</strong> você não cuida do carro nem dirige; só diz para onde quer ir (foca só no seu código e dados).</div>
+              <div><strong>SaaS (Ônibus / Metrô):</strong> o trajeto já está pronto e funcionando; você só entra e usa o serviço direto pelo navegador.</div>
+            </div>
+          </div>
+
+          <!-- Figura 1 compacta -->
+          <div class="fig-box">
+            <div class="fig-cap">Figura do Slide 04 · Quem gerencia cada camada (Branco = Cliente · Azul = Provedor)</div>
+            <svg viewBox="0 0 760 245" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="4" width="174" height="28" rx="6" fill="#EBF2F5"/><text x="95" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#1F3B4A">On-Premises (Local)</text>
+              <rect x="198" y="4" width="174" height="28" rx="6" fill="#EAF4FB"/><text x="285" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#124970">IaaS</text>
+              <rect x="388" y="4" width="174" height="28" rx="6" fill="#EAF4FB"/><text x="475" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#124970">PaaS</text>
+              <rect x="578" y="4" width="174" height="28" rx="6" fill="#EAF4FB"/><text x="665" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#124970">SaaS</text>
+
+              <!-- 6 compact rows (h=26, gap=5) -->
+              <rect x="8" y="40" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="95" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Aplicações</text>
+              <rect x="198" y="40" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="285" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Aplicações</text>
+              <rect x="388" y="40" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="475" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Aplicações</text>
+              <rect x="578" y="40" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="665" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Aplicações</text>
+
+              <rect x="8" y="71" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="95" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Dados e Usuários</text>
+              <rect x="198" y="71" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="285" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Dados e Usuários</text>
+              <rect x="388" y="71" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="475" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Dados e Usuários</text>
+              <rect x="578" y="71" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="665" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Dados e Usuários</text>
+
+              <rect x="8" y="102" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="95" y="119" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Runtime / Middleware</text>
+              <rect x="198" y="102" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="285" y="119" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Runtime / Middleware</text>
+              <rect x="388" y="102" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="475" y="119" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Runtime / Middleware</text>
+              <rect x="578" y="102" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="665" y="119" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Runtime / Middleware</text>
+
+              <rect x="8" y="133" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="95" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Sistema Operacional</text>
+              <rect x="198" y="133" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="285" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Sistema Operacional*</text>
+              <rect x="388" y="133" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="475" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Sistema Operacional</text>
+              <rect x="578" y="133" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="665" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Sistema Operacional</text>
+
+              <rect x="8" y="164" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="95" y="181" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Virtualização</text>
+              <rect x="198" y="164" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="285" y="181" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Virtualização</text>
+              <rect x="388" y="164" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="475" y="181" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Virtualização</text>
+              <rect x="578" y="164" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="665" y="181" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Virtualização</text>
+
+              <rect x="8" y="195" width="174" height="26" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.4"/><text x="95" y="212" text-anchor="middle" font-size="11" font-weight="600" fill="#0F1D26">Servidores e Rede</text>
+              <rect x="198" y="195" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="285" y="212" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Servidores e Rede</text>
+              <rect x="388" y="195" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="475" y="212" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Servidores e Rede</text>
+              <rect x="578" y="195" width="174" height="26" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.4"/><text x="665" y="212" text-anchor="middle" font-size="11" font-weight="600" fill="#FFF">Servidores e Rede</text>
+
+              <text x="8" y="239" font-size="10.5" fill="#647987">*Obs. técnica importante para perguntas: em IaaS, o provedor fornece a imagem base do SO, mas o cliente escolhe, atualiza e configura o SO convidado.</text>
+            </svg>
+          </div>
+
+          <!-- Detalhamento técnico dos 3 modelos -->
+          <div class="table-scroll"><table>
+            <thead>
+              <tr>
+                <th style="width:92px;">Modelo</th>
+                <th>O que o provedor entrega</th>
+                <th>Para quem serve / Quando usar</th>
+                <th style="width:158px;">Exemplos Reais</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>IaaS</strong><br/><span style="font-size:10.5px;color:var(--blue);">Infraestrutura</span></td>
+                <td>Máquinas virtuais, discos em bloco, redes virtuais (VPC), firewalls e IPs. Você instala SO, bibliotecas e sistemas.</td>
+                <td>Equipes de TI/Redes que precisam de <strong>máximo controle</strong>, migração de servidores antigos ou configuração de VPNs.</td>
+                <td>AWS EC2, Azure Virtual Machines, Google Compute Engine</td>
+              </tr>
+              <tr>
+                <td><strong>PaaS</strong><br/><span style="font-size:10.5px;color:var(--blue);">Plataforma</span></td>
+                <td>Ambiente pronto para rodar código (Java, Python, Node), banco de dados gerenciado e deploy automático.</td>
+                <td><strong>Desenvolvedores</strong> que querem criar e publicar sistemas rápido sem perder tempo configurando Linux ou hardware.</td>
+                <td>Google App Engine, Azure App Service, Render, Heroku</td>
+              </tr>
+              <tr>
+                <td><strong>SaaS</strong><br/><span style="font-size:10.5px;color:var(--blue);">Software</span></td>
+                <td>Software completo e pronto, acessado direto pelo navegador ou aplicativo. Atualizações e servidores ficam com o provedor.</td>
+                <td><strong>Usuários finais</strong> e empresas que querem produtividade imediata sem equipe para manter infraestrutura.</td>
+                <td>Google Workspace, Microsoft 365, GitHub, Figma, Gmail</td>
+              </tr>
+            </tbody>
+          </table></div>
+
+          <!-- Roteiro de Fala -->
+          <div class="script-box">
+            <div class="script-head">
+              <span>Roteiro de Fala Sugerido — Slide 04</span>
+              <span>~1 min 30s</span>
+            </div>
+            <div class="script-body">
+              <ul>
+                <li><strong>Abertura:</strong> "Agora que vimos o que é a nuvem, precisamos entender como ela é entregue na prática. A nuvem se divide em três modelos de serviço: <strong>IaaS, PaaS e SaaS</strong>."</li>
+                <li><strong>Aponte para a Figura 1:</strong> "Olhando a figura da esquerda para a direita, tudo que está em <strong>branco</strong> é gerenciado pelo cliente e tudo em <strong>azul</strong> fica por conta do provedor. Quanto mais à direita, maior a praticidade e menor o trabalho técnico."</li>
+                <li><strong>Explique os três de forma leve:</strong> "No <strong>IaaS</strong>, alugamos servidores e redes virtuais — como na AWS EC2 — mantendo controle do sistema. No <strong>PaaS</strong>, o desenvolvedor só envia o código, como no App Engine ou Render. E no <strong>SaaS</strong>, o software já vem pronto pela internet, como Gmail, Google Docs e Microsoft 365."</li>
+                <li><strong>Gancho para o Slide 05:</strong> "Definido <em>o que</em> vamos contratar, a próxima decisão é <em>onde</em> essa nuvem vai rodar — que são os modelos de implantação."</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+        <div class="page-footer">
+          <span>FOCO PRINCIPAL · SLIDE 04 (MODELOS DE SERVIÇO)</span>
+          <span>PÁGINA 02 / 06</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- =====================================================================
+         PÁGINA 3 — FOCO PRINCIPAL: SLIDE 05 (MODELOS DE IMPLANTAÇÃO)
+         ===================================================================== -->
+    <article class="page" id="p3">
+      <div class="page-bar" style="background: #1B7598;"></div>
+      <div class="page-inner">
+        <div class="page-body">
+
+          <div class="kicker-row">
+            <span class="pill pill-focus">★ Foco Principal · Sua Apresentação (Slide 05)</span>
+            <span class="mono-tag">Computação em Nuvem</span>
+          </div>
+
+          <div>
+            <h2 class="sec-title">Slide 05 — Modelos de Implantação da Nuvem</h2>
+            <p class="lead">Enquanto o Slide 04 responde <em>"qual camada eu contrato?"</em>, o Slide 05 responde <strong>"onde os servidores físicos estão e quem pode usá-los?"</strong>.</p>
+          </div>
+
+          <!-- Figura 2 compacta -->
+          <div class="fig-box">
+            <div class="fig-cap">Figura do Slide 05 · Diagrama em Leque (Pública, Privada, Híbrida e Multicloud)</div>
+            <svg viewBox="0 0 760 222" xmlns="http://www.w3.org/2000/svg">
+              <defs><marker id="arr-p3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker></defs>
+              <rect x="160" y="6" width="440" height="44" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.6"/>
+              <text x="380" y="25" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF">Infraestrutura de Computação em Nuvem</text>
+              <text x="380" y="42" text-anchor="middle" font-size="10.5" fill="#DCEEF9">Decisão baseada em governança, conectividade e custo</text>
+
+              <line x1="230" y1="50" x2="98" y2="92" stroke="#1E2D38" stroke-width="1.6" marker-end="url(#arr-p3)"/>
+              <line x1="330" y1="50" x2="286" y2="92" stroke="#1E2D38" stroke-width="1.6" marker-end="url(#arr-p3)"/>
+              <line x1="430" y1="50" x2="474" y2="92" stroke="#1E2D38" stroke-width="1.6" marker-end="url(#arr-p3)"/>
+              <line x1="530" y1="50" x2="662" y2="92" stroke="#1E2D38" stroke-width="1.6" marker-end="url(#arr-p3)"/>
+
+              <rect x="10" y="94" width="176" height="114" rx="9" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/>
+              <text x="98" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="#0F1D26">Nuvem Pública</text>
+              <text x="98" y="138" text-anchor="middle" font-size="11" fill="#3D515E">AWS · Azure · GCP</text>
+              <text x="98" y="154" text-anchor="middle" font-size="10.5" fill="#647987">Compartilhada</text>
+              <rect x="34" y="170" width="128" height="24" rx="12" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.3"/><text x="98" y="186" text-anchor="middle" font-size="9.5" font-weight="700" fill="#124970">MULTI-TENANT</text>
+
+              <rect x="198" y="94" width="176" height="114" rx="9" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/>
+              <text x="286" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="#0F1D26">Nuvem Privada</text>
+              <text x="286" y="138" text-anchor="middle" font-size="11" fill="#3D515E">On-Premises / Dedicada</text>
+              <text x="286" y="154" text-anchor="middle" font-size="10.5" fill="#647987">Uso exclusivo</text>
+              <rect x="222" y="170" width="128" height="24" rx="12" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.3"/><text x="286" y="186" text-anchor="middle" font-size="9.5" font-weight="700" fill="#124970">DEDICADA</text>
+
+              <rect x="386" y="94" width="176" height="114" rx="9" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/>
+              <text x="474" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="#0F1D26">Nuvem Híbrida</text>
+              <text x="474" y="138" text-anchor="middle" font-size="11" fill="#3D515E">Privada + Pública</text>
+              <text x="474" y="154" text-anchor="middle" font-size="10.5" fill="#647987">Via VPN / Link dedicado</text>
+              <rect x="410" y="170" width="128" height="24" rx="12" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.3"/><text x="474" y="186" text-anchor="middle" font-size="9.5" font-weight="700" fill="#124970">INTEGRADA</text>
+
+              <rect x="574" y="94" width="176" height="114" rx="9" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/>
+              <text x="662" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="#0F1D26">Multicloud</text>
+              <text x="662" y="138" text-anchor="middle" font-size="11" fill="#3D515E">2+ Provedores Públicos</text>
+              <text x="662" y="154" text-anchor="middle" font-size="10.5" fill="#647987">Alta resiliência</text>
+              <rect x="598" y="170" width="128" height="24" rx="12" fill="none" stroke="#647987" stroke-width="1.4" stroke-dasharray="4 3"/><text x="662" y="186" text-anchor="middle" font-size="9.5" font-weight="700" fill="#647987">SEM LOCK-IN</text>
+            </svg>
+          </div>
+
+          <!-- Os 4 Modelos Explicados -->
+          <div class="grid-4">
+            <div class="card accent-left">
+              <h3 class="sub-title">1. Nuvem Pública</h3>
+              <p style="font-size:12.2px;">Mantida por grandes provedores (AWS, Azure, Google Cloud) e compartilhada por milhões de clientes (<strong>multi-tenant</strong>) pela internet. <strong>Vantagem:</strong> baixo custo inicial e escala quase infinita. <strong>Atenção:</strong> menos controle sobre o hardware físico.</p>
+            </div>
+            <div class="card accent-left">
+              <h3 class="sub-title">2. Nuvem Privada</h3>
+              <p style="font-size:12.2px;">Infraestrutura de uso <strong>exclusivo de uma organização</strong> (no data center próprio ou hospedada dedicada). Muito comum em <strong>bancos, hospitais e governo</strong> por exigir privacidade máxima e conformidade com leis (ex.: LGPD). <strong>Atenção:</strong> custo e manutenção altos.</p>
+            </div>
+            <div class="card accent-left">
+              <h3 class="sub-title">3. Nuvem Híbrida</h3>
+              <p style="font-size:12.2px;">Combina <strong>Privada + Pública</strong> interligadas por <strong>VPN ou links dedicados</strong>. Dados sigilosos ficam na privada, enquanto o site ou promoções (Black Friday) escalam na pública (<em>cloud bursting</em>). Une controle e flexibilidade.</p>
+            </div>
+            <div class="card accent-left">
+              <h3 class="sub-title">4. Estratégia Multicloud</h3>
+              <p style="font-size:12.2px;">Uso simultâneo de <strong>dois ou mais provedores públicos</strong> (ex.: hospedar o sistema na AWS e usar IA no Google Cloud). Reduz o risco de <strong>vendor lock-in</strong> (dependência) e garante continuidade se um provedor sair do ar.</p>
+            </div>
+          </div>
+
+          <!-- Diferença Crítica que Professor Pergunta -->
+          <div class="card accent-left alert">
+            <h3 class="sub-title" style="color:var(--alert); margin-bottom:4px;">Pegadinha Clássica: Qual a diferença entre Nuvem Híbrida e Multicloud?</h3>
+            <p style="font-size:12.4px;">
+              • <strong>Nuvem Híbrida</strong> mistura <em>tipos diferentes</em> de infraestrutura: uma nuvem <strong>Privada</strong> (local) + uma nuvem <strong>Pública</strong> trabalhando integradas.<br/>
+              • <strong>Multicloud</strong> usa <em>vários provedores</em> (normalmente 2 ou mais nuvens <strong>Públicas</strong>, como AWS + Azure) para aproveitar o melhor serviço de cada um e não depender de uma única empresa. <em>(Na figura do slide, Multicloud tem selo tracejado justamente porque é uma estratégia de arquitetura, enquanto o NIST lista Pública, Privada, Híbrida e Comunitária.)</em>
+            </p>
+          </div>
+
+          <!-- Roteiro de Fala -->
+          <div class="script-box">
+            <div class="script-head">
+              <span>Roteiro de Fala Sugerido — Slide 05</span>
+              <span>~1 min 30s</span>
+            </div>
+            <div class="script-body">
+              <ul>
+                <li><strong>Abertura:</strong> "Nos modelos de implantação, a pergunta muda para: <em>onde ficam os servidores e quem tem acesso a eles?</em>"</li>
+                <li><strong>Siga o diagrama da esquerda para a direita:</strong> "Na <strong>Nuvem Pública</strong>, vários clientes dividem a infraestrutura do provedor com isolamento lógico — o chamado <em>multi-tenant</em>. Na <strong>Privada</strong>, o ambiente é exclusivo de uma única instituição, como bancos e órgãos públicos que precisam de controle rígido."</li>
+                <li><strong>Feche com Híbrida e Multicloud:</strong> "Já a <strong>Híbrida</strong> junta o melhor dos dois mundos via VPN ou link dedicado: dados sensíveis no ambiente privado e picos de acesso na pública. Por fim, o <strong>Multicloud</strong> — destacado em tracejado por ser uma estratégia complementar — usa mais de um provedor público ao mesmo tempo para evitar dependência, o <em>vendor lock-in</em>."</li>
+                <li><strong>Passando a palavra (Slide 06):</strong> "E para fazer essas redes funcionarem e se comunicarem com segurança na nuvem, entram tecnologias como VPC, SDN e NFV, que o próximo colega vai apresentar."</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+        <div class="page-footer">
+          <span>FOCO PRINCIPAL · SLIDE 05 (MODELOS DE IMPLANTAÇÃO)</span>
+          <span>PÁGINA 03 / 06</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- =====================================================================
+         PÁGINA 4 — RESTANTE DA PARTE 01: COMPUTAÇÃO EM NUVEM (SLIDES 02, 03, 06, 07)
+         ===================================================================== -->
+    <article class="page" id="p4">
+      <div class="page-bar" style="background: linear-gradient(90deg, #1C739E, #1A7B86);"></div>
+      <div class="page-inner">
+        <div class="page-body">
+
+          <div class="kicker-row">
+            <span class="pill pill-blue">Visão Completa · Parte 01 (Slides 03, 06 e 07)</span>
+            <span class="mono-tag">Computação em Nuvem</span>
+          </div>
+
+          <div>
+            <h2 class="sec-title">Restante da Parte 01: Conceito NIST, Redes e Operação</h2>
+            <p class="lead">Mesmo não sendo os slides que você vai apresentar, dominar estes conceitos garante segurança total para responder perguntas conectadas à sua fala.</p>
+          </div>
+
+          <!-- Slide 03: NIST -->
+          <div class="card white">
+            <h3 class="sub-title" style="color:var(--blue-dark);">Slide 03 — O que é Nuvem e os 5 Pilares do NIST (SP 800-145)</h3>
+            <p style="font-size:12.5px; margin-bottom:8px;">O <strong>NIST</strong> (Instituto Nacional de Padrões e Tecnologia dos EUA) publicou a definição oficial de nuvem usada em praticamente todos os livros acadêmicos. Para algo ser realmente "computação em nuvem", precisa reunir <strong>5 características essenciais</strong>:</p>
+            <div class="grid-2" style="gap:8px; font-size:12.3px;">
+              <div><strong>1. Autoatendimento sob demanda:</strong> o usuário cria um servidor em cliques, sem precisar ligar para um técnico.</div>
+              <div><strong>2. Amplo acesso à rede:</strong> acessível de qualquer lugar (PC, celular, tablet) via protocolos padrão da internet.</div>
+              <div><strong>3. Pool de recursos (Multi-tenant):</strong> hardware agrupado e dividido dinamicamente entre vários clientes isolados.</div>
+              <div><strong>4. Elasticidade rápida:</strong> aumenta capacidade automaticamente em picos e reduz quando o movimento cai.</div>
+            </div>
+            <p style="font-size:12.3px; margin-top:7px;"><strong>5. Serviço mensurado:</strong> o uso de CPU, armazenamento e tráfego é medido em tempo real — modelo <em>pay-as-you-go</em> (pague pelo que usar, trocando <strong>CAPEX</strong> por <strong>OPEX</strong>).</p>
+          </div>
+
+          <!-- Slide 06: VPC, SDN, NFV -->
+          <div>
+            <h3 class="sub-title" style="color:var(--blue-dark);">Slide 06 — Redes na Nuvem: VPC, SDN e NFV</h3>
+            <div class="grid-3">
+              <div class="card blue">
+                <h3 class="sub-title" style="font-size:13.5px;">VPC (Virtual Private Cloud)</h3>
+                <p style="font-size:12.1px;">É a "sua rede privada" isolada dentro de uma nuvem pública. Você define faixas de IP (ex.: <code>10.0.0.0/16</code>), cria <strong>sub-redes públicas</strong> (para o site receber acessos via Internet Gateway) e <strong>sub-redes privadas</strong> (para bancos de dados sem IP público).</p>
+              </div>
+              <div class="card blue">
+                <h3 class="sub-title" style="font-size:13.5px;">SDN (Redes Definidas por Software)</h3>
+                <p style="font-size:12.1px;">Em redes antigas, cada roteador decidia e encaminhava pacotes sozinho. A SDN separa o <strong>Plano de Controle</strong> (um software controlador central, o "cérebro") do <strong>Plano de Dados</strong> (equipamentos que só encaminham pacotes), permitindo automatizar rotas em segundos.</p>
+              </div>
+              <div class="card blue">
+                <h3 class="sub-title" style="font-size:13.5px;">NFV (Funções de Rede Virtualizadas)</h3>
+                <p style="font-size:12.1px;">Substitui equipamentos caros e dedicados (firewalls físicos, balanceadores de carga, roteadores de borda) por <strong>softwares rodando em VMs ou containers</strong> sobre servidores comuns. Ex.: <em>Security Groups</em> atuando como firewalls virtuais.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 07: Operação -->
+          <div>
+            <h3 class="sub-title" style="color:var(--blue-dark);">Slide 07 — Desempenho, Segurança Compartilhada e Custos</h3>
+            <div class="table-scroll"><table>
+              <thead>
+                <tr>
+                  <th style="width:175px;">Tema</th>
+                  <th>O que saber para responder com clareza</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Latência, Banda e CDNs</strong></td>
+                  <td>Como tudo trafega pela internet, a distância até o data center afeta o tempo de resposta (<strong>latência</strong>). Usar regiões próximas e <strong>CDNs</strong> (servidores de cache distribuídos perto do usuário) acelera o carregamento.</td>
+                </tr>
+                <tr>
+                  <td><strong>Responsabilidade Compartilhada</strong></td>
+                  <td>A segurança <strong>não</strong> é 100% do provedor! O provedor protege o prédio, hardware e hypervisor (<em>segurança DA nuvem</em>); o cliente protege senhas/acessos (IAM), dados, criptografia e regras de firewall (<em>segurança NA nuvem</em>).</td>
+                </tr>
+                <tr>
+                  <td><strong>Disponibilidade (Multi-AZ)</strong></td>
+                  <td>Provedores dividem regiões em múltiplas <strong>Zonas de Disponibilidade</strong> (data centers fisicamente separados). Replicar sistemas entre zonas evita que uma queda de energia derrube o serviço.</td>
+                </tr>
+                <tr>
+                  <td><strong>Custos (FinOps) &amp; Links</strong></td>
+                  <td>Sem monitoramento, máquinas esquecidas ligadas e tráfego de saída (<em>egress</em>) encarecem a fatura. Além disso, se a internet local cair, o acesso à nuvem para — por isso empresas usam links redundantes.</td>
+                </tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <div class="card accent-left">
+            <p style="font-size:12.4px;"><strong>Conexão com sua parte (Slides 04 e 05):</strong> se o professor perguntar sobre segurança no <strong>IaaS vs. SaaS</strong>, lembre do <em>Modelo de Responsabilidade Compartilhada</em> — no IaaS você precisa atualizar o sistema operacional e configurar firewall; no SaaS você cuida principalmente de senhas, permissões de usuários e dos dados inseridos.</p>
+          </div>
+
+        </div>
+        <div class="page-footer">
+          <span>VISÃO COMPLETA · PARTE 01 (COMPUTAÇÃO EM NUVEM)</span>
+          <span>PÁGINA 04 / 06</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- =====================================================================
+         PÁGINA 5 — PARTE 02: VIRTUALIZAÇÃO DE SISTEMAS OPERACIONAIS (SLIDES 08-13)
+         ===================================================================== -->
+    <article class="page" id="p5">
+      <div class="page-bar" style="background: #178866;"></div>
+      <div class="page-inner">
+        <div class="page-body">
+
+          <div class="kicker-row">
+            <span class="pill pill-green">Visão Completa · Parte 02 (Slides 08 a 13)</span>
+            <span class="mono-tag">Virtualização de SO</span>
+          </div>
+
+          <div>
+            <h2 class="sec-title">Parte 02 — Virtualização de Sistemas Operacionais</h2>
+            <p class="lead">Tudo o que você precisa entender sobre a base que abstrai o hardware físico: camadas, hypervisors, containers, redes virtuais e o elo final com a nuvem.</p>
+          </div>
+
+          <!-- Conceito + Camadas -->
+          <div class="grid-2">
+            <div class="card green">
+              <h3 class="sub-title" style="color:var(--green-dark);">Slide 09 — O que é e Como Funciona</h3>
+              <p style="font-size:12.3px;">Uma camada de software chamada <strong>Hypervisor (ou VMM — Virtual Machine Monitor)</strong> usa recursos do processador (Intel VT-x / AMD-V) para criar várias <strong>Máquinas Virtuais (VMs)</strong> independentes sobre um único servidor físico.</p>
+              <p style="font-size:12.3px; margin-top:6px;">Cada VM tem seu próprio SO convidado (Linux, Windows) e fica <strong>encapsulada em arquivos</strong> — se uma travar ou pegar vírus, o servidor físico e as outras VMs continuam protegidos.</p>
+            </div>
+            <div class="fig-box green" style="display:flex; flex-direction:column; justify-content:center;">
+              <div class="fig-cap">Resumo Visual · Camadas (Slide 09)</div>
+              <svg viewBox="0 0 340 132" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="4" width="104" height="44" rx="7" fill="#F2FAF7" stroke="#1E2D38" stroke-width="1.4"/>
+                <text x="56" y="23" text-anchor="middle" font-size="11" font-weight="700" fill="#0F1D26">VM 1 · Linux</text>
+                <text x="56" y="38" text-anchor="middle" font-size="9.5" fill="#0F5943">Apps + SO Guest</text>
+                <rect x="118" y="4" width="104" height="44" rx="7" fill="#F2FAF7" stroke="#1E2D38" stroke-width="1.4"/>
+                <text x="170" y="23" text-anchor="middle" font-size="11" font-weight="700" fill="#0F1D26">VM 2 · Win</text>
+                <text x="170" y="38" text-anchor="middle" font-size="9.5" fill="#0F5943">Apps + SO Guest</text>
+                <rect x="232" y="4" width="104" height="44" rx="7" fill="#F2FAF7" stroke="#1E2D38" stroke-width="1.4"/>
+                <text x="284" y="23" text-anchor="middle" font-size="11" font-weight="700" fill="#0F1D26">VM 3 · Linux</text>
+                <text x="284" y="38" text-anchor="middle" font-size="9.5" fill="#0F5943">Apps + SO Guest</text>
+                <rect x="4" y="58" width="332" height="32" rx="7" fill="#178866" stroke="#1E2D38" stroke-width="1.5"/>
+                <text x="170" y="78" text-anchor="middle" font-size="11.5" font-weight="700" fill="#FFF">Hypervisor (VMM) + vSwitch</text>
+                <rect x="4" y="98" width="332" height="30" rx="7" fill="#E7F6F1" stroke="#178866" stroke-width="1.5"/>
+                <text x="170" y="117" text-anchor="middle" font-size="11" font-weight="700" fill="#0F5943">Hardware Físico (CPU · RAM · Disco · NIC)</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Slide 10: Comparativo Tipo 1 vs Tipo 2 vs Containers -->
+          <div>
+            <h3 class="sub-title" style="color:var(--green-dark);">Slide 10 — Hypervisor Tipo 1 vs. Tipo 2 vs. Containers</h3>
+            <div class="table-scroll"><table class="green-tbl">
+              <thead>
+                <tr>
+                  <th style="width:130px;">Arquitetura</th>
+                  <th>Onde roda</th>
+                  <th>Desempenho &amp; Peso</th>
+                  <th style="width:155px;">Exemplos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Tipo 1 (Bare-Metal)</strong></td>
+                  <td>Direto sobre o hardware físico, sem SO intermediário.</td>
+                  <td><strong>Altíssimo desempenho</strong> e baixo overhead. Padrão em data centers e provedores de nuvem.</td>
+                  <td>VMware ESXi, KVM, Hyper-V, Xen</td>
+                </tr>
+                <tr>
+                  <td><strong>Tipo 2 (Hosted)</strong></td>
+                  <td>Como um programa comum dentro do Windows, Linux ou macOS.</td>
+                  <td><strong>Mais lento (maior overhead)</strong>, pois passa pelo SO host. Excelente para estudos e laboratórios no notebook.</td>
+                  <td>VirtualBox, VMware Workstation</td>
+                </tr>
+                <tr>
+                  <td><strong>Containers (SO)</strong></td>
+                  <td>Sobre o <strong>mesmo kernel</strong> do SO host (usa <em>namespaces</em> e <em>cgroups</em>).</td>
+                  <td><strong>Ultra leve</strong> — não duplica o SO inteiro, inicia em segundos e gasta muito menos RAM.</td>
+                  <td>Docker, Podman, LXC, Kubernetes</td>
+                </tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <!-- Slide 11: Redes Virtuais -->
+          <div>
+            <h3 class="sub-title" style="color:var(--green-dark);">Slide 11 — Redes Virtuais (vSwitch, Bridge, NAT e Host-Only)</h3>
+            <div class="grid-2" style="gap:9px;">
+              <div class="card accent-left green" style="padding:10px 12px;">
+                <h3 class="sub-title" style="font-size:13px;">vSwitch (Switch Virtual)</h3>
+                <p style="font-size:12px;">Switch em software dentro do hypervisor (ex.: Open vSwitch) que liga as placas virtuais (vNICs) das VMs entre si e à placa física, com suporte a VLANs (802.1Q).</p>
+              </div>
+              <div class="card accent-left green" style="padding:10px 12px;">
+                <h3 class="sub-title" style="font-size:13px;">Bridge (Modo Ponte)</h3>
+                <p style="font-size:12px;">Conecta a VM direto na rede física (LAN). A VM pega um <strong>IP próprio</strong> do roteador e fica visível para todos os outros PCs da rede local.</p>
+              </div>
+              <div class="card accent-left" style="padding:10px 12px;">
+                <h3 class="sub-title" style="font-size:13px;">Modo NAT</h3>
+                <p style="font-size:12px;">Coloca a VM numa rede interna privada. Ela <strong>acessa a internet usando o IP do host</strong>, mas máquinas de fora não conseguem acessá-la diretamente.</p>
+              </div>
+              <div class="card accent-left alert" style="padding:10px 12px;">
+                <h3 class="sub-title" style="font-size:13px; color:var(--alert);">Host-Only (Isolada)</h3>
+                <p style="font-size:12px;">Conecta <strong>apenas as VMs e o computador hospedeiro</strong>, totalmente <strong>sem acesso à internet</strong>. Perfeita para testes seguros de segurança e roteamento.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slides 12 e 13 -->
+          <div class="grid-2">
+            <div class="card white" style="border-color:var(--green-border);">
+              <h3 class="sub-title" style="color:var(--green-dark);">Slide 12 — Benefícios vs. Desafios</h3>
+              <ul class="clean-list" style="font-size:12px;">
+                <li><strong>Ganhos:</strong> consolidação de servidores (menos energia/espaço), isolamento, <em>snapshots</em> (voltar no tempo) e <em>live migration</em> (mover VM sem desligar).</li>
+                <li><strong>Cuidados:</strong> <em>overhead</em> de CPU/RAM, ponto único de falha se o servidor físico parar sem cluster HA e <em>VM Sprawl</em> (criar VMs sem controle).</li>
+              </ul>
+            </div>
+            <div class="card blue">
+              <h3 class="sub-title" style="color:var(--blue-dark);">Slide 13 — Fluxo Integrado (Fechamento)</h3>
+              <p style="font-size:12px;"><strong>1. Hardware Físico</strong> → <strong>2. Virtualização (Hypervisor/VMs/Containers)</strong> → <strong>3. Orquestração &amp; Redes (VPC/SDN/NFV)</strong> → <strong>4. Serviços em Nuvem (IaaS/PaaS/SaaS)</strong>. É possível ter virtualização sem nuvem (no seu PC), mas não existe nuvem moderna sem virtualização!</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="page-footer">
+          <span>VISÃO COMPLETA · PARTE 02 (VIRTUALIZAÇÃO DE SO)</span>
+          <span>PÁGINA 05 / 06</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- =====================================================================
+         PÁGINA 6 — SIMULADO: SE O PROFESSOR PERGUNTAR + REFERÊNCIAS
+         ===================================================================== -->
+    <article class="page" id="p6">
+      <div class="page-bar" style="background: linear-gradient(90deg, #1D6FA8, #178866);"></div>
+      <div class="page-inner">
+        <div class="page-body">
+
+          <div class="kicker-row">
+            <span class="pill pill-uni">Preparação para Arguição · 10 Perguntas</span>
+            <span class="mono-tag">Perguntas &amp; Respostas</span>
+          </div>
+
+          <div>
+            <h2 class="sec-title">Se o Professor Perguntar... (Respostas Diretas)</h2>
+            <p class="lead">As 6 primeiras perguntas são focadas direto nos <strong>Slides 04 e 05</strong> (sua fala); as 4 finais cobrem o restante do trabalho para você não ser pego de surpresa.</p>
+          </div>
+
+          <!-- 6 Perguntas Foco Slides 04 e 05 -->
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div class="qa-item focus-qa">
+              <div class="qa-q">1. [Slide 04] "Se uma empresa aluga uma máquina virtual na AWS e instala Linux e MySQL nela, isso é IaaS ou PaaS?"</div>
+              <div class="qa-a"><strong>É IaaS.</strong> Porque a empresa está gerenciando o servidor virtual, o sistema operacional e o banco por conta própria. Seria PaaS se o provedor já entregasse a plataforma e o banco gerenciados, bastando subir o código.</div>
+            </div>
+
+            <div class="qa-item focus-qa">
+              <div class="qa-q">2. [Slide 04] "No SaaS o usuário ainda tem alguma responsabilidade de segurança?"</div>
+              <div class="qa-a"><strong>Sim!</strong> Embora o provedor cuide dos servidores e atualizações do software, o usuário/empresa continua responsável por senhas fortes, autenticação em dois fatores (MFA), controle de quem tem acesso e proteção dos dados que coloca lá.</div>
+            </div>
+
+            <div class="qa-item focus-qa">
+              <div class="qa-q">3. [Slide 04] "Por que nem toda empresa usa só SaaS se ele dá menos trabalho?"</div>
+              <div class="qa-a">Porque o SaaS oferece menos personalização. Se a empresa desenvolve um sistema próprio sob medida, vai precisar de <strong>PaaS</strong> (para publicar seu código rápido) ou <strong>IaaS</strong> (se exigir configurações específicas de sistema operacional e rede).</div>
+            </div>
+
+            <div class="qa-item focus-qa">
+              <div class="qa-q">4. [Slide 05] "Qual a diferença exata entre Nuvem Híbrida e Multicloud?"</div>
+              <div class="qa-a"><strong>Híbrida</strong> integra uma nuvem <em>Privada</em> com uma nuvem <em>Pública</em> (ex.: dados sensíveis locais + picos na pública). <strong>Multicloud</strong> usa <em>dois ou mais provedores públicos</em> diferentes (ex.: AWS + Azure) para evitar dependência (<em>vendor lock-in</em>) e aumentar resiliência.</div>
+            </div>
+
+            <div class="qa-item focus-qa">
+              <div class="qa-q">5. [Slide 05] "Por que um banco ou hospital pagaria por Nuvem Privada se a Pública é mais barata inicialmente?"</div>
+              <div class="qa-a">Por exigência de <strong>controle, privacidade e conformidade legal</strong> (como LGPD e normas do Banco Central). Na privada, o hardware não é compartilhado com outros clientes, reduzindo riscos regulatórios e dando controle total sobre políticas internas.</div>
+            </div>
+
+            <div class="qa-item focus-qa">
+              <div class="qa-q">6. [Slide 05] "O que significa Multi-tenant na Nuvem Pública? Um cliente consegue ver os dados do outro?"</div>
+              <div class="qa-a"><em>Multi-tenant</em> significa múltiplos clientes compartilhando os mesmos servidores físicos do provedor. Eles <strong>não</strong> veem os dados uns dos outros porque a camada de <strong>virtualização e VPC</strong> garante isolamento lógico rígido entre cada conta.</div>
+            </div>
+
+            <!-- 4 Perguntas Gerais -->
+            <div class="qa-item green">
+              <div class="qa-q">7. [Geral] "Virtualização e Computação em Nuvem são a mesma coisa?"</div>
+              <div class="qa-a"><strong>Não.</strong> Virtualização é a tecnologia que divide um hardware físico em ambientes isolados (pode rodar até no seu notebook offline). Nuvem é o modelo de entrega sob demanda pela rede que usa virtualização em larga escala com autoatendimento e cobrança por uso.</div>
+            </div>
+
+            <div class="qa-item green">
+              <div class="qa-q">8. [Virtualização] "Qual a principal diferença entre uma Máquina Virtual (VM) e um Container?"</div>
+              <div class="qa-a">A VM virtualiza o hardware e carrega um <strong>sistema operacional inteiro</strong> (mais pesada, mas isolamento total). O Container compartilha o <strong>mesmo kernel do SO hospedeiro</strong> (muito mais leve, inicia em segundos e consome bem menos RAM).</div>
+            </div>
+
+            <div class="qa-item green">
+              <div class="qa-q">9. [Redes Virtuais] "No VirtualBox, se eu quiser que outro computador da sala dê ping na minha VM, uso NAT ou Bridge?"</div>
+              <div class="qa-a"><strong>Modo Bridge (Ponte).</strong> No Bridge, a VM recebe um IP próprio na mesma rede física (LAN) do host. No NAT ela fica escondida atrás do IP do host e bloqueia conexões vindas de fora.</div>
+            </div>
+
+            <div class="qa-item">
+              <div class="qa-q">10. [Redes na Nuvem] "Qual a diferença prática entre SDN e NFV?"</div>
+              <div class="qa-a"><strong>SDN</strong> separa o plano de controle do plano de dados para programar rotas centralmente por software. <strong>NFV</strong> substitui aparelhos físicos dedicados (como firewall ou balanceador de carga) por versões virtuais rodando em servidores comuns.</div>
+            </div>
+          </div>
+
+          <!-- Referências Compactas -->
+          <div class="card white" style="padding:10px 13px; margin-top:auto;">
+            <div class="mono-tag" style="margin-bottom:5px; font-weight:700; color:var(--ink);">Referências Bibliográficas da Apresentação (ABNT)</div>
+            <p style="font-size:10.8px; line-height:1.45; color:var(--ink-muted);">
+              • MELL, P.; GRANCE, T. <strong>The NIST Definition of Cloud Computing</strong>. SP 800-145. NIST, 2011.
+              • KUROSE, J. F.; ROSS, K. W. <strong>Redes de computadores e a internet</strong>. 8. ed. Pearson, 2021.
+              • TANENBAUM, A. S.; FEAMSTER, N.; WETHERALL, D. <strong>Redes de computadores</strong>. 6. ed. Pearson, 2021.
+              • TANENBAUM, A. S.; BOS, H. <strong>Sistemas operacionais modernos</strong>. 5. ed. Pearson, 2024.
+              • SILBERSCHATZ, A.; GALVIN, P. B.; GAGNE, G. <strong>Fundamentos de sistemas operacionais</strong>. 9. ed. LTC, 2015.
+            </p>
+          </div>
+
+        </div>
+        <div class="page-footer">
+          <span>SIMULADO DE PERGUNTAS &amp; REFERÊNCIAS · PRONTO PARA IMPRESSÃO A4</span>
+          <span>PÁGINA 06 / 06</span>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <script>
+    document.getElementById('btnTheme').addEventListener('click', function () {
+      var r = document.documentElement;
+      var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      r.dataset.theme = escuro ? 'light' : 'dark';
+      try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    });
+  </script>
+</body>
+</html>
