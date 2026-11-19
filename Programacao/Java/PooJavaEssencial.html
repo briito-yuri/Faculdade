@@ -442,21 +442,60 @@ code, pre, .m, .fig svg .m { font-variant-ligatures: none; font-feature-settings
 @media screen and (min-width: 1101px) { .voltar-capa { display: none; } }
 @media print { .voltar, .voltar-capa { display: none !important; } }
 
+/* Ocultar barra lateral (tela cheia) */
+.lateral-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
+.lateral-topo .voltar { margin-bottom: 0; }
+.ocultar-barra-btn {
+  padding: 7px 10px; background: none; color: var(--tinta); border: 1px solid var(--tinta); border-radius: 2px; cursor: pointer;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.ocultar-barra-btn:hover { background: var(--azul); color: var(--papel); border-color: var(--azul); }
+.mostrar-barra-btn {
+  position: fixed; top: 20px; left: 16px; z-index: 28; display: none; align-items: center; gap: 6px;
+  padding: 8px 12px; background: var(--tinta); color: var(--papel); border: none; border-radius: 2px; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.mostrar-barra-btn:hover { background: var(--azul); }
+@media screen and (min-width: 1101px) {
+  .lateral { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  main { transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease; }
+  body.barra-oculta .lateral { transform: translateX(-105%); pointer-events: none; }
+  body.barra-oculta .mostrar-barra-btn { display: inline-flex; }
+  body.barra-oculta main {
+    margin-left: 0 !important; max-width: none !important; width: 100% !important;
+    padding: 48px clamp(24px, 5vw, 80px) 96px max(clamp(24px, 5vw, 80px), 160px) !important;
+  }
+  body.barra-oculta main > *,
+  body.barra-oculta .flow > p,
+  body.barra-oculta .flow > ul,
+  body.barra-oculta .flow > ol,
+  body.barra-oculta blockquote,
+  body.barra-oculta .resumo,
+  body.barra-oculta p.resumo,
+  body.barra-oculta .table-wrap,
+  body.barra-oculta .flow > figure.fig { max-width: 100% !important; }
+}
+@media screen and (max-width: 1100px) {
+  .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+}
+@media print {
+  .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+}
+
 </style>
 </head>
 <body>
 <div class="progresso" aria-hidden="true"><span></span></div>
 <button class="menu-btn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
+<button class="mostrar-barra-btn" type="button" aria-label="Mostrar barra lateral" title="Mostrar barra lateral (Atalho: tecla [)">&#9776; Sumário</button>
 <aside class="lateral" aria-label="Sumário">
-<a class="voltar" href="../index.html">&larr; Programação</a><p class="lateral-titulo">POO em Java — o essencial</p>
+<div class="lateral-topo"><a class="voltar" href="../index.html">&larr; Programação</a><button class="ocultar-barra-btn" type="button" title="Ocultar barra lateral (Atalho: tecla [)">Ocultar &times;</button></div><p class="lateral-titulo">POO em Java — o essencial</p>
 <nav><a class="nav-capa" href="#topo">Início</a><ol class="nav-unica"><li><a href="#p0-por-que-isso-importa"><span class="nav-num"></span>Por que isso importa</a></li><li><a href="#p0-objetivos-de-aprendizagem"><span class="nav-num"></span>Objetivos de aprendizagem</a></li><li><a href="#p0-siglas-usadas-neste-material"><span class="nav-num"></span>Siglas usadas neste material</a></li><li><a href="#p0-o-exemplo-condutor-e-o-roteiro"><span class="nav-num"></span>O exemplo condutor e o roteiro</a></li><li><a href="#p0-1-classe-e-objeto"><span class="nav-num">1</span>Classe e objeto</a></li><li><a href="#p0-2-métodos-assinatura-parâmetros-retorno-e-chamada"><span class="nav-num">2</span>Métodos: assinatura, parâmetros, retorno e chamada</a></li><li><a href="#p0-3-construtores"><span class="nav-num">3</span>Construtores</a></li><li><a href="#p0-4-this"><span class="nav-num">4</span>this</a></li><li><a href="#p0-5-static-instância-só-o-necessário"><span class="nav-num">5</span>static × instância (só o necessário)</a></li><li><a href="#p0-6-encapsulamento-private-getters-e-invariantes"><span class="nav-num">6</span>Encapsulamento: private, getters e invariantes</a></li><li><a href="#p0-7-interfaces-contrato-implements-e-programar-para-interfaces"><span class="nav-num">7</span>Interfaces: contrato, implements e programar para interfaces</a></li><li><a href="#p0-8-composição-e-dependência-entre-objetos"><span class="nav-num">8</span>Composição e dependência entre objetos</a></li><li><a href="#p0-9-injeção-de-dependência-e-inversão-de-controle"><span class="nav-num">9</span>Injeção de dependência e inversão de controle</a></li><li><a href="#p0-10-como-o-spring-faz"><span class="nav-num">10</span>Como o Spring faz</a></li><li><a href="#p0-11-o-exemplo-inteiro-em-um-arquivo-só-jdk"><span class="nav-num">11</span>O exemplo inteiro em um arquivo (só JDK)</a></li><li><a href="#p0-12-resumo-final-uma-linha-por-conceito"><span class="nav-num">12</span>Resumo final: uma linha por conceito</a></li><li><a href="#p0-13-mapa-das-confusões-de-iniciante"><span class="nav-num">13</span>Mapa das confusões de iniciante</a></li><li><a href="#p0-glossário"><span class="nav-num"></span>Glossário</a></li><li><a href="#p0-referências"><span class="nav-num"></span>Referências</a></li></ol></nav>
-<button class="pdf-btn" type="button" title="Abre a janela de impressão: escolha Salvar como PDF">Gerar PDF</button>
 <button class="tema-btn" type="button">Alternar tema claro/escuro</button>
 </aside>
 <main id="topo">
 <header class="capa">
 <p class="voltar-capa"><a class="voltar" href="../index.html">&larr; Programação</a></p><p class="kicker"><span>Guia</span><span>Java 21</span>Classes, construtores e injeção de dependência</p>
-<p class="acoes"><button class="pdf-btn" type="button">Gerar PDF</button><span>Na janela que abrir, escolha <strong class="abre">Salvar como PDF</strong>. O PDF sai em A4, sempre no tema claro; o tema escuro fica para a leitura na tela.</span></p>
 <h1>POO em Java, o essencial</h1>
 <nav class="toc"><p class="toc-label">Seções</p><ol><li><span class="toc-n"></span><a href="#p0-por-que-isso-importa">Por que isso importa</a></li><li><span class="toc-n"></span><a href="#p0-objetivos-de-aprendizagem">Objetivos de aprendizagem</a></li><li><span class="toc-n"></span><a href="#p0-siglas-usadas-neste-material">Siglas usadas neste material</a></li><li><span class="toc-n"></span><a href="#p0-o-exemplo-condutor-e-o-roteiro">O exemplo condutor e o roteiro</a></li><li><span class="toc-n">1</span><a href="#p0-1-classe-e-objeto">Classe e objeto</a></li><li><span class="toc-n">2</span><a href="#p0-2-métodos-assinatura-parâmetros-retorno-e-chamada">Métodos: assinatura, parâmetros, retorno e chamada</a></li><li><span class="toc-n">3</span><a href="#p0-3-construtores">Construtores</a></li><li><span class="toc-n">4</span><a href="#p0-4-this">this</a></li><li><span class="toc-n">5</span><a href="#p0-5-static-instância-só-o-necessário">static × instância (só o necessário)</a></li><li><span class="toc-n">6</span><a href="#p0-6-encapsulamento-private-getters-e-invariantes">Encapsulamento: private, getters e invariantes</a></li><li><span class="toc-n">7</span><a href="#p0-7-interfaces-contrato-implements-e-programar-para-interfaces">Interfaces: contrato, implements e programar para interfaces</a></li><li><span class="toc-n">8</span><a href="#p0-8-composição-e-dependência-entre-objetos">Composição e dependência entre objetos</a></li><li><span class="toc-n">9</span><a href="#p0-9-injeção-de-dependência-e-inversão-de-controle">Injeção de dependência e inversão de controle</a></li><li><span class="toc-n">10</span><a href="#p0-10-como-o-spring-faz">Como o Spring faz</a></li><li><span class="toc-n">11</span><a href="#p0-11-o-exemplo-inteiro-em-um-arquivo-só-jdk">O exemplo inteiro em um arquivo (só JDK)</a></li><li><span class="toc-n">12</span><a href="#p0-12-resumo-final-uma-linha-por-conceito">Resumo final: uma linha por conceito</a></li><li><span class="toc-n">13</span><a href="#p0-13-mapa-das-confusões-de-iniciante">Mapa das confusões de iniciante</a></li><li><span class="toc-n"></span><a href="#p0-glossário">Glossário</a></li><li><span class="toc-n"></span><a href="#p0-referências">Referências</a></li></ol></nav>
 <div class="flow intro"><h3 id="p0-classes-objetos-métodos-construtores-e-injeção-de-dependênci"><span class="tag tag-vazia"></span><span>Classes, objetos, métodos, construtores e injeção de dependência, com um único exemplo do começo ao fim</span></h3>
@@ -2655,13 +2694,23 @@ Bloqueado: Saldo insuficiente na conta 0001
   menu.addEventListener("click",function(){var o=document.body.classList.toggle("menu-aberto");menu.setAttribute("aria-expanded",o);});
   lat.addEventListener("click",function(e){if(e.target.closest("a"))document.body.classList.remove("menu-aberto");});
   // tema
-  // PDF: a folha de impressão (estilo-java.css, @media print) cuida do layout; sai sempre no tema claro
-  document.querySelectorAll(".pdf-btn").forEach(function(b){b.addEventListener("click",function(){
-    document.body.classList.remove("menu-aberto");setTimeout(function(){window.print();},50);
-  });});
   document.querySelector(".tema-btn").addEventListener("click",function(){
     var r=document.documentElement,escuro=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
     r.dataset.theme=escuro?"light":"dark";try{localStorage.setItem("tema",r.dataset.theme);}catch(e){}
+  });
+  // ocultar/mostrar barra lateral (tela cheia)
+  function setBarraOculta(oculta){
+    document.body.classList.toggle("barra-oculta",!!oculta);
+    try{localStorage.setItem("barra_oculta",oculta?"1":"0");}catch(e){}
+  }
+  try{if(localStorage.getItem("barra_oculta")==="1")document.body.classList.add("barra-oculta");}catch(e){}
+  var btnOcultar=document.querySelector(".ocultar-barra-btn"),btnMostrar=document.querySelector(".mostrar-barra-btn");
+  if(btnOcultar)btnOcultar.addEventListener("click",function(){setBarraOculta(true);});
+  if(btnMostrar)btnMostrar.addEventListener("click",function(){setBarraOculta(false);});
+  document.addEventListener("keyup",function(e){
+    var tag=document.activeElement&&document.activeElement.tagName;
+    if(tag==="INPUT"||tag==="TEXTAREA")return;
+    if(e.key==="["&&innerWidth>1100)setBarraOculta(!document.body.classList.contains("barra-oculta"));
   });
   // barra de progresso e seção atual no sumário
   var bar=document.querySelector(".progresso span");
