@@ -36,52 +36,9 @@
 
     /* 1. CONFIGURAÇÕES RESPONSIVAS E BASE */
     *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    html, body { margin: 0; padding: 0; background-color: var(--desk); color: var(--ink); font-family: var(--font-sans); }
-
-    body {
-        padding: 16px;
-        margin: 0 auto;
-        max-width: 900px;
-    }
-
-    @media (min-width: 768px) {
-        body { padding: 32px 0; }
-    }
-
-    /* ESTRUTURA DE PÁGINA ADAPTÁVEL (FLUIDA NO CELULAR, A4 NO DESKTOP) */
-    .page {
-        width: 100%;
-        margin: 0 auto 24px auto;
-        padding: 24px 18px;
-        background-color: var(--paper);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-    }
-
-    @media (min-width: 768px) {
-        .page {
-            min-height: 297mm;
-            padding: 20mm 20mm 12mm 20mm;
-        }
-    }
-
-    .page-content { flex: 1 1 auto; }
-
-    /* O RODAPÉ */
-    .page-footer {
-        flex-shrink: 0; margin-top: 24px; padding-top: 10px;
-        border-top: 3px solid var(--ink);
-        display: flex; flex-direction: column; gap: 4px; justify-content: space-between; align-items: flex-start;
-        font-family: var(--font-mono); font-size: 7.5pt; letter-spacing: 0.12em;
-        color: var(--muted); text-transform: uppercase;
-    }
-    .page-footer span:last-child { background: var(--ink); color: var(--paper); padding: 2px 8px; }
-
-    @media (min-width: 600px) {
-        .page-footer { flex-direction: row; align-items: center; }
-    }
+    html, body { margin: 0; padding: 0; background-color: var(--paper); color: var(--ink); font-family: var(--font-sans); }
+    html { scroll-padding-top: 24px; }
+    .page-content { width: 100%; }
 
     /* CABEÇALHO DO DOCUMENTO */
     .doc-header { margin-bottom: 28px; }
@@ -216,23 +173,6 @@
     }
     .folder-tree p { font-family: var(--font-sans); letter-spacing: 0; margin-bottom: 6px; }
 
-    /* NAVEGAÇÃO DE VOLTA (SÓ NA TELA) */
-    .doc-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px 0; }
-    .back-link {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 8px 12px; min-height: 40px;
-        background: var(--paper); color: var(--ink);
-        font-family: var(--font-mono); font-size: 8pt; font-weight: 500; letter-spacing: 0.12em;
-        text-decoration: none; text-transform: uppercase;
-        transition: background 0.15s, color 0.15s;
-    }
-    .back-link:hover { background: var(--sign); }
-    .back-link:focus-visible { outline: 3px solid var(--sign); outline-offset: 3px; }
-
-    /* BOTÃO DE TEMA: empurrado para a direita */
-    .tema-btn { margin-left: auto; border: none; cursor: pointer; }
-
-
     /* SUBTÍTULOS NUMERADOS (2.1, 2.2...): número com contorno, como placa secundária */
     h3.sub { display: flex; align-items: center; gap: 10px; margin-top: 22px; margin-bottom: 10px; }
     h3.sub .num {
@@ -340,20 +280,141 @@
         .code-block, .table-wrap { overflow: visible; }
         a { color: inherit; text-decoration: none; }
     }
+    
+
+    /* BARRA DE PROGRESSO NO TOPO */
+    .progresso { position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 30; }
+    .progresso span { display: block; height: 100%; width: 0; background: var(--sign); }
+
+    /* SUMÁRIO LATERAL RECOLHÍVEL (MESMO PADRÃO DO RESTANTE DO SITE) */
+    :root { --lateral: 290px; }
+    .lateral {
+        position: fixed; top: 0; bottom: 0; left: 0; width: var(--lateral); z-index: 20;
+        overflow-y: auto; padding: 28px 22px 24px 24px;
+        background: var(--paper); border-right: 2px solid var(--ink);
+        font-size: 13.5px; line-height: 19px;
+    }
+    .lateral a { color: inherit; text-decoration: none; }
+    .lateral-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
+    .voltar {
+        display: inline-block; padding: 6px 10px;
+        background: var(--ink); color: var(--paper) !important; text-decoration: none !important;
+        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .voltar:hover { background: var(--sign); color: #111111 !important; }
+    .voltar-capa { margin: 0 0 12px 0; }
+    @media screen and (min-width: 1101px) { .voltar-capa { display: none; } }
+
+    .ocultar-barra-btn {
+        padding: 6px 10px; background: none; color: var(--ink); border: 2px solid var(--ink); cursor: pointer;
+        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .ocultar-barra-btn:hover { background: var(--sign); color: #111111; border-color: var(--sign); }
+
+    .mostrar-barra-btn {
+        position: fixed; top: 20px; left: 16px; z-index: 28; display: none; align-items: center; gap: 6px;
+        padding: 8px 12px; background: var(--sign); color: #111111; border: 2px solid var(--ink); cursor: pointer;
+        font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .mostrar-barra-btn:hover { background: var(--ink); color: var(--paper); }
+
+    .lateral-titulo {
+        padding-bottom: 12px; margin: 0 0 14px 0; border-bottom: 8px solid var(--ink);
+        font-size: 19px; line-height: 23px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .lateral .nav-capa {
+        display: inline-block; margin-bottom: 10px; padding: 2px 8px;
+        background: var(--sign); color: #111111;
+        font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .lateral ol { list-style: none; margin: 0 0 12px 0; padding: 0; display: block; }
+    .lateral li { padding: 0; margin: 0; }
+    .lateral li::before { display: none; content: none; }
+    .lateral li a {
+        display: grid; grid-template-columns: 32px 1fr; align-items: baseline;
+        padding: 5px 6px; color: var(--line);
+    }
+    .lateral li a:hover { background: var(--wash); }
+    .nav-num { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--muted); }
+    .lateral a.atual { background: var(--sign); color: #111111; font-weight: 700; }
+    .lateral a.atual .nav-num { color: #111111; }
+
+    .lateral .tema-btn {
+        margin: 18px 0 0 0; width: 100%; padding: 8px 10px; cursor: pointer;
+        background: none; color: var(--ink); border: 2px solid var(--ink);
+        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .lateral .tema-btn:hover { background: var(--ink); color: var(--paper); }
+
+    .menu-btn { display: none; }
+
+    /* ÁREA PRINCIPAL CONTÍNUA (SEM FOLHA A4) */
+    main {
+        margin-left: var(--lateral);
+        max-width: calc(900px + var(--lateral));
+        padding: 48px 56px 96px;
+    }
+    main > * { max-width: 820px; }
+
+    .doc-footer {
+        margin-top: 64px; padding-top: 12px; border-top: 3px solid var(--ink);
+        display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between;
+        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+        color: var(--muted); text-transform: uppercase;
+    }
+
+    @media screen and (min-width: 1101px) {
+        .lateral { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        main { transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease; }
+        body.barra-oculta .lateral { transform: translateX(-105%); pointer-events: none; }
+        body.barra-oculta .mostrar-barra-btn { display: inline-flex; }
+        body.barra-oculta main {
+            margin-left: 0 !important; max-width: none !important; width: 100% !important;
+            padding: 48px clamp(24px, 5vw, 80px) 96px max(clamp(24px, 5vw, 80px), 160px) !important;
+        }
+        body.barra-oculta main > * { max-width: 100% !important; }
+    }
+
+    @media screen and (max-width: 1100px) {
+        .lateral { transform: translateX(-100%); transition: transform 0.2s ease; width: min(340px, 88vw); }
+        body.menu-aberto .lateral { transform: none; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.35); }
+        .menu-btn {
+            display: block; position: fixed; top: 12px; right: 12px; z-index: 25; cursor: pointer;
+            padding: 8px 12px; background: var(--sign); color: #111111; border: 2px solid var(--ink);
+            font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+        main { margin-left: 0; max-width: none; padding: 56px 24px 72px; }
+        main > * { max-width: none; }
+    }
+
+    @media screen and (max-width: 640px) {
+        main { padding: 56px 16px 64px; }
+    }
+
+    @media print {
+        .lateral, .menu-btn, .progresso, .ocultar-barra-btn, .mostrar-barra-btn, .voltar, .voltar-capa { display: none !important; }
+        main { margin: 0 !important; max-width: none !important; padding: 0 !important; }
+        main > * { max-width: none !important; }
+    }
+
     </style>
 </head>
 <body>
+<div class="progresso" aria-hidden="true"><span></span></div>
+<button class="menu-btn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
+<button class="mostrar-barra-btn" type="button" aria-label="Mostrar barra lateral" title="Mostrar barra lateral (Atalho: tecla [)">&#9776; Sumário</button>
+<aside class="lateral" aria-label="Sumário">
+<div class="lateral-topo"><a class="voltar" href="index.html">&larr; Informática</a><button class="ocultar-barra-btn" type="button" title="Ocultar barra lateral (Atalho: tecla [)">Ocultar &times;</button></div>
+<p class="lateral-titulo">Bases Numéricas</p>
+<nav><a class="nav-capa" href="#topo">Início</a><ol class="nav-unica"><li><a href="#sec-1"><span class="nav-num">01</span><span>O que você vai aprender</span></a></li><li><a href="#sec-2"><span class="nav-num">02</span><span>Conceitos básicos</span></a></li><li><a href="#sec-3"><span class="nav-num">03</span><span>Métodos passo a passo (parte 1)</span></a></li><li><a href="#sec-4"><span class="nav-num">03</span><span>Métodos passo a passo (parte 2)</span></a></li><li><a href="#sec-5"><span class="nav-num">03</span><span>Métodos passo a passo (parte 3)</span></a></li><li><a href="#sec-6"><span class="nav-num">03</span><span>Métodos passo a passo (parte 4)</span></a></li><li><a href="#sec-7"><span class="nav-num">04</span><span>Erros comuns de prova</span></a></li><li><a href="#sec-8"><span class="nav-num">05</span><span>Atalhos</span></a></li><li><a href="#sec-9"><span class="nav-num">06</span><span>Exercícios</span></a></li><li><a href="#sec-10"><span class="nav-num">07</span><span>Gabarito</span></a></li><li><a href="#sec-11"><span class="nav-num">08</span><span>Fontes consultadas</span></a></li></ol></nav>
+<button class="tema-btn" type="button">Alternar tema claro/escuro</button>
+</aside>
 
-<nav class="doc-nav">
-    <a href="index.html" class="back-link">&larr; Voltar para Informática</a>
-    <a href="../index.html" class="back-link">Painel principal</a>
-    <button type="button" class="back-link tema-btn">Tema claro/escuro</button>
-</nav>
-
-<!-- PÁGINA 1 -->
-<section class="page">
+<main id="topo">
     <div class="page-content">
-        <header class="doc-header">
+<header class="doc-header">
+            <p class="voltar-capa"><a class="voltar" href="index.html">&larr; Informática</a></p>
             <div class="kicker"><span class="label">Resumo</span><span class="meta">Sistemas de Informação · CESMAC</span></div>
             <h1>Conversão de Bases Numéricas</h1>
             <p class="subtitle">Resumo para alunos do 1º período de Sistemas de Informação (CESMAC).</p>
@@ -361,7 +422,7 @@
 
         <p>Aqui vamos trabalhar só com quatro bases: <strong>2 (binária), 8 (octal), 10 (decimal) e 16 (hexadecimal)</strong>.</p>
 
-        <h2><span class="num">01</span>O que você vai aprender</h2>
+        <h2 id="sec-1"><span class="num">01</span>O que você vai aprender</h2>
         <p>Ao terminar este resumo, você vai saber:</p>
         <ol>
             <li>Explicar o que é uma <strong>base numérica</strong> e como funciona a <strong>notação posicional</strong> (valor do dígito = dígito × base^posição). Também vai reconhecer quais dígitos valem em cada base.</li>
@@ -372,7 +433,7 @@
             <li><strong>Conferir</strong> qualquer resultado fazendo a conversão de volta, e fugir dos erros mais comuns de prova.</li>
         </ol>
 
-        <h2><span class="num">02</span>Conceitos básicos</h2>
+        <h2 id="sec-2"><span class="num">02</span>Conceitos básicos</h2>
         <h3 class="sub"><span class="num">2.1</span>O que é a base</h3>
         <p>A base (ou raiz) de um sistema de numeração é a quantidade de dígitos diferentes que ele usa. Na base <em>b</em>, os dígitos vão de 0 até <em>b</em> − 1.</p>
         <p><strong>Exemplo:</strong> a base 10 usa 10 dígitos (0 a 9). A base 2 usa só 2 dígitos (0 e 1).</p>
@@ -403,17 +464,8 @@
   3   2   1   0  ← posições
 1011₂ = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ = 8 + 0 + 2 + 1 = 11₁₀</pre>
         <p>Cada posição tem um "peso", que é uma potência da base. Na base 2, os pesos são 1, 2, 4, 8, 16... Na base 16, são 1, 16, 256, 4096...</p>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 1</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 2 -->
-<section class="page">
-    <div class="page-content">
-        <h3 class="sub"><span class="num">2.5</span>Tabela de potências</h3>
+<h3 class="sub"><span class="num">2.5</span>Tabela de potências</h3>
         <div class="table-wrap"><table><thead><tr><th class="key">Expoente</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead><tbody><tr><td class="key">2^n</td><td>1</td><td>2</td><td>4</td><td>8</td><td>16</td><td>32</td><td>64</td><td>128</td><td>256</td><td>512</td><td>1024</td></tr><tr><td class="key">8^n</td><td>1</td><td>8</td><td>64</td><td>512</td><td>4096</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="key">16^n</td><td>1</td><td>16</td><td>256</td><td>4096</td><td>65536</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
         <p>Lembre: <strong>qualquer número elevado a 0 vale 1</strong>. Por isso o dígito mais à direita sempre vale ele mesmo.</p>
 
@@ -436,17 +488,8 @@
         <p>Depois da vírgula, as posições continuam com <strong>expoentes negativos</strong>: −1, −2, −3... Assim, 0,1₂ = 1×2⁻¹ = 0,5.</p>
         <p><strong>Exemplo:</strong> 0,101₂ = 1×2⁻¹ + 0×2⁻² + 1×2⁻³ = 0,5 + 0 + 0,125 = 0,625₁₀.</p>
         <p>Para sair do decimal e ir para outra base, a parte inteira usa divisões sucessivas. Já a parte fracionária usa <strong>multiplicações sucessivas</strong> pela base (veja a seção 3.6).</p>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 2</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 3 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">03</span>Métodos passo a passo (parte 1)</h2>
+<h2 id="sec-3"><span class="num">03</span>Métodos passo a passo (parte 1)</h2>
         <h3 class="sub"><span class="num">3.1</span>Binário, octal ou hexadecimal → decimal (soma de potências)</h3>
         <ol>
             <li>Escreva os dígitos. Embaixo de cada um, anote a posição (da direita para a esquerda, começando em 0).</li>
@@ -518,17 +561,8 @@ posições:  2   1   0</pre>
             <p class="result"><strong class="accent">1000₁₀ = 3E8₁₆.</strong></p>
             <p class="conf"><strong>Conferência:</strong> 3E8₁₆ = 3×256 + 14×16 + 8×1 = 768 + 224 + 8 = 1000. ✔</p>
         </div>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 3</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 4 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">03</span>Métodos passo a passo (parte 2)</h2>
+<h2 id="sec-4"><span class="num">03</span>Métodos passo a passo (parte 2)</h2>
         <h3 class="sub"><span class="num">3.3</span>Binário ↔ octal (grupos de 3 bits)</h3>
         <p><strong>Binário → octal:</strong></p>
         <ol>
@@ -604,17 +638,8 @@ posições:  2   1   0</pre>
                 <li>10110111₂ = 128 + 0 + 32 + 16 + 0 + 4 + 2 + 1 = 183 ✔</li>
             </ul>
         </div>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 4</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 5 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">03</span>Métodos passo a passo (parte 3)</h2>
+<h2 id="sec-5"><span class="num">03</span>Métodos passo a passo (parte 3)</h2>
         <h3 class="sub"><span class="num">3.5</span>Octal ↔ hexadecimal (sempre pelo binário)</h3>
         <p>Não dá para trocar dígito por dígito entre octal e hexadecimal. Por exemplo, 17₈ vale 15₁₀ = F₁₆, e não 17₁₆. O binário serve de "ponte" porque 8 e 16 são potências de 2.</p>
         <p><strong>Octal → hexadecimal:</strong></p>
@@ -670,17 +695,8 @@ posições:  2   1   0</pre>
                 <li>1655₈ = 1×512 + 6×64 + 5×8 + 5×1 = 512 + 384 + 40 + 5 = 941 ✔</li>
             </ul>
         </div>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 5</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 6 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">03</span>Métodos passo a passo (parte 4)</h2>
+<h2 id="sec-6"><span class="num">03</span>Métodos passo a passo (parte 4)</h2>
         <h3 class="sub"><span class="num">3.6</span>Parte fracionária: decimal → binário, octal ou hexadecimal (multiplicações sucessivas)</h3>
         <ol>
             <li>Separe a parte inteira da parte fracionária. A parte inteira segue o método da seção 3.2.</li>
@@ -734,17 +750,8 @@ posições:  2   1   0</pre>
 0,8 × 2 = 1,6 → 1 (sobra 0,6)
 0,6 × 2 = 1,2 → 1 (sobra 0,2)  ← 0,2 já apareceu: o ciclo se repete</pre>
         <p>0,1₁₀ = 0,0001100110011...₂ (dízima periódica). Nesses casos, pare quando atingir o número de dígitos pedido no enunciado.</p>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 6</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 7 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">04</span>Erros comuns de prova</h2>
+<h2 id="sec-7"><span class="num">04</span>Erros comuns de prova</h2>
         <ol class="titled">
             <li><strong class="item-title">Ler os restos na ordem errada.</strong> Nas divisões sucessivas, leia <strong>de baixo para cima</strong>. Exemplo: 13₁₀ dá os restos 1, 0, 1, 1 (nessa ordem). O certo é <strong>1101₂</strong> (= 13). Lendo de cima para baixo, você teria 1011₂, que vale 11. Errado.</li>
             <li><strong class="item-title">Parar a divisão antes da hora.</strong> Continue até o <strong>quociente dar 0</strong>. Muita gente esquece o último resto, que é o primeiro dígito do resultado.</li>
@@ -760,7 +767,7 @@ posições:  2   1   0</pre>
             <li><strong class="item-title">Confundir o valor das letras.</strong> A=10, B=11, C=12, D=13, E=14, F=15. Truque: F é a maior (15); conte para trás a partir dela.</li>
         </ol>
 
-        <h2><span class="num">05</span>Atalhos</h2>
+        <h2 id="sec-8"><span class="num">05</span>Atalhos</h2>
         <div class="card-grid">
             <div class="card">
                 <h3 class="accent">Paridade rápida</h3>
@@ -785,7 +792,7 @@ posições:  2   1   0</pre>
             <p>Converta de volta ou passe os dois lados para decimal.</p>
         </div>
 
-        <h2><span class="num">06</span>Exercícios</h2>
+        <h2 id="sec-9"><span class="num">06</span>Exercícios</h2>
         <ol class="ruled">
             <li>Converta <strong>77₁₀</strong> para binário.</li>
             <li>Converta <strong>11100110₂</strong> para decimal.</li>
@@ -795,17 +802,8 @@ posições:  2   1   0</pre>
             <li>Converta <strong>1750₈</strong> para hexadecimal (use o binário como pivô).</li>
             <li>Converta <strong>4B₁₆</strong> para octal (use o binário como pivô).</li>
         </ol>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 7</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 8 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">07</span>Gabarito</h2>
+<h2 id="sec-10"><span class="num">07</span>Gabarito</h2>
         <div class="card card-example">
             <p class="result"><strong class="accent">1. 77₁₀ = 1001101₂</strong></p>
             <pre class="code-block bits">77 ÷ 2 = 38, resto 1
@@ -873,17 +871,8 @@ posições:  2   1   0</pre>
             </ul>
             <p class="conf">Conferência pelo decimal (só para checar): 4B₁₆ = 4×16 + 11 = 75; 113₈ = 1×64 + 1×8 + 3 = 75. ✔</p>
         </div>
-    </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 8</span>
-    </footer>
-</section>
 
-<!-- PÁGINA 9 -->
-<section class="page">
-    <div class="page-content">
-        <h2><span class="num">08</span>Fontes consultadas</h2>
+<h2 id="sec-11"><span class="num">08</span>Fontes consultadas</h2>
         <ul class="sources">
             <li><strong>Wikipédia (pt). "Sistema de numeração hexadecimal".</strong><a class="url" href="https://pt.wikipedia.org/wiki/Sistema_de_numeração_hexadecimal">https://pt.wikipedia.org/wiki/Sistema_de_numeração_hexadecimal</a><span>Conversão hexa ↔ binário (grupos de 4 bits), hexa → decimal por potências de 16, decimal → hexa por divisões sucessivas, tabela de equivalências.</span></li>
             <li><strong>Wikipédia (pt). "Sistema octal".</strong><a class="url" href="https://pt.wikipedia.org/wiki/Sistema_octal">https://pt.wikipedia.org/wiki/Sistema_octal</a><span>Octal → decimal por potências de 8 (ex.: 764₈ = 500₁₀), octal → binário (3 bits por dígito), octal → hexadecimal passando pelo binário.</span></li>
@@ -895,20 +884,85 @@ posições:  2   1   0</pre>
             <p>Todos os exemplos e exercícios deste resumo são próprios e foram conferidos pela conversão inversa.</p>
         </div>
     </div>
-    <footer class="page-footer">
-        <span>CONVERSÃO DE BASES NUMÉRICAS // SISTEMAS DE INFORMAÇÃO</span>
-        <span>PAGE 9</span>
+    <footer class="doc-footer">
+        <span>Conversão de Bases Numéricas // Yuri H. Santos</span>
+        <span>Sistemas de Informação // CESMAC</span>
     </footer>
-</section>
+</main>
 
 <script>
+(function () {
+    // Menu no celular
+    var menu = document.querySelector('.menu-btn'), lat = document.querySelector('.lateral');
+    if (menu && lat) {
+        menu.addEventListener('click', function () {
+            var o = document.body.classList.toggle('menu-aberto');
+            menu.setAttribute('aria-expanded', o);
+        });
+        lat.addEventListener('click', function (e) {
+            if (e.target.closest('a')) document.body.classList.remove('menu-aberto');
+        });
+    }
+
     // Tema claro/escuro: a escolha fica salva e vale para todas as páginas do site
-    document.querySelector('.tema-btn').addEventListener('click', function () {
-        var r = document.documentElement;
-        var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-        r.dataset.theme = escuro ? 'light' : 'dark';
-        try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    var temaBtn = document.querySelector('.tema-btn');
+    if (temaBtn) {
+        temaBtn.addEventListener('click', function () {
+            var r = document.documentElement;
+            var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+            r.dataset.theme = escuro ? 'light' : 'dark';
+            try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+        });
+    }
+
+    // Ocultar/mostrar barra lateral (tela cheia)
+    function setBarraOculta(oculta) {
+        document.body.classList.toggle('barra-oculta', !!oculta);
+        try { localStorage.setItem('barra_oculta', oculta ? '1' : '0'); } catch (e) {}
+    }
+    try { if (localStorage.getItem('barra_oculta') === '1') document.body.classList.add('barra-oculta'); } catch (e) {}
+    var btnOcultar = document.querySelector('.ocultar-barra-btn');
+    var btnMostrar = document.querySelector('.mostrar-barra-btn');
+    if (btnOcultar) btnOcultar.addEventListener('click', function () { setBarraOculta(true); });
+    if (btnMostrar) btnMostrar.addEventListener('click', function () { setBarraOculta(false); });
+    document.addEventListener('keyup', function (e) {
+        var tag = document.activeElement && document.activeElement.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key === '[' && innerWidth > 1100) setBarraOculta(!document.body.classList.contains('barra-oculta'));
     });
+
+    // Barra de progresso e seção atual no sumário
+    var bar = document.querySelector('.progresso span');
+    var links = {};
+    document.querySelectorAll('.lateral a[href^="#"]').forEach(function (a) {
+        links[a.getAttribute('href').slice(1)] = a;
+    });
+    var alvos = Array.prototype.filter.call(document.querySelectorAll('main h2[id]'), function (h) {
+        return links[h.id];
+    });
+    var atual = null;
+    function marcar() {
+        var y = window.scrollY, h = document.documentElement.scrollHeight - innerHeight;
+        if (bar) bar.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+        var ult = null;
+        for (var i = 0; i < alvos.length; i++) {
+            if (alvos[i].getBoundingClientRect().top < 120) ult = alvos[i];
+            else break;
+        }
+        if (ult !== atual) {
+            if (atual && links[atual.id]) links[atual.id].classList.remove('atual');
+            atual = ult;
+            if (atual && links[atual.id]) {
+                var a = links[atual.id];
+                a.classList.add('atual');
+                var r = a.getBoundingClientRect(), lr = lat.getBoundingClientRect();
+                if (r.top < lr.top + 60 || r.bottom > lr.bottom - 60) lat.scrollTop += r.top - lr.top - lr.height / 2;
+            }
+        }
+    }
+    addEventListener('scroll', marcar, { passive: true });
+    marcar();
+})();
 </script>
 
 </body>
