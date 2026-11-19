@@ -3,416 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conversão de Bases Numéricas - Sistemas de Informação</title>
+    <title>Conversão de Bases Numéricas - Informática</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
-    <style>
-    /* 0. PALETA — OPÇÃO 3: SINALIZAÇÃO (tinta preta + amarelo de placa sobre papel branco) */
-    :root {
-        --paper: #ffffff;         /* fundo da página */
-        --ink: #111111;           /* texto, réguas e blocos de número */
-        --wash: #f3f3f3;          /* fundo dos blocos de código */
-        --sign: #ffd21f;          /* amarelo de sinalização (destaques) */
-        --line: #333333;
-        --muted: #555555;         /* subtítulos e rodapé */
-        --desk: #2b2b2b;          /* fundo atrás das páginas (só na tela) */
-        --font-sans: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
-        --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
-        --sign-text: #ffd21f;
-        color-scheme: light;
-    }
-
-    /* TEMA ESCURO: segue o sistema, ou a escolha feita no botão "Tema" */
-    @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
-    }
-    :root[data-theme="dark"] { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
-
-    /* No amarelo de placa o texto continua preto, em qualquer tema */
-    .card-note, strong.accent, .tag, .kicker .label { --ink: #111111; --line: #333333; --muted: #555555; --wash: #f3f3f3; --paper: #ffffff; color: var(--ink); }
-    .badge, .pdf-btn, .back-link:hover { color: #111111; }
-
-    /* 1. CONFIGURAÇÕES RESPONSIVAS E BASE */
-    *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    html, body { margin: 0; padding: 0; background-color: var(--paper); color: var(--ink); font-family: var(--font-sans); }
-    html { scroll-padding-top: 24px; }
-    .page-content { width: 100%; }
-
-    /* CABEÇALHO DO DOCUMENTO */
-    .doc-header { margin-bottom: 28px; }
-    .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
-    .kicker .label {
-        background: var(--sign); color: var(--ink);
-        font-family: var(--font-mono); font-weight: 700; font-size: 8pt; letter-spacing: 0.12em;
-        padding: 4px 10px; text-transform: uppercase;
-    }
-    .kicker .meta { font-family: var(--font-mono); font-size: 8pt; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; }
-    .subtitle { font-size: 11pt; color: var(--muted); margin: 0 0 22px 0; }
-    .doc-header::after { content: ""; display: block; height: 8px; background: var(--ink); }
-
-    /* TIPOGRAFIA */
-    h1, h2, h3, h4 { font-family: var(--font-sans); color: var(--ink); }
-    h1 { font-size: 26pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.08; margin: 0 0 10px 0; }
-
-    h2 {
-        display: flex; align-items: center; gap: 14px;
-        font-size: 15pt; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25;
-        margin-top: 30px; margin-bottom: 14px;
-    }
-    h2 .num {
-        flex-shrink: 0;
-        background: var(--ink); color: var(--paper);
-        font-family: var(--font-mono); font-weight: 500; font-size: 12pt; letter-spacing: 0.08em;
-        padding: 5px 11px;
-    }
-    .page-content > h2:first-child { margin-top: 0; }
-
-    h3 { font-size: 11.5pt; font-weight: 600; margin-bottom: 6px; margin-top: 10px; }
-
-    @media (min-width: 768px) {
-        h1 { font-size: 34pt; }
-        h2 { font-size: 17pt; }
-    }
-
-    p {
-        font-size: 10.5pt;
-        line-height: 1.75;
-        color: var(--ink);
-        margin-top: 0;
-        margin-bottom: 12px;
-    }
-
-    @media (min-width: 768px) {
-        p { font-size: 11pt; }
-    }
-
-    strong { color: var(--ink); font-weight: 700; }
-
-    /* DESTAQUES: texto "accent" vira marcação amarela, como uma placa */
-    .accent { color: var(--ink); }
-    strong.accent { background: var(--sign); padding: 1px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-
-    /* TAGS */
-    .tag {
-        font-family: var(--font-mono); font-weight: 700;
-        font-size: 7.5pt; letter-spacing: 0.08em; color: var(--ink);
-        background: var(--sign); padding: 3px 8px; white-space: nowrap;
-    }
-
-    /* CARDS EM GRID RESPONSIVO */
-    .card-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-top: 14px;
-    }
-
-    @media (min-width: 650px) {
-        .card-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    .card { border: 2px solid var(--ink); background: var(--paper); padding: 16px 18px; }
-    .card h3 { margin-top: 0; margin-bottom: 8px; }
-    .card p { margin-bottom: 0; font-size: 10pt; line-height: 1.7; }
-    .card-grid .card h3 { border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
-
-    /* Cards de destaque */
-    .card-highlight { margin-top: 20px; }
-    .card-highlight h3, .card-side > h3 {
-        display: inline-block; background: var(--ink); color: var(--paper);
-        font-family: var(--font-mono); font-size: 8.5pt; font-weight: 500; letter-spacing: 0.08em;
-        padding: 4px 10px;
-    }
-    .card-side { margin-bottom: 14px; }
-    .card-note { background: var(--sign); border: none; margin-bottom: 20px; }
-    .card-note h3 { font-size: 11pt; font-weight: 700; }
-
-    /* CARDS EM COLUNA (EQUIPAMENTOS): cabeçalho preto como cabeçalho de tabela */
-    .card-stacked { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
-    .card-stacked .card { width: 100%; padding: 0 0 16px 0; }
-    .card-stacked .card p { margin-bottom: 8px; padding: 0 18px; }
-    .card-stacked .card p:last-child { margin-bottom: 0; }
-
-    .card-header-flex {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 8px;
-        background: var(--ink);
-        padding: 10px 18px;
-        margin-bottom: 14px;
-    }
-
-    @media (min-width: 500px) {
-        .card-header-flex { flex-direction: row; align-items: center; }
-    }
-
-    .card-header-flex h3 { margin: 0; font-size: 11.5pt; color: var(--paper); }
-
-    /* BLOCOS DE CÓDIGO E DIAGRAMAS */
-    .code-block {
-        background: var(--wash); padding: 14px 16px;
-        font-family: var(--font-mono); font-size: 9pt; line-height: 1.8; color: var(--ink);
-        white-space: pre-wrap; word-break: break-word;
-        margin-bottom: 10px;
-        overflow-x: auto;
-    }
-    .code-block strong.accent { font-family: var(--font-sans); font-size: 10pt; }
-
-    @media (min-width: 768px) {
-        .code-block { font-size: 9.5pt; }
-    }
-
-    .folder-tree {
-        display: flex; flex-direction: column; gap: 8px;
-        border: 2px solid var(--ink); padding: 18px;
-        font-family: var(--font-mono); font-size: 8.5pt; letter-spacing: 0.04em;
-    }
-    .folder-tree p { font-family: var(--font-sans); letter-spacing: 0; margin-bottom: 6px; }
-
-    /* SUBTÍTULOS NUMERADOS (2.1, 2.2...): número com contorno, como placa secundária */
-    h3.sub { display: flex; align-items: center; gap: 10px; margin-top: 22px; margin-bottom: 10px; }
-    h3.sub .num {
-        flex-shrink: 0;
-        border: 2px solid var(--ink);
-        font-family: var(--font-mono); font-weight: 500; font-size: 8.5pt; letter-spacing: 0.06em;
-        padding: 1px 7px;
-    }
-
-    code { font-family: var(--font-mono); font-size: 0.9em; background: var(--wash); padding: 1px 4px; }
-
-    /* LISTAS NUMERADAS E COM MARCADORES */
-    .page-content ol, .page-content ul { margin: 0 0 12px 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
-    .page-content li { position: relative; padding-left: 28px; font-size: 10.5pt; line-height: 1.75; }
-    .page-content ol { counter-reset: item; }
-    .page-content ol > li { counter-increment: item; }
-    .page-content ol > li::before {
-        content: counter(item) ".";
-        position: absolute; left: 0;
-        font-family: var(--font-mono); font-weight: 700; font-size: 9.5pt;
-    }
-    .page-content ul > li::before { content: "•"; position: absolute; left: 6px; font-weight: 700; }
-
-    @media (min-width: 768px) {
-        .page-content li { font-size: 11pt; }
-    }
-
-    ol.titled { gap: 12px; }
-    .item-title { display: block; }
-
-    /* EXERCÍCIOS: lista com réguas */
-    ol.ruled { gap: 0; border-top: 3px solid var(--ink); }
-    ol.ruled > li { padding: 10px 0 10px 28px; border-bottom: 1px solid var(--ink); }
-    ol.ruled > li::before { top: 10px; }
-
-    /* EXEMPLOS RESOLVIDOS E GABARITO: card com etiqueta preta */
-    .card-example { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
-    .card-example > h3 { align-self: flex-start; margin: 0; }
-    .card.card-example p, .card.card-example ol, .card.card-example ul, .card.card-example .code-block, .card.card-example .table-wrap { margin: 0; }
-    .card.card-example li { font-size: 10pt; line-height: 1.7; }
-
-    /* RESULTADO: marcação amarela de placa */
-    p.result { margin: 0 0 12px 0; }
-    .result strong.accent { font-size: 12pt; }
-
-    /* CONFERÊNCIA */
-    .conf, .card .conf { color: var(--line); font-size: 10pt; }
-    .conf-label { color: var(--line); font-weight: 600; }
-
-    /* BITS E CONTAS: alinhamento por colunas exige texto sem quebra */
-    .code-block.bits { white-space: pre; word-break: normal; margin: 0 0 12px 0; }
-
-    /* TABELAS: cabeçalho preto como o dos cards de equipamento */
-    .table-wrap { overflow-x: auto; margin-bottom: 12px; }
-    table { border-collapse: collapse; border: 2px solid var(--ink); width: 100%; font-size: 9.5pt; line-height: 1.5; }
-    th {
-        background: var(--ink); color: var(--paper);
-        font-family: var(--font-mono); font-weight: 500; font-size: 8.5pt; letter-spacing: 0.06em;
-        text-align: left; padding: 6px 12px;
-    }
-    th.key { color: var(--sign-text); }
-    td { padding: 6px 12px; border-top: 1px solid var(--ink); font-family: var(--font-mono); }
-    td.key { font-weight: 700; }
-    .text-table td { font-family: var(--font-sans); }
-    tbody tr:nth-child(even) { background: var(--wash); }
-
-    @media (max-width: 600px) {
-        th, td { padding: 6px 8px; }
-    }
-
-    /* FONTES CONSULTADAS */
-    .page-content ul.sources { gap: 0; border-top: 3px solid var(--ink); }
-    .page-content ul.sources > li { padding: 12px 0; border-bottom: 1px solid var(--ink); display: flex; flex-direction: column; gap: 4px; font-size: 10pt; line-height: 1.6; }
-    .page-content ul.sources > li::before { content: none; }
-    .url { font-family: var(--font-mono); font-size: 8pt; color: var(--muted); overflow-wrap: anywhere; }
-
-    /* REGRAS PARA IMPRESSÃO EM PDF */
-    /* O conteúdo de cada seção passa de uma folha A4, então na impressão ele flui
-       contínuo com margens reais e nenhum card ou bloco é cortado ao meio */
-    @page {
-        size: A4;
-        margin: 16mm 16mm 18mm 16mm;
-        @bottom-left {
-            content: "Conversão de Bases Numéricas // Sistemas de Informação";
-            font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 0.1em;
-            text-transform: uppercase; color: #555555;
-        }
-        @bottom-right {
-            content: "Página " counter(page) " de " counter(pages);
-            font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 0.1em;
-            text-transform: uppercase; color: #111111;
-        }
-    }
-    @media print {
-        :root, :root[data-theme="dark"], :root:not([data-theme="light"]) { --paper: #ffffff; --ink: #111111; --wash: #f3f3f3; --line: #333333; --muted: #555555; --sign-text: #ffd21f; color-scheme: light; }
-        .doc-nav, .page-footer { display: none; }
-        html, body { background-color: var(--paper) !important; padding: 0; margin: 0; max-width: none; }
-        .page { margin: 0; padding: 0; min-height: 0; display: block; }
-        .page + .page { margin-top: 10mm; }
-        h1 { font-size: 30pt; }
-        h2 { font-size: 16pt; break-after: avoid; page-break-after: avoid; }
-        h3 { break-after: avoid; }
-        p { font-size: 10.5pt; orphans: 3; widows: 3; }
-        .card, .code-block, table, .page-content li { break-inside: avoid; page-break-inside: avoid; }
-        .code-block, .table-wrap { overflow: visible; }
-        a { color: inherit; text-decoration: none; }
-    }
-    
-
-    /* BARRA DE PROGRESSO NO TOPO */
-    .progresso { position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 30; }
-    .progresso span { display: block; height: 100%; width: 0; background: var(--sign); }
-
-    /* SUMÁRIO LATERAL RECOLHÍVEL (MESMO PADRÃO DO RESTANTE DO SITE) */
-    :root { --lateral: 290px; }
-    .lateral {
-        position: fixed; top: 0; bottom: 0; left: 0; width: var(--lateral); z-index: 20;
-        overflow-y: auto; padding: 28px 22px 24px 24px;
-        background: var(--paper); border-right: 2px solid var(--ink);
-        font-size: 13.5px; line-height: 19px;
-    }
-    .lateral a { color: inherit; text-decoration: none; }
-    .lateral-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
-    .voltar {
-        display: inline-block; padding: 6px 10px;
-        background: var(--ink); color: var(--paper) !important; text-decoration: none !important;
-        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .voltar:hover { background: var(--sign); color: #111111 !important; }
-    .voltar-capa { margin: 0 0 12px 0; }
-    @media screen and (min-width: 1101px) { .voltar-capa { display: none; } }
-
-    .ocultar-barra-btn {
-        padding: 6px 10px; background: none; color: var(--ink); border: 2px solid var(--ink); cursor: pointer;
-        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .ocultar-barra-btn:hover { background: var(--sign); color: #111111; border-color: var(--sign); }
-
-    .mostrar-barra-btn {
-        position: fixed; top: 20px; left: 16px; z-index: 28; display: none; align-items: center; gap: 6px;
-        padding: 8px 12px; background: var(--sign); color: #111111; border: 2px solid var(--ink); cursor: pointer;
-        font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .mostrar-barra-btn:hover { background: var(--ink); color: var(--paper); }
-
-    .lateral-titulo {
-        padding-bottom: 12px; margin: 0 0 14px 0; border-bottom: 8px solid var(--ink);
-        font-size: 19px; line-height: 23px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink);
-    }
-    .lateral .nav-capa {
-        display: inline-block; margin-bottom: 10px; padding: 2px 8px;
-        background: var(--sign); color: #111111;
-        font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .lateral ol { list-style: none; margin: 0 0 12px 0; padding: 0; display: block; }
-    .lateral li { padding: 0; margin: 0; }
-    .lateral li::before { display: none; content: none; }
-    .lateral li a {
-        display: grid; grid-template-columns: 32px 1fr; align-items: baseline;
-        padding: 5px 6px; color: var(--line);
-    }
-    .lateral li a:hover { background: var(--wash); }
-    .nav-num { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--muted); }
-    .lateral a.atual { background: var(--sign); color: #111111; font-weight: 700; }
-    .lateral a.atual .nav-num { color: #111111; }
-
-    .lateral .tema-btn {
-        margin: 18px 0 0 0; width: 100%; padding: 8px 10px; cursor: pointer;
-        background: none; color: var(--ink); border: 2px solid var(--ink);
-        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .lateral .tema-btn:hover { background: var(--ink); color: var(--paper); }
-
-    .menu-btn { display: none; }
-
-    /* ÁREA PRINCIPAL CONTÍNUA (SEM FOLHA A4) */
-    main {
-        margin-left: var(--lateral);
-        max-width: calc(900px + var(--lateral));
-        padding: 48px 56px 96px;
-    }
-    main > * { max-width: 820px; }
-
-    .doc-footer {
-        margin-top: 64px; padding-top: 12px; border-top: 3px solid var(--ink);
-        display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between;
-        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
-        color: var(--muted); text-transform: uppercase;
-    }
-
-    @media screen and (min-width: 1101px) {
-        .lateral { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        main { transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease; }
-        body.barra-oculta .lateral { transform: translateX(-105%); pointer-events: none; }
-        body.barra-oculta .mostrar-barra-btn { display: inline-flex; }
-        body.barra-oculta main {
-            margin-left: 0 !important; max-width: none !important; width: 100% !important;
-            padding: 48px clamp(24px, 5vw, 80px) 96px max(clamp(24px, 5vw, 80px), 160px) !important;
-        }
-        body.barra-oculta main > * { max-width: 100% !important; }
-    }
-
-    @media screen and (max-width: 1100px) {
-        .lateral { transform: translateX(-100%); transition: transform 0.2s ease; width: min(340px, 88vw); }
-        body.menu-aberto .lateral { transform: none; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.35); }
-        .menu-btn {
-            display: block; position: fixed; top: 12px; right: 12px; z-index: 25; cursor: pointer;
-            padding: 8px 12px; background: var(--sign); color: #111111; border: 2px solid var(--ink);
-            font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-        }
-        .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
-        main { margin-left: 0; max-width: none; padding: 56px 24px 72px; }
-        main > * { max-width: none; }
-    }
-
-    @media screen and (max-width: 640px) {
-        main { padding: 56px 16px 64px; }
-    }
-
-    @media print {
-        .lateral, .menu-btn, .progresso, .ocultar-barra-btn, .mostrar-barra-btn, .voltar, .voltar-capa { display: none !important; }
-        main { margin: 0 !important; max-width: none !important; padding: 0 !important; }
-        main > * { max-width: none !important; }
-    }
-
-    </style>
+    <link rel="stylesheet" href="sinalizacao.css">
 </head>
 <body>
 <div class="progresso" aria-hidden="true"><span></span></div>
 <button class="menu-btn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
 <button class="mostrar-barra-btn" type="button" aria-label="Mostrar barra lateral" title="Mostrar barra lateral (Atalho: tecla [)">&#9776; Sumário</button>
 <aside class="lateral" aria-label="Sumário">
-<div class="lateral-topo"><a class="voltar" href="index.html">&larr; Informática</a><button class="ocultar-barra-btn" type="button" title="Ocultar barra lateral (Atalho: tecla [)">Ocultar &times;</button></div>
-<p class="lateral-titulo">Bases Numéricas</p>
-<nav><a class="nav-capa" href="#topo">Início</a><ol class="nav-unica"><li><a href="#sec-1"><span class="nav-num">01</span><span>O que você vai aprender</span></a></li><li><a href="#sec-2"><span class="nav-num">02</span><span>Conceitos básicos</span></a></li><li><a href="#sec-3"><span class="nav-num">03</span><span>Métodos passo a passo (parte 1)</span></a></li><li><a href="#sec-4"><span class="nav-num">03</span><span>Métodos passo a passo (parte 2)</span></a></li><li><a href="#sec-5"><span class="nav-num">03</span><span>Métodos passo a passo (parte 3)</span></a></li><li><a href="#sec-6"><span class="nav-num">03</span><span>Métodos passo a passo (parte 4)</span></a></li><li><a href="#sec-7"><span class="nav-num">04</span><span>Erros comuns de prova</span></a></li><li><a href="#sec-8"><span class="nav-num">05</span><span>Atalhos</span></a></li><li><a href="#sec-9"><span class="nav-num">06</span><span>Exercícios</span></a></li><li><a href="#sec-10"><span class="nav-num">07</span><span>Gabarito</span></a></li><li><a href="#sec-11"><span class="nav-num">08</span><span>Fontes consultadas</span></a></li></ol></nav>
-<button class="tema-btn" type="button">Alternar tema claro/escuro</button>
+    <div class="lateral-topo">
+        <a class="voltar" href="index.html">&larr; Informática</a>
+        <button class="ocultar-barra-btn" type="button" title="Ocultar barra lateral (Atalho: tecla [)">Ocultar &times;</button>
+    </div>
+    <p class="lateral-titulo">Bases Numéricas</p>
+    <nav>
+        <a class="nav-capa" href="#topo">Início</a>
+        <ol class="nav-unica"><li><a href="#sec-1"><span class="nav-num">01</span><span>O que você vai aprender</span></a></li><li><a href="#sec-2"><span class="nav-num">02</span><span>Conceitos básicos</span></a></li><li><a href="#sec-3"><span class="nav-num">03</span><span>Métodos passo a passo</span></a></li><li><a href="#sec-4"><span class="nav-num">04</span><span>Erros comuns de prova</span></a></li><li><a href="#sec-5"><span class="nav-num">05</span><span>Atalhos</span></a></li><li><a href="#sec-6"><span class="nav-num">06</span><span>Exercícios</span></a></li><li><a href="#sec-7"><span class="nav-num">07</span><span>Gabarito</span></a></li><li><a href="#sec-8"><span class="nav-num">08</span><span>Fontes consultadas</span></a></li></ol>
+    </nav>
+    <button class="tema-btn" type="button">Alternar tema claro/escuro</button>
 </aside>
 
 <main id="topo">
-    <div class="page-content">
+    <div class="doc-inner">
+        <article class="doc-body">
 <header class="doc-header">
             <p class="voltar-capa"><a class="voltar" href="index.html">&larr; Informática</a></p>
             <div class="kicker"><span class="label">Resumo</span><span class="meta">Sistemas de Informação · CESMAC</span></div>
@@ -466,11 +83,11 @@
         <p>Cada posição tem um "peso", que é uma potência da base. Na base 2, os pesos são 1, 2, 4, 8, 16... Na base 16, são 1, 16, 256, 4096...</p>
 
 <h3 class="sub"><span class="num">2.5</span>Tabela de potências</h3>
-        <div class="table-wrap"><table><thead><tr><th class="key">Expoente</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead><tbody><tr><td class="key">2^n</td><td>1</td><td>2</td><td>4</td><td>8</td><td>16</td><td>32</td><td>64</td><td>128</td><td>256</td><td>512</td><td>1024</td></tr><tr><td class="key">8^n</td><td>1</td><td>8</td><td>64</td><td>512</td><td>4096</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="key">16^n</td><td>1</td><td>16</td><td>256</td><td>4096</td><td>65536</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+        <div class="table-wrap"><table class="mono-table"><thead><tr><th class="key">Expoente</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead><tbody><tr><td class="key">2^n</td><td>1</td><td>2</td><td>4</td><td>8</td><td>16</td><td>32</td><td>64</td><td>128</td><td>256</td><td>512</td><td>1024</td></tr><tr><td class="key">8^n</td><td>1</td><td>8</td><td>64</td><td>512</td><td>4096</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="key">16^n</td><td>1</td><td>16</td><td>256</td><td>4096</td><td>65536</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
         <p>Lembre: <strong>qualquer número elevado a 0 vale 1</strong>. Por isso o dígito mais à direita sempre vale ele mesmo.</p>
 
         <h3 class="sub"><span class="num">2.6</span>Tabela de referência de 0 a 15</h3>
-        <div class="table-wrap"><table><thead><tr><th class="key">Decimal</th><th>Binário (4 bits)</th><th>Octal</th><th>Hexadecimal</th></tr></thead><tbody><tr><td class="key">0</td><td>0000</td><td>0</td><td>0</td></tr><tr><td class="key">1</td><td>0001</td><td>1</td><td>1</td></tr><tr><td class="key">2</td><td>0010</td><td>2</td><td>2</td></tr><tr><td class="key">3</td><td>0011</td><td>3</td><td>3</td></tr><tr><td class="key">4</td><td>0100</td><td>4</td><td>4</td></tr><tr><td class="key">5</td><td>0101</td><td>5</td><td>5</td></tr><tr><td class="key">6</td><td>0110</td><td>6</td><td>6</td></tr><tr><td class="key">7</td><td>0111</td><td>7</td><td>7</td></tr><tr><td class="key">8</td><td>1000</td><td>10</td><td>8</td></tr><tr><td class="key">9</td><td>1001</td><td>11</td><td>9</td></tr><tr><td class="key">10</td><td>1010</td><td>12</td><td>A</td></tr><tr><td class="key">11</td><td>1011</td><td>13</td><td>B</td></tr><tr><td class="key">12</td><td>1100</td><td>14</td><td>C</td></tr><tr><td class="key">13</td><td>1101</td><td>15</td><td>D</td></tr><tr><td class="key">14</td><td>1110</td><td>16</td><td>E</td></tr><tr><td class="key">15</td><td>1111</td><td>17</td><td>F</td></tr></tbody></table></div>
+        <div class="table-wrap"><table class="mono-table"><thead><tr><th class="key">Decimal</th><th>Binário (4 bits)</th><th>Octal</th><th>Hexadecimal</th></tr></thead><tbody><tr><td class="key">0</td><td>0000</td><td>0</td><td>0</td></tr><tr><td class="key">1</td><td>0001</td><td>1</td><td>1</td></tr><tr><td class="key">2</td><td>0010</td><td>2</td><td>2</td></tr><tr><td class="key">3</td><td>0011</td><td>3</td><td>3</td></tr><tr><td class="key">4</td><td>0100</td><td>4</td><td>4</td></tr><tr><td class="key">5</td><td>0101</td><td>5</td><td>5</td></tr><tr><td class="key">6</td><td>0110</td><td>6</td><td>6</td></tr><tr><td class="key">7</td><td>0111</td><td>7</td><td>7</td></tr><tr><td class="key">8</td><td>1000</td><td>10</td><td>8</td></tr><tr><td class="key">9</td><td>1001</td><td>11</td><td>9</td></tr><tr><td class="key">10</td><td>1010</td><td>12</td><td>A</td></tr><tr><td class="key">11</td><td>1011</td><td>13</td><td>B</td></tr><tr><td class="key">12</td><td>1100</td><td>14</td><td>C</td></tr><tr><td class="key">13</td><td>1101</td><td>15</td><td>D</td></tr><tr><td class="key">14</td><td>1110</td><td>16</td><td>E</td></tr><tr><td class="key">15</td><td>1111</td><td>17</td><td>F</td></tr></tbody></table></div>
         <p>Para o octal, use só as linhas de 0 a 7 e os <strong>3 últimos bits</strong>: 0=000, 1=001, 2=010, 3=011, 4=100, 5=101, 6=110, 7=111.</p>
         <p>Quer montar a tabela de cabeça? Use os pesos <strong>8 4 2 1</strong> para os 4 bits. Exemplo: 1101 = 8 + 4 + 0 + 1 = 13 = D. Para 3 bits, os pesos são 4 2 1.</p>
 
@@ -489,7 +106,7 @@
         <p><strong>Exemplo:</strong> 0,101₂ = 1×2⁻¹ + 0×2⁻² + 1×2⁻³ = 0,5 + 0 + 0,125 = 0,625₁₀.</p>
         <p>Para sair do decimal e ir para outra base, a parte inteira usa divisões sucessivas. Já a parte fracionária usa <strong>multiplicações sucessivas</strong> pela base (veja a seção 3.6).</p>
 
-<h2 id="sec-3"><span class="num">03</span>Métodos passo a passo (parte 1)</h2>
+<h2 id="sec-3"><span class="num">03</span>Métodos passo a passo</h2>
         <h3 class="sub"><span class="num">3.1</span>Binário, octal ou hexadecimal → decimal (soma de potências)</h3>
         <ol>
             <li>Escreva os dígitos. Embaixo de cada um, anote a posição (da direita para a esquerda, começando em 0).</li>
@@ -502,7 +119,7 @@
             <h3>EXEMPLO 1 — BINÁRIO → DECIMAL: 110101₂</h3>
             <pre class="code-block bits">dígitos:   1   1   0   1   0   1
 posições:  5   4   3   2   1   0</pre>
-            <div class="table-wrap"><table><thead><tr><th class="key">Dígito</th><th>Potência</th><th>Conta</th><th>Valor</th></tr></thead><tbody><tr><td class="key">1</td><td>2⁵ = 32</td><td>1 × 32</td><td>32</td></tr><tr><td class="key">1</td><td>2⁴ = 16</td><td>1 × 16</td><td>16</td></tr><tr><td class="key">0</td><td>2³ = 8</td><td>0 × 8</td><td>0</td></tr><tr><td class="key">1</td><td>2² = 4</td><td>1 × 4</td><td>4</td></tr><tr><td class="key">0</td><td>2¹ = 2</td><td>0 × 2</td><td>0</td></tr><tr><td class="key">1</td><td>2⁰ = 1</td><td>1 × 1</td><td>1</td></tr></tbody></table></div>
+            <div class="table-wrap"><table class="mono-table"><thead><tr><th class="key">Dígito</th><th>Potência</th><th>Conta</th><th>Valor</th></tr></thead><tbody><tr><td class="key">1</td><td>2⁵ = 32</td><td>1 × 32</td><td>32</td></tr><tr><td class="key">1</td><td>2⁴ = 16</td><td>1 × 16</td><td>16</td></tr><tr><td class="key">0</td><td>2³ = 8</td><td>0 × 8</td><td>0</td></tr><tr><td class="key">1</td><td>2² = 4</td><td>1 × 4</td><td>4</td></tr><tr><td class="key">0</td><td>2¹ = 2</td><td>0 × 2</td><td>0</td></tr><tr><td class="key">1</td><td>2⁰ = 1</td><td>1 × 1</td><td>1</td></tr></tbody></table></div>
             <p>Soma: 32 + 16 + 0 + 4 + 0 + 1 = <strong>53</strong>.</p>
             <p class="result"><strong class="accent">Logo, 110101₂ = 53₁₀.</strong></p>
             <p class="conf-label">Conferência (volta para binário):</p>
@@ -519,7 +136,7 @@ posições:  5   4   3   2   1   0</pre>
             <h3>EXEMPLO 2 — HEXADECIMAL → DECIMAL: 2AF₁₆</h3>
             <pre class="code-block bits">dígitos:   2   A   F       (A = 10, F = 15)
 posições:  2   1   0</pre>
-            <div class="table-wrap"><table><thead><tr><th class="key">Dígito</th><th>Potência</th><th>Conta</th><th>Valor</th></tr></thead><tbody><tr><td class="key">2</td><td>16² = 256</td><td>2 × 256</td><td>512</td></tr><tr><td class="key">A = 10</td><td>16¹ = 16</td><td>10 × 16</td><td>160</td></tr><tr><td class="key">F = 15</td><td>16⁰ = 1</td><td>15 × 1</td><td>15</td></tr></tbody></table></div>
+            <div class="table-wrap"><table class="mono-table"><thead><tr><th class="key">Dígito</th><th>Potência</th><th>Conta</th><th>Valor</th></tr></thead><tbody><tr><td class="key">2</td><td>16² = 256</td><td>2 × 256</td><td>512</td></tr><tr><td class="key">A = 10</td><td>16¹ = 16</td><td>10 × 16</td><td>160</td></tr><tr><td class="key">F = 15</td><td>16⁰ = 1</td><td>15 × 1</td><td>15</td></tr></tbody></table></div>
             <p>Soma: 512 + 160 + 15 = <strong>687</strong>.</p>
             <p class="result"><strong class="accent">Logo, 2AF₁₆ = 687₁₀.</strong></p>
             <p class="conf-label">Conferência:</p>
@@ -562,8 +179,7 @@ posições:  2   1   0</pre>
             <p class="conf"><strong>Conferência:</strong> 3E8₁₆ = 3×256 + 14×16 + 8×1 = 768 + 224 + 8 = 1000. ✔</p>
         </div>
 
-<h2 id="sec-4"><span class="num">03</span>Métodos passo a passo (parte 2)</h2>
-        <h3 class="sub"><span class="num">3.3</span>Binário ↔ octal (grupos de 3 bits)</h3>
+<h3 class="sub"><span class="num">3.3</span>Binário ↔ octal (grupos de 3 bits)</h3>
         <p><strong>Binário → octal:</strong></p>
         <ol>
             <li>Separe os bits em grupos de <strong>3, da direita para a esquerda</strong>.</li>
@@ -639,8 +255,7 @@ posições:  2   1   0</pre>
             </ul>
         </div>
 
-<h2 id="sec-5"><span class="num">03</span>Métodos passo a passo (parte 3)</h2>
-        <h3 class="sub"><span class="num">3.5</span>Octal ↔ hexadecimal (sempre pelo binário)</h3>
+<h3 class="sub"><span class="num">3.5</span>Octal ↔ hexadecimal (sempre pelo binário)</h3>
         <p>Não dá para trocar dígito por dígito entre octal e hexadecimal. Por exemplo, 17₈ vale 15₁₀ = F₁₆, e não 17₁₆. O binário serve de "ponte" porque 8 e 16 são potências de 2.</p>
         <p><strong>Octal → hexadecimal:</strong></p>
         <ol>
@@ -696,8 +311,7 @@ posições:  2   1   0</pre>
             </ul>
         </div>
 
-<h2 id="sec-6"><span class="num">03</span>Métodos passo a passo (parte 4)</h2>
-        <h3 class="sub"><span class="num">3.6</span>Parte fracionária: decimal → binário, octal ou hexadecimal (multiplicações sucessivas)</h3>
+<h3 class="sub"><span class="num">3.6</span>Parte fracionária: decimal → binário, octal ou hexadecimal (multiplicações sucessivas)</h3>
         <ol>
             <li>Separe a parte inteira da parte fracionária. A parte inteira segue o método da seção 3.2.</li>
             <li>Multiplique a parte fracionária pela base de destino.</li>
@@ -751,7 +365,7 @@ posições:  2   1   0</pre>
 0,6 × 2 = 1,2 → 1 (sobra 0,2)  ← 0,2 já apareceu: o ciclo se repete</pre>
         <p>0,1₁₀ = 0,0001100110011...₂ (dízima periódica). Nesses casos, pare quando atingir o número de dígitos pedido no enunciado.</p>
 
-<h2 id="sec-7"><span class="num">04</span>Erros comuns de prova</h2>
+<h2 id="sec-4"><span class="num">04</span>Erros comuns de prova</h2>
         <ol class="titled">
             <li><strong class="item-title">Ler os restos na ordem errada.</strong> Nas divisões sucessivas, leia <strong>de baixo para cima</strong>. Exemplo: 13₁₀ dá os restos 1, 0, 1, 1 (nessa ordem). O certo é <strong>1101₂</strong> (= 13). Lendo de cima para baixo, você teria 1011₂, que vale 11. Errado.</li>
             <li><strong class="item-title">Parar a divisão antes da hora.</strong> Continue até o <strong>quociente dar 0</strong>. Muita gente esquece o último resto, que é o primeiro dígito do resultado.</li>
@@ -767,7 +381,7 @@ posições:  2   1   0</pre>
             <li><strong class="item-title">Confundir o valor das letras.</strong> A=10, B=11, C=12, D=13, E=14, F=15. Truque: F é a maior (15); conte para trás a partir dela.</li>
         </ol>
 
-        <h2 id="sec-8"><span class="num">05</span>Atalhos</h2>
+        <h2 id="sec-5"><span class="num">05</span>Atalhos</h2>
         <div class="card-grid">
             <div class="card">
                 <h3 class="accent">Paridade rápida</h3>
@@ -792,7 +406,7 @@ posições:  2   1   0</pre>
             <p>Converta de volta ou passe os dois lados para decimal.</p>
         </div>
 
-        <h2 id="sec-9"><span class="num">06</span>Exercícios</h2>
+        <h2 id="sec-6"><span class="num">06</span>Exercícios</h2>
         <ol class="ruled">
             <li>Converta <strong>77₁₀</strong> para binário.</li>
             <li>Converta <strong>11100110₂</strong> para decimal.</li>
@@ -803,7 +417,7 @@ posições:  2   1   0</pre>
             <li>Converta <strong>4B₁₆</strong> para octal (use o binário como pivô).</li>
         </ol>
 
-<h2 id="sec-10"><span class="num">07</span>Gabarito</h2>
+<h2 id="sec-7"><span class="num">07</span>Gabarito</h2>
         <div class="card card-example">
             <p class="result"><strong class="accent">1. 77₁₀ = 1001101₂</strong></p>
             <pre class="code-block bits">77 ÷ 2 = 38, resto 1
@@ -872,7 +486,7 @@ posições:  2   1   0</pre>
             <p class="conf">Conferência pelo decimal (só para checar): 4B₁₆ = 4×16 + 11 = 75; 113₈ = 1×64 + 1×8 + 3 = 75. ✔</p>
         </div>
 
-<h2 id="sec-11"><span class="num">08</span>Fontes consultadas</h2>
+<h2 id="sec-8"><span class="num">08</span>Fontes consultadas</h2>
         <ul class="sources">
             <li><strong>Wikipédia (pt). "Sistema de numeração hexadecimal".</strong><a class="url" href="https://pt.wikipedia.org/wiki/Sistema_de_numeração_hexadecimal">https://pt.wikipedia.org/wiki/Sistema_de_numeração_hexadecimal</a><span>Conversão hexa ↔ binário (grupos de 4 bits), hexa → decimal por potências de 16, decimal → hexa por divisões sucessivas, tabela de equivalências.</span></li>
             <li><strong>Wikipédia (pt). "Sistema octal".</strong><a class="url" href="https://pt.wikipedia.org/wiki/Sistema_octal">https://pt.wikipedia.org/wiki/Sistema_octal</a><span>Octal → decimal por potências de 8 (ex.: 764₈ = 500₁₀), octal → binário (3 bits por dígito), octal → hexadecimal passando pelo binário.</span></li>
@@ -883,87 +497,13 @@ posições:  2   1   0</pre>
         <div class="card card-note">
             <p>Todos os exemplos e exercícios deste resumo são próprios e foram conferidos pela conversão inversa.</p>
         </div>
+        </article>
+        <footer class="doc-footer">
+            <span>Conversão de Bases Numéricas // Yuri H. Santos</span>
+            <span>Sistemas de Informação // CESMAC</span>
+        </footer>
     </div>
-    <footer class="doc-footer">
-        <span>Conversão de Bases Numéricas // Yuri H. Santos</span>
-        <span>Sistemas de Informação // CESMAC</span>
-    </footer>
 </main>
-
-<script>
-(function () {
-    // Menu no celular
-    var menu = document.querySelector('.menu-btn'), lat = document.querySelector('.lateral');
-    if (menu && lat) {
-        menu.addEventListener('click', function () {
-            var o = document.body.classList.toggle('menu-aberto');
-            menu.setAttribute('aria-expanded', o);
-        });
-        lat.addEventListener('click', function (e) {
-            if (e.target.closest('a')) document.body.classList.remove('menu-aberto');
-        });
-    }
-
-    // Tema claro/escuro: a escolha fica salva e vale para todas as páginas do site
-    var temaBtn = document.querySelector('.tema-btn');
-    if (temaBtn) {
-        temaBtn.addEventListener('click', function () {
-            var r = document.documentElement;
-            var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-            r.dataset.theme = escuro ? 'light' : 'dark';
-            try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
-        });
-    }
-
-    // Ocultar/mostrar barra lateral (tela cheia)
-    function setBarraOculta(oculta) {
-        document.body.classList.toggle('barra-oculta', !!oculta);
-        try { localStorage.setItem('barra_oculta', oculta ? '1' : '0'); } catch (e) {}
-    }
-    try { if (localStorage.getItem('barra_oculta') === '1') document.body.classList.add('barra-oculta'); } catch (e) {}
-    var btnOcultar = document.querySelector('.ocultar-barra-btn');
-    var btnMostrar = document.querySelector('.mostrar-barra-btn');
-    if (btnOcultar) btnOcultar.addEventListener('click', function () { setBarraOculta(true); });
-    if (btnMostrar) btnMostrar.addEventListener('click', function () { setBarraOculta(false); });
-    document.addEventListener('keyup', function (e) {
-        var tag = document.activeElement && document.activeElement.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        if (e.key === '[' && innerWidth > 1100) setBarraOculta(!document.body.classList.contains('barra-oculta'));
-    });
-
-    // Barra de progresso e seção atual no sumário
-    var bar = document.querySelector('.progresso span');
-    var links = {};
-    document.querySelectorAll('.lateral a[href^="#"]').forEach(function (a) {
-        links[a.getAttribute('href').slice(1)] = a;
-    });
-    var alvos = Array.prototype.filter.call(document.querySelectorAll('main h2[id]'), function (h) {
-        return links[h.id];
-    });
-    var atual = null;
-    function marcar() {
-        var y = window.scrollY, h = document.documentElement.scrollHeight - innerHeight;
-        if (bar) bar.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
-        var ult = null;
-        for (var i = 0; i < alvos.length; i++) {
-            if (alvos[i].getBoundingClientRect().top < 120) ult = alvos[i];
-            else break;
-        }
-        if (ult !== atual) {
-            if (atual && links[atual.id]) links[atual.id].classList.remove('atual');
-            atual = ult;
-            if (atual && links[atual.id]) {
-                var a = links[atual.id];
-                a.classList.add('atual');
-                var r = a.getBoundingClientRect(), lr = lat.getBoundingClientRect();
-                if (r.top < lr.top + 60 || r.bottom > lr.bottom - 60) lat.scrollTop += r.top - lr.top - lr.height / 2;
-            }
-        }
-    }
-    addEventListener('scroll', marcar, { passive: true });
-    marcar();
-})();
-</script>
-
+<script src="sinalizacao.js"></script>
 </body>
 </html>
