@@ -6,7 +6,7 @@
     <title>Painel de Estudos - Faculdade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;800;900&family=Nunito:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
     <style>
     /* PALETA — OPÇÃO 3: SINALIZAÇÃO (tinta preta + amarelo de placa sobre papel branco) */
@@ -27,9 +27,11 @@
     @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
         :root:not([data-theme="light"]) .card.suico { --blue: #7d93ff; --blue-wash: #1b2140; }
+        :root:not([data-theme="light"]) .card.botanico { --bot-bg: #232625; --bot-sage: #3A3F3B; --bot-line: #40453F; --bot-ink: #E2DED4; --bot-text: #B9B6AD; --bot-accent: #9BB08C; --bot-on-accent: #1D2219; --bot-wash: #2C302D; }
     }
     :root[data-theme="dark"] { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
     :root[data-theme="dark"] .card.suico { --blue: #7d93ff; --blue-wash: #1b2140; }
+    :root[data-theme="dark"] .card.botanico { --bot-bg: #232625; --bot-sage: #3A3F3B; --bot-line: #40453F; --bot-ink: #E2DED4; --bot-text: #B9B6AD; --bot-accent: #9BB08C; --bot-on-accent: #1D2219; --bot-wash: #2C302D; }
 
     /* No amarelo de placa o texto continua preto, em qualquer tema */
     .card-note, strong.accent, .tag, .kicker .label { --ink: #111111; --line: #333333; --muted: #555555; --wash: #f3f3f3; --paper: #ffffff; color: var(--ink); }
@@ -187,6 +189,53 @@
     .card.suico .badge { background: var(--blue); color: var(--paper); }
     .card.suico:hover .badge { background: var(--ink); color: var(--paper); }
 
+    /* CARD NO ESTILO BOTÂNICO (Inglês: o mesmo visual verde-musgo e creme da apostila) */
+    .card.botanico {
+        --bot-bg: #F3F1E8;
+        --bot-sage: #E2E9D3;
+        --bot-line: #D5DDC4;
+        --bot-ink: #1F2A1C;
+        --bot-text: #4C5545;
+        --bot-accent: #4F6B3A;
+        --bot-on-accent: #F3F1E8;
+        --bot-wash: #E8ECDF;
+        --bot-leaf: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'><mask id='m'><rect width='18' height='18' fill='white'/><path d='M3 15 L11 7' stroke='black' stroke-width='1.4' stroke-linecap='round'/></mask><path mask='url(%23m)' d='M3 15 C3 7 8 3 15 3 C15 10 11 15 3 15 Z' fill='white'/></svg>");
+        background: var(--bot-bg);
+        border: 1.5px solid var(--bot-line);
+        border-radius: 18px;
+        color: var(--bot-ink);
+        font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    .card.botanico:hover { background: var(--bot-wash); border-color: var(--bot-accent); }
+    .card.botanico:focus-visible { outline-color: var(--bot-accent); }
+    .card.botanico .bot-head {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 10px 14px; border-radius: 12px; background: var(--bot-sage);
+    }
+    .card.botanico .bot-num {
+        padding: 3px 12px; border-radius: 999px; background: var(--bot-accent); color: var(--bot-on-accent);
+        font-size: 14px; line-height: 20px; font-weight: 800;
+    }
+    .card.botanico .bot-kicker {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+        color: var(--bot-accent); text-align: right;
+    }
+    .card.botanico .bot-kicker::before {
+        content: ""; width: 15px; height: 15px; flex-shrink: 0; background: var(--bot-accent);
+        -webkit-mask: var(--bot-leaf) center / contain no-repeat; mask: var(--bot-leaf) center / contain no-repeat;
+    }
+    .card.botanico h3 { font-size: clamp(22px, 3.2vw, 27px); font-weight: 800; letter-spacing: -0.015em; line-height: 1.15; color: var(--bot-ink); }
+    .card.botanico p { font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; color: var(--bot-text); }
+    .card.botanico .card-footer { border-top: 1px solid var(--bot-line); }
+    .card.botanico .badge {
+        border-radius: 999px; background: var(--bot-accent); color: var(--bot-on-accent);
+        font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
+        padding: 8px 15px;
+    }
+    .card.botanico:hover .badge { background: var(--bot-ink); color: var(--bot-bg); }
+
     /* CARD AINDA NÃO DISPONÍVEL */
     .card.is-soon { border-style: dashed; color: var(--muted); pointer-events: none; }
     .card.is-soon .num { background: var(--muted); }
@@ -246,7 +295,7 @@
                 <span class="num">01</span>
                 <div>
                     <h3>Informática</h3>
-                    <p>Redes de computadores, arquitetura, protocolos, hardware, cabeamento estruturado e conceitos fundamentais.</p>
+                    <p>Redes de computadores, conversão de bases numéricas, segurança da informação, protocolos, hardware e cabeamento estruturado.</p>
                 </div>
                 <div class="card-footer">
                     <span class="badge">ACESSAR PASTA &rarr;</span>
@@ -261,12 +310,39 @@
                 </div>
                 <div>
                     <h3>Programação</h3>
-                    <p>Java do zero às APIs REST: ambiente e JVM, lógica, orientação a objetos e web, com código comentado e figuras.</p>
+                    <p>Java do zero às APIs REST e guia essencial de POO: ambiente e JVM, lógica, orientação a objetos, injeção de dependência e web.</p>
                 </div>
                 <div class="card-footer">
                     <span class="badge">ACESSAR PASTA &rarr;</span>
                 </div>
             </a>
+
+            <!-- CARD DE INGLÊS (estilo botânico) -->
+            <a href="Ingles/index.html" class="card botanico">
+                <div class="bot-head">
+                    <span class="bot-num">03</span>
+                    <span class="bot-kicker">Pré-A1 ao C2</span>
+                </div>
+                <div>
+                    <h3>Inglês</h3>
+                    <p>Trilha completa em inglês britânico pelos níveis do CEFR (Pré-A1 ao B2 publicados), com gramática, pronúncia IPA, vocabulário e figuras.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="badge">ACESSAR PASTA &rarr;</span>
+                </div>
+            </a>
+
+            <!-- CARD DE LÓGICA (em breve) -->
+            <div class="card is-soon" aria-disabled="true">
+                <span class="num">04</span>
+                <div>
+                    <h3>Lógica</h3>
+                    <p>Lógica proposicional, lógica de predicados, tabelas-verdade, regras de inferência e provas formais.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="badge">EM BREVE</span>
+                </div>
+            </div>
         </div>
     </div>
 
