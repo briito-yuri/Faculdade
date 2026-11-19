@@ -229,16 +229,8 @@
     .back-link:hover { background: var(--sign); }
     .back-link:focus-visible { outline: 3px solid var(--sign); outline-offset: 3px; }
 
-    /* BOTÃO DE GERAR PDF: amarelo de placa, empurrado para a direita */
-    .pdf-btn {
-        margin-left: auto;
-        border: none; cursor: pointer;
-        background: var(--sign); font-weight: 700;
-    }
-    .pdf-btn:hover { background: var(--ink); color: var(--sign-text); }
-
-    /* BOTÃO DE TEMA: ao lado do PDF */
-    .tema-btn { border: none; cursor: pointer; }
+    /* BOTÃO DE TEMA: empurrado para a direita */
+    .tema-btn { margin-left: auto; border: none; cursor: pointer; }
 
 
     /* SUBTÍTULOS NUMERADOS (2.1, 2.2...): número com contorno, como placa secundária */
@@ -355,19 +347,8 @@
 <nav class="doc-nav">
     <a href="index.html" class="back-link">&larr; Voltar para Informática</a>
     <a href="../index.html" class="back-link">Painel principal</a>
-    <button type="button" class="back-link pdf-btn" id="gerar-pdf">&darr; Gerar PDF</button>
     <button type="button" class="back-link tema-btn">Tema claro/escuro</button>
 </nav>
-
-<script>
-    // Abre a janela de impressão já no layout A4; o título vira o nome sugerido do arquivo
-    document.getElementById('gerar-pdf').addEventListener('click', function () {
-        var tituloOriginal = document.title;
-        document.title = 'Resumo - Conversao de Bases Numericas';
-        window.addEventListener('afterprint', function () { document.title = tituloOriginal; }, { once: true });
-        window.print();
-    });
-</script>
 
 <!-- PÁGINA 1 -->
 <section class="page">

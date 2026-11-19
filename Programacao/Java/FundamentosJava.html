@@ -442,21 +442,60 @@ code, pre, .m, .fig svg .m { font-variant-ligatures: none; font-feature-settings
 @media screen and (min-width: 1101px) { .voltar-capa { display: none; } }
 @media print { .voltar, .voltar-capa { display: none !important; } }
 
+/* Ocultar barra lateral (tela cheia) */
+.lateral-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
+.lateral-topo .voltar { margin-bottom: 0; }
+.ocultar-barra-btn {
+  padding: 7px 10px; background: none; color: var(--tinta); border: 1px solid var(--tinta); border-radius: 2px; cursor: pointer;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.ocultar-barra-btn:hover { background: var(--azul); color: var(--papel); border-color: var(--azul); }
+.mostrar-barra-btn {
+  position: fixed; top: 20px; left: 16px; z-index: 28; display: none; align-items: center; gap: 6px;
+  padding: 8px 12px; background: var(--tinta); color: var(--papel); border: none; border-radius: 2px; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.mostrar-barra-btn:hover { background: var(--azul); }
+@media screen and (min-width: 1101px) {
+  .lateral { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  main { transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease; }
+  body.barra-oculta .lateral { transform: translateX(-105%); pointer-events: none; }
+  body.barra-oculta .mostrar-barra-btn { display: inline-flex; }
+  body.barra-oculta main {
+    margin-left: 0 !important; max-width: none !important; width: 100% !important;
+    padding: 48px clamp(24px, 5vw, 80px) 96px max(clamp(24px, 5vw, 80px), 160px) !important;
+  }
+  body.barra-oculta main > *,
+  body.barra-oculta .flow > p,
+  body.barra-oculta .flow > ul,
+  body.barra-oculta .flow > ol,
+  body.barra-oculta blockquote,
+  body.barra-oculta .resumo,
+  body.barra-oculta p.resumo,
+  body.barra-oculta .table-wrap,
+  body.barra-oculta .flow > figure.fig { max-width: 100% !important; }
+}
+@media screen and (max-width: 1100px) {
+  .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+}
+@media print {
+  .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+}
+
 </style>
 </head>
 <body>
 <div class="progresso" aria-hidden="true"><span></span></div>
 <button class="menu-btn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
+<button class="mostrar-barra-btn" type="button" aria-label="Mostrar barra lateral" title="Mostrar barra lateral (Atalho: tecla [)">&#9776; Sumário</button>
 <aside class="lateral" aria-label="Sumário">
-<a class="voltar" href="../index.html">&larr; Programação</a><p class="lateral-titulo">Fundamentos de Java</p>
+<div class="lateral-topo"><a class="voltar" href="../index.html">&larr; Programação</a><button class="ocultar-barra-btn" type="button" title="Ocultar barra lateral (Atalho: tecla [)">Ocultar &times;</button></div><p class="lateral-titulo">Fundamentos de Java</p>
 <nav><a class="nav-capa" href="#topo">Início</a><details><summary><a href="#parte-1"><span class="nav-n">1</span>Onboarding: o ambiente Java</a></summary><ol><li><a href="#p1-por-que-isso-importa"><span class="nav-num"></span>Por que isso importa</a></li><li><a href="#p1-objetivos-de-aprendizagem"><span class="nav-num"></span>Objetivos de aprendizagem</a></li><li><a href="#p1-como-ler-esta-parte"><span class="nav-num"></span>Como ler esta parte</a></li><li><a href="#p1-11-o-que-é-java"><span class="nav-num">1.1</span>O que é Java</a></li><li><a href="#p1-12-como-a-plataforma-funciona-jdk-jre-jvm-bytecode-classload"><span class="nav-num">1.2</span>Como a plataforma funciona: JDK, JRE, JVM, bytecode, ClassLoader, JIT e GC</a></li><li><a href="#p1-13-distribuições-do-jdk-e-licenças"><span class="nav-num">1.3</span>Distribuições do JDK e licenças</a></li><li><a href="#p1-14-instalação-e-configuração-do-ambiente"><span class="nav-num">1.4</span>Instalação e configuração do ambiente</a></li><li><a href="#p1-15-intellij-idea"><span class="nav-num">1.5</span>IntelliJ IDEA</a></li><li><a href="#p1-16-anatomia-do-primeiro-programa"><span class="nav-num">1.6</span>Anatomia do primeiro programa</a></li><li><a href="#p1-17-estrutura-de-projeto-noção-de-maven-e-gradle"><span class="nav-num">1.7</span>Estrutura de projeto: noção de Maven e Gradle</a></li><li><a href="#p1-18-convenções-de-código-e-boas-práticas-iniciais"><span class="nav-num">1.8</span>Convenções de código e boas práticas iniciais</a></li><li><a href="#p1-19-fechamento-da-parte-1"><span class="nav-num">1.9</span>Fechamento da Parte 1</a></li><li><a href="#p1-glossário-da-parte-1"><span class="nav-num"></span>Glossário da Parte 1</a></li><li><a href="#p1-referências-da-parte-1"><span class="nav-num"></span>Referências da Parte 1</a></li></ol></details><details><summary><a href="#parte-2"><span class="nav-n">2</span>Lógica de programação em Java</a></summary><ol><li><a href="#p2-por-que-isso-importa-2"><span class="nav-num"></span>Por que isso importa</a></li><li><a href="#p2-objetivos-de-aprendizagem-2"><span class="nav-num"></span>Objetivos de aprendizagem</a></li><li><a href="#p2-como-ler-esta-parte-convenções"><span class="nav-num"></span>Como ler esta parte (convenções)</a></li><li><a href="#p2-21-algoritmos-e-pensamento-computacional"><span class="nav-num">2.1</span>Algoritmos e pensamento computacional</a></li><li><a href="#p2-22-o-esqueleto-de-um-programa-java-21"><span class="nav-num">2.2</span>O esqueleto de um programa Java 21</a></li><li><a href="#p2-23-variáveis-tipos-primitivos-e-literais"><span class="nav-num">2.3</span>Variáveis, tipos primitivos e literais</a></li><li><a href="#p2-24-conversões-de-tipo-casting-e-overflow"><span class="nav-num">2.4</span>Conversões de tipo, casting e overflow</a></li><li><a href="#p2-25-classes-empacotadoras-wrappers-autoboxing-e-o-cache-de-in"><span class="nav-num">2.5</span>Classes empacotadoras (wrappers), autoboxing e o cache de Integer</a></li><li><a href="#p2-26-ponto-flutuante-ieee-754-e-bigdecimal-para-dinheiro"><span class="nav-num">2.6</span>Ponto flutuante (IEEE 754) e BigDecimal para dinheiro</a></li><li><a href="#p2-27-operadores"><span class="nav-num">2.7</span>Operadores</a></li><li><a href="#p2-28-estruturas-condicionais"><span class="nav-num">2.8</span>Estruturas condicionais</a></li><li><a href="#p2-29-estruturas-de-repetição"><span class="nav-num">2.9</span>Estruturas de repetição</a></li><li><a href="#p2-210-arrays"><span class="nav-num">2.10</span>Arrays</a></li><li><a href="#p2-211-strings"><span class="nav-num">2.11</span>Strings</a></li><li><a href="#p2-212-métodos"><span class="nav-num">2.12</span>Métodos</a></li><li><a href="#p2-213-entrada-e-saída-no-console"><span class="nav-num">2.13</span>Entrada e saída no console</a></li><li><a href="#p2-214-math-random-e-noção-de-complexidade"><span class="nav-num">2.14</span>Math, Random e noção de complexidade</a></li><li><a href="#p2-215-quadro-resumo-de-armadilhas-desta-parte"><span class="nav-num">2.15</span>Quadro-resumo de armadilhas desta parte</a></li><li><a href="#p2-glossário-da-parte-2"><span class="nav-num"></span>Glossário da Parte 2</a></li><li><a href="#p2-referências-da-parte-2"><span class="nav-num"></span>Referências da Parte 2</a></li></ol></details><details><summary><a href="#parte-3"><span class="nav-n">3</span>Programação orientada a objetos em Java</a></summary><ol><li><a href="#p3-por-que-isso-importa-3"><span class="nav-num"></span>Por que isso importa</a></li><li><a href="#p3-como-ler-esta-parte-2"><span class="nav-num"></span>Como ler esta parte</a></li><li><a href="#p3-objetivos-de-aprendizagem-3"><span class="nav-num"></span>Objetivos de aprendizagem</a></li><li><a href="#p3-mapa-da-parte"><span class="nav-num"></span>Mapa da parte</a></li><li><a href="#p3-31-origem-da-poo-e-por-que-ela-existe"><span class="nav-num">3.1</span>Origem da POO e por que ela existe</a></li><li><a href="#p3-32-classes-objetos-e-o-que-acontece-na-memória"><span class="nav-num">3.2</span>Classes, objetos e o que acontece na memória</a></li><li><a href="#p3-33-encapsulamento"><span class="nav-num">3.3</span>Encapsulamento</a></li><li><a href="#p3-34-pacotes-e-imports"><span class="nav-num">3.4</span>Pacotes e imports</a></li><li><a href="#p3-35-herança"><span class="nav-num">3.5</span>Herança</a></li><li><a href="#p3-36-polimorfismo"><span class="nav-num">3.6</span>Polimorfismo</a></li><li><a href="#p3-37-abstração-classes-abstratas-e-interfaces"><span class="nav-num">3.7</span>Abstração: classes abstratas e interfaces</a></li><li><a href="#p3-38-classes-seladas-records-e-enums"><span class="nav-num">3.8</span>Classes seladas, records e enums</a></li><li><a href="#p3-39-exceções"><span class="nav-num">3.9</span>Exceções</a></li><li><a href="#p3-310-coleções-básicas-e-generics"><span class="nav-num">3.10</span>Coleções básicas e generics</a></li><li><a href="#p3-311-princípios-solid-visão-introdutória"><span class="nav-num">3.11</span>Princípios SOLID (visão introdutória)</a></li><li><a href="#p3-312-noção-de-uml-de-classes"><span class="nav-num">3.12</span>Noção de UML de classes</a></li><li><a href="#p3-313-síntese-da-poo-ao-spring"><span class="nav-num">3.13</span>Síntese: da POO ao Spring</a></li><li><a href="#p3-nota-sobre-as-fontes-divergências-e-limites"><span class="nav-num"></span>Nota sobre as fontes: divergências e limites</a></li><li><a href="#p3-glossário-da-parte-3"><span class="nav-num"></span>Glossário da Parte 3</a></li><li><a href="#p3-referências-da-parte-3"><span class="nav-num"></span>Referências da Parte 3</a></li></ol></details><details><summary><a href="#parte-4"><span class="nav-n">4</span>Desenvolvimento web e APIs REST</a></summary><ol><li><a href="#p4-por-que-isso-importa-4"><span class="nav-num"></span>Por que isso importa</a></li><li><a href="#p4-objetivos-de-aprendizagem-4"><span class="nav-num"></span>Objetivos de aprendizagem</a></li><li><a href="#p4-antes-de-começar-convenções-desta-parte"><span class="nav-num"></span>Antes de começar: convenções desta parte</a></li><li><a href="#p4-41-como-a-web-funciona"><span class="nav-num">4.1</span>Como a web funciona</a></li><li><a href="#p4-42-http-história-e-anatomia-das-mensagens"><span class="nav-num">4.2</span>HTTP: história e anatomia das mensagens</a></li><li><a href="#p4-43-métodos-http-e-suas-propriedades"><span class="nav-num">4.3</span>Métodos HTTP e suas propriedades</a></li><li><a href="#p4-44-códigos-de-status"><span class="nav-num">4.4</span>Códigos de status</a></li><li><a href="#p4-45-cabeçalhos-cache-ausência-de-estado-cookies-e-sessões"><span class="nav-num">4.5</span>Cabeçalhos, cache, ausência de estado, cookies e sessões</a></li><li><a href="#p4-46-https-tls-e-cors-visão-geral"><span class="nav-num">4.6</span>HTTPS, TLS e CORS (visão geral)</a></li><li><a href="#p4-47-json"><span class="nav-num">4.7</span>JSON</a></li><li><a href="#p4-48-api-e-rest"><span class="nav-num">4.8</span>API e REST</a></li><li><a href="#p4-49-design-de-apis-na-prática"><span class="nav-num">4.9</span>Design de APIs na prática</a></li><li><a href="#p4-410-noções-de-autenticação-basic-bearer-e-jwt"><span class="nav-num">4.10</span>Noções de autenticação: Basic, Bearer e JWT</a></li><li><a href="#p4-411-rest-soap-graphql-grpc-openapi"><span class="nav-num">4.11</span>REST × SOAP × GraphQL × gRPC; OpenAPI</a></li><li><a href="#p4-412-ferramentas-para-enxergar-e-testar-http"><span class="nav-num">4.12</span>Ferramentas para enxergar e testar HTTP</a></li><li><a href="#p4-413-java-na-web"><span class="nav-num">4.13</span>Java na web</a></li><li><a href="#p4-414-mini-projeto-design-da-api-de-uma-biblioteca"><span class="nav-num">4.14</span>Mini-projeto: design da API de uma biblioteca</a></li><li><a href="#p4-415-resumo-checklist-de-uma-api-bem-projetada"><span class="nav-num">4.15</span>Resumo: checklist de uma API bem projetada</a></li><li><a href="#p4-glossário-da-parte-4"><span class="nav-num"></span>Glossário da Parte 4</a></li><li><a href="#p4-referências-da-parte-4"><span class="nav-num"></span>Referências da Parte 4</a></li></ol></details></nav>
-<button class="pdf-btn" type="button" title="Abre a janela de impressão: escolha Salvar como PDF">Gerar PDF</button>
 <button class="tema-btn" type="button">Alternar tema claro/escuro</button>
 </aside>
 <main id="topo">
 <header class="capa">
 <p class="voltar-capa"><a class="voltar" href="../index.html">&larr; Programação</a></p><p class="kicker"><span>Apostila</span><span>Java 21 LTS</span>Do zero às APIs REST</p>
-<p class="acoes"><button class="pdf-btn" type="button">Gerar PDF</button><span>Na janela que abrir, escolha <strong class="abre">Salvar como PDF</strong>. O PDF sai em A4, sempre no tema claro; o tema escuro fica para a leitura na tela.</span></p>
 <h1>Fundamentos de Java<span class="h1-sub">da instalação às APIs REST</span></h1>
 <nav class="toc"><p class="toc-label">Partes</p><ol><li><span class="toc-n">1</span><a href="#parte-1">Onboarding: o ambiente Java</a></li><li><span class="toc-n">2</span><a href="#parte-2">Lógica de programação em Java</a></li><li><span class="toc-n">3</span><a href="#parte-3">Programação orientada a objetos em Java</a></li><li><span class="toc-n">4</span><a href="#parte-4">Desenvolvimento web e APIs REST</a></li></ol></nav>
 <div class="flow intro"><p><em>Versão de referência: Java 21 LTS. Quando a Java 25 LTS muda algo importante para quem começa, isso é avisado.</em></p>
@@ -18329,13 +18368,23 @@ GET após DELETE: 404
   menu.addEventListener("click",function(){var o=document.body.classList.toggle("menu-aberto");menu.setAttribute("aria-expanded",o);});
   lat.addEventListener("click",function(e){if(e.target.closest("a"))document.body.classList.remove("menu-aberto");});
   // tema
-  // PDF: a folha de impressão (estilo-java.css, @media print) cuida do layout; sai sempre no tema claro
-  document.querySelectorAll(".pdf-btn").forEach(function(b){b.addEventListener("click",function(){
-    document.body.classList.remove("menu-aberto");setTimeout(function(){window.print();},50);
-  });});
   document.querySelector(".tema-btn").addEventListener("click",function(){
     var r=document.documentElement,escuro=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
     r.dataset.theme=escuro?"light":"dark";try{localStorage.setItem("tema",r.dataset.theme);}catch(e){}
+  });
+  // ocultar/mostrar barra lateral (tela cheia)
+  function setBarraOculta(oculta){
+    document.body.classList.toggle("barra-oculta",!!oculta);
+    try{localStorage.setItem("barra_oculta",oculta?"1":"0");}catch(e){}
+  }
+  try{if(localStorage.getItem("barra_oculta")==="1")document.body.classList.add("barra-oculta");}catch(e){}
+  var btnOcultar=document.querySelector(".ocultar-barra-btn"),btnMostrar=document.querySelector(".mostrar-barra-btn");
+  if(btnOcultar)btnOcultar.addEventListener("click",function(){setBarraOculta(true);});
+  if(btnMostrar)btnMostrar.addEventListener("click",function(){setBarraOculta(false);});
+  document.addEventListener("keyup",function(e){
+    var tag=document.activeElement&&document.activeElement.tagName;
+    if(tag==="INPUT"||tag==="TEXTAREA")return;
+    if(e.key==="["&&innerWidth>1100)setBarraOculta(!document.body.classList.contains("barra-oculta"));
   });
   // barra de progresso e seção atual no sumário
   var bar=document.querySelector(".progresso span");

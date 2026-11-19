@@ -199,7 +199,7 @@ main a { text-decoration: underline; text-decoration-thickness: 2px; text-decora
 .lateral a.atual .nav-num { color: var(--sobre-destaque); }
 .pdf-btn { margin-top: 18px; padding: 9px 10px; background: var(--destaque); color: var(--sobre-destaque); border: 2px solid var(--destaque);
   font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.tema-btn { margin-top: 8px; padding: 8px 10px; background: none; color: var(--tinta); border: 2px solid var(--tinta);
+.tema-btn { margin-top: 18px; padding: 8px 10px; background: none; color: var(--tinta); border: 2px solid var(--tinta);
   font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .acoes { margin-top: 18px; font-size: 13px; line-height: 19px; color: var(--suave); }
 .acoes .pdf-btn { padding: 8px 14px; }
@@ -440,21 +440,52 @@ p.como-cai strong {
   padding: 0 !important;
 }
 
+/* Ocultar barra lateral (tela cheia) */
+.lateral-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
+.lateral-topo .voltar { margin-bottom: 0; }
+.ocultar-barra-btn {
+  padding: 6px 10px; background: none; color: var(--tinta); border: 2px solid var(--tinta); cursor: pointer;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.ocultar-barra-btn:hover { background: var(--destaque); color: var(--sobre-destaque); border-color: var(--destaque); }
+.mostrar-barra-btn {
+  position: fixed; top: 20px; left: 16px; z-index: 28; display: none; align-items: center; gap: 6px;
+  padding: 8px 12px; background: var(--destaque); color: var(--sobre-destaque); border: 2px solid var(--tinta); cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.mostrar-barra-btn:hover { background: var(--tinta); color: var(--papel); }
+@media screen and (min-width: 1101px) {
+  .lateral { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  main { transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease; }
+  body.barra-oculta .lateral { transform: translateX(-105%); pointer-events: none; }
+  body.barra-oculta .mostrar-barra-btn { display: inline-flex; }
+  body.barra-oculta main {
+    margin-left: 0 !important; max-width: none !important; width: 100% !important;
+    padding: 48px clamp(24px, 5vw, 80px) 96px max(clamp(24px, 5vw, 80px), 160px) !important;
+  }
+  body.barra-oculta main > * { max-width: 100% !important; }
+}
+@media screen and (max-width: 1100px) {
+  .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+}
+@media print {
+  .ocultar-barra-btn, .mostrar-barra-btn { display: none !important; }
+}
+
 </style>
 </head>
 <body>
 <div class="progresso" aria-hidden="true"><span></span></div>
 <button class="menu-btn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
+<button class="mostrar-barra-btn" type="button" aria-label="Mostrar barra lateral" title="Mostrar barra lateral (Atalho: tecla [)">&#9776; Sumário</button>
 <aside class="lateral" aria-label="Sumário">
-<a class="voltar" href="index.html">&larr; Informática</a><p class="lateral-titulo">Segurança da Informação</p>
+<div class="lateral-topo"><a class="voltar" href="index.html">&larr; Informática</a><button class="ocultar-barra-btn" type="button" title="Ocultar barra lateral (Atalho: tecla [)">Ocultar &times;</button></div><p class="lateral-titulo">Segurança da Informação</p>
 <nav><a class="nav-capa" href="#topo">Início</a><ol class="nav-unica"><li><a href="#p0-o-que-você-vai-saber-ao-final"><span class="nav-num"></span>O que você vai saber ao final</a></li><li><a href="#p0-mapa-do-material"><span class="nav-num"></span>Mapa do material</a></li><li><a href="#p0-como-estudar-para-a-prova"><span class="nav-num"></span>Como estudar para a prova</a></li><li><a href="#p0-1-o-que-é-segurança-da-informação"><span class="nav-num">1</span>O que é segurança da informação</a></li><li><a href="#p0-2-os-princípios-da-segurança-da-informação"><span class="nav-num">2</span>Os princípios da segurança da informação</a></li><li><a href="#p0-3-conceitos-base-ativo-ameaça-vulnerabilidade-risco-impacto-"><span class="nav-num">3</span>Conceitos-base: ativo, ameaça, vulnerabilidade, risco, impacto, incidente</a></li><li><a href="#p0-4-as-ameaças"><span class="nav-num">4</span>As ameaças</a></li><li><a href="#p0-5-os-ataques"><span class="nav-num">5</span>Os ataques</a></li><li><a href="#p0-6-os-controles-e-a-autenticação"><span class="nav-num">6</span>Os controles e a autenticação</a></li><li><a href="#p0-7-malware-códigos-maliciosos"><span class="nav-num">7</span>Malware (códigos maliciosos)</a></li><li><a href="#p0-8-contas-e-senhas"><span class="nav-num">8</span>Contas e senhas</a></li><li><a href="#p0-9-incidentes-de-segurança-e-logs"><span class="nav-num">9</span>Incidentes de segurança e logs</a></li><li><a href="#p0-10-segurança-na-internet"><span class="nav-num">10</span>Segurança na internet</a></li><li><a href="#p0-11-quadro-de-boas-práticas"><span class="nav-num">11</span>Quadro de boas práticas</a></li><li><a href="#p0-resumo-para-revisar-na-véspera"><span class="nav-num"></span>Resumo para revisar na véspera</a></li><li><a href="#p0-12-glossário"><span class="nav-num">12</span>Glossário</a></li></ol></nav>
-<button class="pdf-btn" type="button" title="Abre a janela de impressão: escolha Salvar como PDF">Gerar PDF</button>
 <button class="tema-btn" type="button">Alternar tema claro/escuro</button>
 </aside>
 <main id="topo">
 <header class="capa">
 <p class="voltar-capa"><a class="voltar" href="index.html">&larr; Informática</a></p><p class="kicker"><span>Material de estudo</span><span>1º período</span>Segurança da Informação</p>
-<p class="acoes"><button class="pdf-btn" type="button">Gerar PDF</button><span>Na janela que abrir, escolha <strong class="abre">Salvar como PDF</strong>. O PDF sai em A4, sempre no tema claro; o tema escuro fica para a leitura na tela.</span></p>
 <h1>Segurança da Informação — material de estudo</h1>
 <nav class="toc"><p class="toc-label">Seções</p><ol><li><span class="toc-n"></span><a href="#p0-o-que-você-vai-saber-ao-final">O que você vai saber ao final</a></li><li><span class="toc-n"></span><a href="#p0-mapa-do-material">Mapa do material</a></li><li><span class="toc-n"></span><a href="#p0-como-estudar-para-a-prova">Como estudar para a prova</a></li><li><span class="toc-n">1</span><a href="#p0-1-o-que-é-segurança-da-informação">O que é segurança da informação</a></li><li><span class="toc-n">2</span><a href="#p0-2-os-princípios-da-segurança-da-informação">Os princípios da segurança da informação</a></li><li><span class="toc-n">3</span><a href="#p0-3-conceitos-base-ativo-ameaça-vulnerabilidade-risco-impacto-">Conceitos-base: ativo, ameaça, vulnerabilidade, risco, impacto, incidente</a></li><li><span class="toc-n">4</span><a href="#p0-4-as-ameaças">As ameaças</a></li><li><span class="toc-n">5</span><a href="#p0-5-os-ataques">Os ataques</a></li><li><span class="toc-n">6</span><a href="#p0-6-os-controles-e-a-autenticação">Os controles e a autenticação</a></li><li><span class="toc-n">7</span><a href="#p0-7-malware-códigos-maliciosos">Malware (códigos maliciosos)</a></li><li><span class="toc-n">8</span><a href="#p0-8-contas-e-senhas">Contas e senhas</a></li><li><span class="toc-n">9</span><a href="#p0-9-incidentes-de-segurança-e-logs">Incidentes de segurança e logs</a></li><li><span class="toc-n">10</span><a href="#p0-10-segurança-na-internet">Segurança na internet</a></li><li><span class="toc-n">11</span><a href="#p0-11-quadro-de-boas-práticas">Quadro de boas práticas</a></li><li><span class="toc-n"></span><a href="#p0-resumo-para-revisar-na-véspera">Resumo para revisar na véspera</a></li><li><span class="toc-n">12</span><a href="#p0-12-glossário">Glossário</a></li></ol></nav>
 <div class="flow intro"><p>Todos os dias você digita senhas, paga contas pelo celular, recebe mensagens que dizem ser do banco e conecta no Wi-Fi do café. Em cada um desses momentos há uma informação com valor e alguém que pode querer roubá-la, alterá-la ou tirá-la do ar. A segurança da informação é a área que explica <strong>o que</strong> proteger, <strong>contra o quê</strong> e <strong>como</strong>. Este material segue a apostila da disciplina, tópico por tópico, e mostra também o que mudou desde que ela foi escrita, com base nas normas (ISO/IEC, NIST), nas leis brasileiras (LGPD, Marco Civil) e nas orientações do CERT.br.</p>
@@ -4727,13 +4758,23 @@ p.como-cai strong {
   menu.addEventListener("click",function(){var o=document.body.classList.toggle("menu-aberto");menu.setAttribute("aria-expanded",o);});
   lat.addEventListener("click",function(e){if(e.target.closest("a"))document.body.classList.remove("menu-aberto");});
   // tema
-  // PDF: a folha de impressão (estilo-java.css, @media print) cuida do layout; sai sempre no tema claro
-  document.querySelectorAll(".pdf-btn").forEach(function(b){b.addEventListener("click",function(){
-    document.body.classList.remove("menu-aberto");setTimeout(function(){window.print();},50);
-  });});
   document.querySelector(".tema-btn").addEventListener("click",function(){
     var r=document.documentElement,escuro=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
     r.dataset.theme=escuro?"light":"dark";try{localStorage.setItem("tema",r.dataset.theme);}catch(e){}
+  });
+  // ocultar/mostrar barra lateral (tela cheia)
+  function setBarraOculta(oculta){
+    document.body.classList.toggle("barra-oculta",!!oculta);
+    try{localStorage.setItem("barra_oculta",oculta?"1":"0");}catch(e){}
+  }
+  try{if(localStorage.getItem("barra_oculta")==="1")document.body.classList.add("barra-oculta");}catch(e){}
+  var btnOcultar=document.querySelector(".ocultar-barra-btn"),btnMostrar=document.querySelector(".mostrar-barra-btn");
+  if(btnOcultar)btnOcultar.addEventListener("click",function(){setBarraOculta(true);});
+  if(btnMostrar)btnMostrar.addEventListener("click",function(){setBarraOculta(false);});
+  document.addEventListener("keyup",function(e){
+    var tag=document.activeElement&&document.activeElement.tagName;
+    if(tag==="INPUT"||tag==="TEXTAREA")return;
+    if(e.key==="["&&innerWidth>1100)setBarraOculta(!document.body.classList.contains("barra-oculta"));
   });
   // barra de progresso e seção atual no sumário
   var bar=document.querySelector(".progresso span");
