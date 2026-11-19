@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Computação em Nuvem e Virtualização de Sistemas Operacionais — Informática Básica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --canvas: #F7FAFB;
+      --surface: #FFFFFF;
+      --ink: #0F1D26;
+      --ink-body: #3D515E;
+      --ink-muted: #6E8391;
+      --divider: #E2EBF0;
+      --diagram-stroke: #1E2D38;
+
+      --blue: #1D6FA8;
+      --blue-dark: #124970;
+      --blue-soft: #EAF4FB;
+      --blue-tint: #F3F9FD;
+      --blue-border: #C5DFEF;
+
+      --green: #178866;
+      --green-dark: #0F5943;
+      --green-soft: #E7F6F1;
+      --green-tint: #F2FAF7;
+      --green-border: #BEE3D6;
+
+      --alert: #B84A39;
+      --alert-soft: #FDF0ED;
+
+      --uni-soft: #EBF2F5;
+      --uni-dark: #1F3B4A;
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+      --shadow-card: 0 8px 24px rgba(15, 29, 38, 0.065);
+      --shadow-sm: 0 4px 14px rgba(15, 29, 38, 0.05);
+      --shadow-hud: 0 12px 32px rgba(15, 29, 38, 0.14);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0E1720;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    /* Full-viewport PPTX stage */
+    .deck-viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #F7FAFB;
+    }
+
+    /* Scalable 16:9 slide stage on desktop/landscape */
+    .stage-wrap {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: center center;
+      flex-shrink: 0;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      background: var(--canvas);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(28px);
+      transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      user-select: text;
+    }
+
+    .slide.prev-out {
+      transform: translateX(-28px);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    /* Progressive top bar (Blue -> Green across deck) */
+    .top-bar {
+      width: 100%;
+      height: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Unified slide inner container */
+    .slide-inner {
+      flex: 1;
+      padding: 50px 112px 26px 112px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Header row */
+    .slide-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 16px 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .pill.sm {
+      padding: 5px 12px;
+      font-size: 11.5px;
+      letter-spacing: 0.8px;
+    }
+
+    .pill-blue { background: var(--blue-soft); color: var(--blue-dark); }
+    .pill-green { background: var(--green-soft); color: var(--green-dark); }
+    .pill-uni { background: var(--uni-soft); color: var(--uni-dark); }
+
+    .slide-type {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.9px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+    }
+
+    .slide-title {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1.14;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .slide-subtitle {
+      font-size: 21px;
+      font-weight: 400;
+      color: var(--ink-muted);
+      line-height: 1.38;
+      margin-bottom: 34px;
+      max-width: 1440px;
+    }
+
+    /* Core 'Nuvem · Conceito' 2-column grid */
+    .conceito-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 770px 1fr;
+      gap: 56px;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .col-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .lead-text {
+      font-size: 22px;
+      line-height: 1.58;
+      color: var(--ink-body);
+    }
+
+    .left-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .h-card {
+      position: relative;
+      background: var(--surface);
+      border: 1.5px solid var(--card-border, var(--blue-border));
+      border-radius: 18px;
+      padding: 24px 28px 24px 34px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .h-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: var(--card-accent, var(--blue));
+    }
+
+    .h-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .h-card p {
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--ink-body);
+    }
+
+    /* Right elevated feature panel */
+    .feature-panel {
+      background: var(--surface);
+      border: 1.5px solid var(--panel-border, var(--blue-border));
+      border-radius: 22px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-header {
+      padding: 22px 36px;
+      background: var(--panel-tint, var(--blue-tint));
+      border-bottom: 1.5px solid var(--panel-border, var(--blue-border));
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--panel-dark, var(--blue-dark));
+      flex-shrink: 0;
+    }
+
+    .panel-body {
+      flex: 1;
+      padding: 20px 36px 24px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+    }
+
+    .panel-body.diagram-body {
+      padding: 18px 26px 18px 26px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .panel-body.diagram-body svg {
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      display: block;
+    }
+
+    /* Structured numbered list rows */
+    .num-list {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .num-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .num-row:first-child { padding-top: 6px; }
+    .num-row:last-child { border-bottom: none; padding-bottom: 4px; }
+
+    .num-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .num-badge.blue { background: var(--blue-soft); color: var(--blue); }
+    .num-badge.green { background: var(--green-soft); color: var(--green); }
+
+    .tag-pill {
+      min-width: 90px;
+      height: 32px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 4px;
+      padding: 0 12px;
+    }
+
+    .tag-pill.pro { background: var(--green-soft); color: var(--green-dark); border: 1.5px solid var(--green); }
+    .tag-pill.warn { background: var(--alert-soft); color: var(--alert); border: 1.5px solid var(--alert); }
+
+    .row-content h4 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+
+    .row-content p {
+      font-size: 17px;
+      line-height: 1.44;
+      color: var(--ink-body);
+    }
+
+    .ref-text {
+      font-size: 16.5px;
+      line-height: 1.48;
+      color: var(--ink-body);
+    }
+
+    .ref-text strong { color: var(--ink); font-weight: 700; }
+
+    /* Cover Slide Specific */
+    .cover-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 880px 1fr;
+      gap: 64px;
+      align-items: center;
+      min-height: 0;
+      padding-top: 10px;
+    }
+
+    .cover-title {
+      font-size: 64px;
+      font-weight: 800;
+      letter-spacing: -1.6px;
+      line-height: 1.12;
+      color: var(--ink);
+      margin: 26px 0 22px 0;
+    }
+
+    .cover-sub {
+      font-size: 23px;
+      line-height: 1.52;
+      color: var(--ink-body);
+      margin-bottom: 34px;
+      max-width: 820px;
+    }
+
+    .cover-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 790px;
+    }
+
+    .cover-card {
+      position: relative;
+      background: var(--surface);
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px 26px 18px 32px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .cover-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 6px;
+      background: var(--card-accent);
+    }
+
+    .cover-card h3 {
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 10px 0 4px 0;
+    }
+
+    .cover-card p {
+      font-size: 16px;
+      color: var(--ink-body);
+      line-height: 1.4;
+    }
+
+    .cover-footer {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--divider);
+      display: grid;
+      grid-template-columns: 1.4fr 0.85fr 0.2fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .meta-k {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .meta-v {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 16px;
+      color: var(--ink-muted);
+      flex-shrink: 0;
+    }
+
+    .slide-footer .num {
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    /* PPTX-style Floating HUD Navigation */
+    .hud {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(15, 29, 38, 0.12);
+      border-radius: 999px;
+      padding: 8px 14px;
+      box-shadow: var(--shadow-hud);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    .hud.idle {
+      opacity: 0.22;
+    }
+
+    .hud:hover, .hud:focus-within {
+      opacity: 1 !important;
+    }
+
+    .hud-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.16s ease, color 0.16s ease, transform 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .hud-btn:hover:not(:disabled) {
+      background: var(--uni-soft);
+      color: var(--blue-dark);
+    }
+
+    .hud-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .hud-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .hud-btn.primary {
+      background: var(--blue);
+      color: #FFFFFF;
+    }
+
+    .hud-btn.primary:hover:not(:disabled) {
+      background: var(--blue-dark);
+      color: #FFFFFF;
+    }
+
+    .hud-sep {
+      width: 1px;
+      height: 22px;
+      background: var(--divider);
+    }
+
+    .hud-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 6px;
+    }
+
+    .hud-counter {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      min-width: 58px;
+      text-align: center;
+    }
+
+    .hud-track {
+      width: 140px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--divider);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .hud-fill {
+      height: 100%;
+      width: 7%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width 0.26s ease;
+    }
+
+    /* Subtle side click arrows (PowerPoint feel) */
+    .edge-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 40;
+      width: 48px;
+      height: 76px;
+      border: 1px solid rgba(15, 29, 38, 0.1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(8px);
+      color: var(--ink);
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0.25;
+      transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+      box-shadow: 0 6px 20px rgba(15, 29, 38, 0.08);
+    }
+
+    .edge-nav:hover:not(:disabled) {
+      opacity: 1;
+      background: #FFFFFF;
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .edge-nav:disabled { opacity: 0.08; cursor: default; }
+    .edge-prev { left: 16px; }
+    .edge-next { right: 16px; }
+
+    /* Overview Grid Modal */
+    .grid-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(14, 23, 32, 0.82);
+      backdrop-filter: blur(10px);
+      display: none;
+      flex-direction: column;
+      padding: 28px 36px;
+      overflow-y: auto;
+    }
+
+    .grid-modal.open { display: flex; }
+
+    .grid-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      max-width: 1360px;
+      width: 100%;
+      margin-inline: auto;
+    }
+
+    .grid-modal-head h2 { font-size: 22px; font-weight: 700; }
+
+    .grid-close {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #FFF;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .grid-thumb {
+      background: var(--surface);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      text-align: left;
+    }
+
+    .grid-thumb:hover { transform: translateY(-3px); border-color: var(--blue); }
+    .grid-thumb.current { border-color: var(--green); box-shadow: 0 0 0 3px rgba(23,136,102,0.3); }
+
+    .grid-thumb-bar { height: 7px; width: 100%; }
+
+    .grid-thumb-body { padding: 14px 16px 16px; }
+    .grid-thumb-num { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--ink-muted); margin-bottom: 4px; }
+    .grid-thumb-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.3; margin-bottom: 4px; }
+    .grid-thumb-tag { font-size: 12px; color: var(--ink-muted); }
+
+    /* Responsive Mobile / Portrait Mode (Fluid vertical cards — no microscopic scaled text!) */
+    @media (max-width: 960px), (orientation: portrait) and (max-width: 1024px) {
+      .deck-viewport {
+        align-items: stretch;
+        justify-content: flex-start;
+      }
+
+      .stage-wrap {
+        width: 100% !important;
+        height: 100% !important;
+        transform: none !important;
+      }
+
+      .slide {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .slide-inner {
+        padding: 20px 18px 96px 18px;
+      }
+
+      .slide-meta { flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+      .slide-type { font-size: 11px; }
+      .slide-title { font-size: 28px; letter-spacing: -0.6px; }
+      .slide-subtitle { font-size: 15px; margin-bottom: 18px; }
+
+      .conceito-grid, .cover-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .cover-title { font-size: 34px; margin: 16px 0 12px; }
+      .cover-sub { font-size: 16px; margin-bottom: 20px; }
+      .lead-text { font-size: 16px; }
+      .h-card { padding: 16px 18px 16px 22px; }
+      .h-card h3 { font-size: 17px; }
+      .h-card p { font-size: 14.5px; }
+
+      .panel-header { padding: 14px 18px; font-size: 16px; }
+      .panel-body { padding: 12px 18px 16px; }
+      .panel-body.diagram-body { padding: 12px; }
+      .row-content h4 { font-size: 16px; }
+      .row-content p, .ref-text { font-size: 14px; }
+      .num-badge { width: 34px; height: 34px; font-size: 13px; border-radius: 9px; }
+
+      .cover-footer { grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+      .meta-v { font-size: 15px; }
+      .slide-footer { font-size: 13px; margin-top: 20px; }
+
+      .edge-nav { display: none; }
+      .hud { bottom: 12px; padding: 6px 10px; gap: 6px; max-width: calc(100vw - 20px); }
+      .hud-track { width: 64px; }
+      .hud-btn { padding: 7px 10px; font-size: 13px; }
+      .hud-label { display: none; }
+    }
+
+    /* Clean Print / PDF export */
+    @media print {
+      @page { size: 1920px 1080px landscape; margin: 0; }
+      html, body { overflow: visible; height: auto; background: #FFF; }
+      .hud, .edge-nav, .grid-modal { display: none !important; }
+      .deck-viewport { position: static; display: block; }
+      .stage-wrap { width: 1920px !important; height: auto !important; transform: none !important; }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        page-break-after: always;
+        break-after: page;
+      }
+    }
+
+    /* === Refino de responsividade no celular e tablet === */
+    @media (max-width: 960px), (orientation: portrait) and (max-width: 1024px) {
+      .slide { overflow-x: hidden; }
+      .slide-inner, .conceito-grid > *, .cover-grid > *, .panel, .panel-body { min-width: 0; }
+      .panel-body.diagram-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .panel-body.diagram-body svg { width: 100%; height: auto; max-width: 100%; display: block; }
+      .grid-cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .slide-inner { padding: 16px 14px 92px 14px; }
+      .slide-title { font-size: 24px; }
+      .cover-title { font-size: 28px; }
+      .hud { gap: 4px; padding: 6px 8px; }
+      .hud-btn { padding: 7px 9px; font-size: 13px; }
+      .hud-track { width: 42px; }
+      .hud-counter { font-size: 11.5px; min-width: 44px; }
+      .grid-modal { padding: 18px 14px; }
+      .grid-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-viewport" id="viewport">
+    <div class="stage-wrap" id="stage">
+
+      <!-- ==================== SLIDE 01: CAPA ==================== -->
+      <section class="slide active" data-title="Capa — Nuvem e Virtualização" data-tag="Abertura" data-bar="linear-gradient(90deg, #1D6FA8, #178866)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1D6FA8, #178866);"></div>
+        <div class="slide-inner">
+          <div class="cover-grid">
+            <div>
+              <span class="pill pill-blue"><span class="dot" style="background:#1D6FA8"></span>Informática Básica · Trabalho Acadêmico</span>
+              <h1 class="cover-title">Computação em Nuvem<br/>e Virtualização de<br/>Sistemas Operacionais</h1>
+              <p class="cover-sub">Do provisionamento de serviços sob demanda na internet à abstração de hardware que sustenta as redes modernas.</p>
+              <div class="cover-cards">
+                <div class="cover-card" style="--card-border: var(--blue-border); --card-accent: var(--blue);">
+                  <span class="pill sm pill-blue">Parte 01 · Início Azul</span>
+                  <h3>Computação em Nuvem</h3>
+                  <p>Pilares NIST, IaaS/PaaS/SaaS, modelos de implantação, VPC, SDN e NFV</p>
+                </div>
+                <div class="cover-card" style="--card-border: var(--green-border); --card-accent: var(--green);">
+                  <span class="pill sm pill-green">Parte 02 · Transição para Verde</span>
+                  <h3>Virtualização de Sistemas Operacionais</h3>
+                  <p>Arquitetura em camadas, Hypervisors Tipo 1/2, Containers e Redes Virtuais</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="height: 100%; max-height: 750px; --panel-border: var(--blue-border); --panel-tint: var(--blue-tint); --panel-dark: var(--blue-dark);">
+              <div class="panel-header" style="font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.9px;">VISÃO GERAL · DA NUVEM AO HARDWARE FÍSICO</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 700 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fluxo da Computação em Nuvem até o Hardware Físico">
+                  <defs>
+                    <marker id="arr-dk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker>
+                  </defs>
+                  <rect x="30" y="16" width="640" height="92" rx="14" fill="#1D6FA8" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="350" y="53" text-anchor="middle" font-size="20" font-weight="700" fill="#FFFFFF">COMPUTAÇÃO EM NUVEM</text>
+                  <text x="350" y="81" text-anchor="middle" font-size="14" fill="#DCEEF9">IaaS · PaaS · SaaS  |  Acesso Sob Demanda pela Internet</text>
+
+                  <line x1="350" y1="108" x2="350" y2="178" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-dk)"/>
+                  <rect x="190" y="124" width="320" height="32" rx="16" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.6"/>
+                  <text x="350" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="#124970">Redes · VPC · SDN · NFV</text>
+
+                  <rect x="30" y="180" width="196" height="132" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="128" y="212" text-anchor="middle" font-size="18" font-weight="700" fill="#0F1D26">VM 01</text>
+                  <text x="128" y="238" text-anchor="middle" font-size="14" fill="#3D515E">SO Linux</text>
+                  <rect x="74" y="262" width="108" height="28" rx="14" fill="#E7F6F1" stroke="#178866" stroke-width="1.5"/>
+                  <text x="128" y="280" text-anchor="middle" font-size="12" font-weight="700" fill="#0F5943">Isolada</text>
+
+                  <rect x="252" y="180" width="196" height="132" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="350" y="212" text-anchor="middle" font-size="18" font-weight="700" fill="#0F1D26">VM 02</text>
+                  <text x="350" y="238" text-anchor="middle" font-size="14" fill="#3D515E">SO Windows</text>
+                  <rect x="296" y="262" width="108" height="28" rx="14" fill="#E7F6F1" stroke="#178866" stroke-width="1.5"/>
+                  <text x="350" y="280" text-anchor="middle" font-size="12" font-weight="700" fill="#0F5943">Isolada</text>
+
+                  <rect x="474" y="180" width="196" height="132" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="572" y="212" text-anchor="middle" font-size="18" font-weight="700" fill="#0F1D26">Containers</text>
+                  <text x="572" y="238" text-anchor="middle" font-size="14" fill="#3D515E">Kernel Host</text>
+                  <rect x="518" y="262" width="108" height="28" rx="14" fill="#E7F6F1" stroke="#178866" stroke-width="1.5"/>
+                  <text x="572" y="280" text-anchor="middle" font-size="12" font-weight="700" fill="#0F5943">Leve</text>
+
+                  <line x1="128" y1="312" x2="128" y2="366" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-dk)"/>
+                  <line x1="350" y1="312" x2="350" y2="366" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-dk)"/>
+                  <line x1="572" y1="312" x2="572" y2="366" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-dk)"/>
+
+                  <rect x="30" y="368" width="640" height="86" rx="14" fill="#178866" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="350" y="402" text-anchor="middle" font-size="18" font-weight="700" fill="#FFFFFF">VIRTUALIZAÇÃO DE SO  (HYPERVISOR / VMM)</text>
+                  <text x="350" y="430" text-anchor="middle" font-size="14" fill="#D9F4EC">Abstração de CPU, Memória, Disco e Switch Virtual (vSwitch)</text>
+
+                  <line x1="350" y1="454" x2="350" y2="494" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-dk)"/>
+
+                  <rect x="30" y="496" width="640" height="72" rx="14" fill="#F2FAF7" stroke="#178866" stroke-width="2"/>
+                  <text x="350" y="525" text-anchor="middle" font-size="16" font-weight="700" fill="#0F5943">HARDWARE FÍSICO DO DATA CENTER</text>
+                  <text x="350" y="550" text-anchor="middle" font-size="13.5" fill="#3D515E">Servidores x86/ARM · RAM · Storage · Placas de Rede (NIC)</text>
+
+                  <text x="30" y="600" font-size="12.5" fill="#6E8391">A nuvem entrega serviços escaláveis sobre a rede; a virtualização abstrai o hardware físico na base.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="cover-footer">
+            <div>
+              <div class="meta-k">Integrantes</div>
+              <div class="meta-v" style="font-size:15.5px; line-height:1.48;">Yuri Henrique · Gabriel Pereira · Victor Novaes · Ruan Victor · Rodolpho Oliveira<br/>André Moreira · Tiago Neri · Arthur Andrade · Bianca Barbosa · Matheus Guedes</div>
+            </div>
+            <div>
+              <div class="meta-k">Disciplina / Professor</div>
+              <div class="meta-v">Informática Básica · Prof. Jeyniglis Matos</div>
+            </div>
+            <div style="text-align:right">
+              <div class="meta-k">Ano</div>
+              <div class="meta-v">2026</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 02: DIVISÓRIA PARTE 01 ==================== -->
+      <section class="slide" data-title="Parte 01: Computação em Nuvem" data-tag="Divisória · Nuvem" data-bar="linear-gradient(90deg, #1D6FA8, #1D70A4)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1D6FA8, #1D70A4);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-blue"><span class="dot" style="background:#1D6FA8"></span>Parte 01 · Computação em Nuvem</span>
+            <span class="slide-type">Divisória · Roteiro</span>
+          </div>
+          <h1 class="slide-title">Parte 01: Computação em Nuvem</h1>
+          <p class="slide-subtitle">Como recursos computacionais passam a ser entregues sob demanda em escala global pela rede.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Nesta primeira etapa, exploramos a definição oficial da computação em nuvem, seus modelos de serviço e implantação, além das tecnologias de rede que permitem operar aplicações distribuídas com alta disponibilidade.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#1D6FA8; --card-border:var(--blue-border);">
+                  <h3>Foco em Redes de Computadores</h3>
+                  <p>Entender como a internet, roteamento, VPCs, SDN e NFV viabilizam o acesso rápido e seguro à nuvem.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#1D6FA8; --card-border:var(--blue-border);">
+                  <h3>Progressão do Material</h3>
+                  <p>Começamos pela camada de serviços na nuvem (azul) e avançamos até a virtualização de SO na base (verde).</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--blue-dark);">
+              <div class="panel-header">Roteiro da Parte 01 (5 Tópicos)</div>
+              <div class="panel-body">
+                <div class="num-list">
+                  <div class="num-row"><div class="num-badge blue">01</div><div class="row-content"><h4>Conceito e 5 Pilares (NIST SP 800-145)</h4><p>Definição formal e características essenciais da nuvem.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">02</div><div class="row-content"><h4>Modelos de Serviço: IaaS, PaaS e SaaS</h4><p>Matriz visual de responsabilidades entre cliente e provedor.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">03</div><div class="row-content"><h4>Modelos de Implantação</h4><p>Diagrama comparativo: Pública, Privada, Híbrida e Multicloud.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">04</div><div class="row-content"><h4>Redes na Nuvem: VPC, SDN e NFV</h4><p>Arquitetura lógica, plano de controle e funções virtualizadas.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">05</div><div class="row-content"><h4>Desempenho, Segurança e Custos</h4><p>Latência, CDNs, responsabilidade compartilhada e governança.</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem</span><span class="num">02</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 03: NUVEM CONCEITO & NIST ==================== -->
+      <section class="slide" data-title="O que é Computação em Nuvem?" data-tag="Nuvem · NIST" data-bar="linear-gradient(90deg, #1D70A5, #1C739E)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1D70A5, #1C739E);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-blue"><span class="dot" style="background:#1C72A1"></span>Computação em Nuvem</span>
+            <span class="slide-type">Conceito · NIST SP 800-145</span>
+          </div>
+          <h1 class="slide-title">O que é Computação em Nuvem?</h1>
+          <p class="slide-subtitle">Modelo de acesso conveniente e sob demanda a recursos computacionais configuráveis pela rede.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Segundo o NIST (SP 800-145), computação em nuvem é o modelo que habilita acesso ubíquo via rede a um pool compartilhado de servidores, redes, armazenamento e aplicações, provisionados e liberados rapidamente com mínimo esforço gerencial.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#1C72A1; --card-border:var(--blue-border);">
+                  <h3>Mudança de CAPEX para OPEX</h3>
+                  <p>Substitui a compra antecipada de servidores físicos locais por contratação flexível conforme o consumo real.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#1C72A1; --card-border:var(--blue-border);">
+                  <h3>Dependência Direta da Rede</h3>
+                  <p>O desempenho percebido depende de conectividade confiável, roteamento eficiente, protocolos HTTP/TLS e baixa latência.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--blue-dark);">
+              <div class="panel-header">As 5 Características Essenciais (NIST SP 800-145)</div>
+              <div class="panel-body">
+                <div class="num-list">
+                  <div class="num-row"><div class="num-badge blue">01</div><div class="row-content"><h4>Autoatendimento sob Demanda</h4><p>Provisionamento automático de recursos sem interação humana com o provedor.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">02</div><div class="row-content"><h4>Amplo Acesso à Rede</h4><p>Serviços disponíveis pela internet via protocolos padrão em qualquer dispositivo.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">03</div><div class="row-content"><h4>Pool de Recursos (Multi-Tenant)</h4><p>Infraestrutura física agrupada e alocada dinamicamente a múltiplos clientes.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">04</div><div class="row-content"><h4>Elasticidade Rápida</h4><p>Escala recursos para cima ou para baixo rapidamente conforme picos de tráfego.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">05</div><div class="row-content"><h4>Serviço Mensurado</h4><p>Monitoramento contínuo de uso (CPU, banda, tráfego) para controle e tarifação.</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem</span><span class="num">03</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 04: MODELOS DE SERVIÇO + FIGURA 1 ==================== -->
+      <section class="slide" data-title="Modelos de Serviço: IaaS, PaaS e SaaS" data-tag="Nuvem · Figura 1" data-bar="linear-gradient(90deg, #1C739E, #1B7598)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1C739E, #1B7598);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-blue"><span class="dot" style="background:#1C749B"></span>Computação em Nuvem</span>
+            <span class="slide-type">Modelos de Serviço · Figura</span>
+          </div>
+          <h1 class="slide-title">Modelos de Serviço: IaaS, PaaS e SaaS</h1>
+          <p class="slide-subtitle">Cada modelo define até onde vai o controle do cliente e o que fica sob gestão do provedor.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">A nuvem se divide em três camadas principais de entrega: Infraestrutura (IaaS), Plataforma (PaaS) e Software (SaaS). Quanto mais alto o modelo, menos camadas técnicas de hardware, rede e sistema operacional o usuário precisa gerenciar.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#1C749B; --card-border:var(--blue-border);">
+                  <h3>IaaS &amp; PaaS — Controle Técnico</h3>
+                  <p>IaaS entrega VMs e redes virtuais (AWS EC2, Azure VMs); PaaS entrega o ambiente pronto para rodar código (App Engine, Render).</p>
+                </div>
+                <div class="h-card" style="--card-accent:#1C749B; --card-border:var(--blue-border);">
+                  <h3>SaaS — Uso Imediato pela Rede</h3>
+                  <p>Aplicações completas acessadas pelo navegador ou cliente leve (Google Workspace, Microsoft 365, GitHub) sem instalar servidores.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--blue-dark);">
+              <div class="panel-header">Figura 1 · Divisão de Responsabilidades por Camada</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matriz de responsabilidades On-Premises, IaaS, PaaS e SaaS">
+                  <!-- Headers -->
+                  <rect x="14" y="14" width="182" height="36" rx="8" fill="#EBF2F5"/><text x="105" y="37" text-anchor="middle" font-size="14" font-weight="700" fill="#1F3B4A">On-Premises</text>
+                  <rect x="218" y="14" width="182" height="36" rx="8" fill="#EAF4FB"/><text x="309" y="37" text-anchor="middle" font-size="14" font-weight="700" fill="#124970">IaaS</text>
+                  <rect x="422" y="14" width="182" height="36" rx="8" fill="#EAF4FB"/><text x="513" y="37" text-anchor="middle" font-size="14" font-weight="700" fill="#124970">PaaS</text>
+                  <rect x="626" y="14" width="182" height="36" rx="8" fill="#EAF4FB"/><text x="717" y="37" text-anchor="middle" font-size="14" font-weight="700" fill="#124970">SaaS</text>
+
+                  <!-- Row 1: Aplicações -->
+                  <rect x="14" y="64" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="105" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Aplicações</text>
+                  <rect x="218" y="64" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="309" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Aplicações</text>
+                  <rect x="422" y="64" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="513" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Aplicações</text>
+                  <rect x="626" y="64" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="717" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Aplicações</text>
+
+                  <!-- Row 2: Dados -->
+                  <rect x="14" y="122" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="105" y="151" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Dados e Usuários</text>
+                  <rect x="218" y="122" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="309" y="151" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Dados e Usuários</text>
+                  <rect x="422" y="122" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="513" y="151" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Dados e Usuários</text>
+                  <rect x="626" y="122" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="717" y="151" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Dados e Usuários</text>
+
+                  <!-- Row 3: Runtime -->
+                  <rect x="14" y="180" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="105" y="209" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Runtime / Middleware</text>
+                  <rect x="218" y="180" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="309" y="209" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Runtime / Middleware</text>
+                  <rect x="422" y="180" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="513" y="209" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Runtime / Middleware</text>
+                  <rect x="626" y="180" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="717" y="209" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Runtime / Middleware</text>
+
+                  <!-- Row 4: SO -->
+                  <rect x="14" y="238" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="105" y="267" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Sistema Operacional</text>
+                  <rect x="218" y="238" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="309" y="267" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Sistema Operacional</text>
+                  <rect x="422" y="238" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="513" y="267" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Sistema Operacional</text>
+                  <rect x="626" y="238" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="717" y="267" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Sistema Operacional</text>
+
+                  <!-- Row 5: Virtualização -->
+                  <rect x="14" y="296" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="105" y="325" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Virtualização</text>
+                  <rect x="218" y="296" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="309" y="325" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Virtualização</text>
+                  <rect x="422" y="296" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="513" y="325" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Virtualização</text>
+                  <rect x="626" y="296" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="717" y="325" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Virtualização</text>
+
+                  <!-- Row 6: Servidores e Rede -->
+                  <rect x="14" y="354" width="182" height="48" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="105" y="383" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">Servidores e Rede</text>
+                  <rect x="218" y="354" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="309" y="383" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Servidores e Rede</text>
+                  <rect x="422" y="354" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="513" y="383" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Servidores e Rede</text>
+                  <rect x="626" y="354" width="182" height="48" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/><text x="717" y="383" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">Servidores e Rede</text>
+
+                  <!-- Legend -->
+                  <line x1="14" y1="424" x2="808" y2="424" stroke="#E2EBF0" stroke-width="1.5"/>
+                  <rect x="14" y="444" width="22" height="22" rx="5" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/>
+                  <text x="46" y="460" font-size="14" font-weight="600" fill="#0F1D26">Gerenciado pelo Cliente</text>
+                  <rect x="268" y="444" width="22" height="22" rx="5" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/>
+                  <text x="300" y="460" font-size="14" font-weight="600" fill="#124970">Gerenciado pelo Provedor de Nuvem</text>
+                  <text x="14" y="494" font-size="13" fill="#6E8391">Quanto maior a abstração (da esquerda para a direita), menor o esforço operacional de infraestrutura.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem</span><span class="num">04</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 05: MODELOS DE IMPLANTAÇÃO + FIGURA 2 ==================== -->
+      <section class="slide" data-title="Modelos de Implantação da Nuvem" data-tag="Nuvem · Figura 2" data-bar="linear-gradient(90deg, #1B7598, #1B7791)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1B7598, #1B7791);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-blue"><span class="dot" style="background:#1B7695"></span>Computação em Nuvem</span>
+            <span class="slide-type">Implantação · Diagrama em Leque</span>
+          </div>
+          <h1 class="slide-title">Modelos de Implantação da Nuvem</h1>
+          <p class="slide-subtitle">Onde a infraestrutura reside, quem a opera e como o tráfego de rede conecta os ambientes.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Além do tipo de serviço, organizações escolhem o modelo de implantação conforme requisitos de privacidade, custo e elasticidade. Ambientes públicos, privados e híbridos podem ainda ser combinados em arquiteturas Multicloud.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#1B7695; --card-border:var(--blue-border);">
+                  <h3>Pública vs. Privada</h3>
+                  <p>A nuvem pública compartilha recursos (multi-tenant) com escala global; a privada dedica hardware exclusivo para maior controle regulatório.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#1B7695; --card-border:var(--blue-border);">
+                  <h3>Híbrida e Multicloud</h3>
+                  <p>A híbrida integra data center local e nuvem pública via VPN/links dedicados; Multicloud usa 2+ provedores evitando vendor lock-in.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--blue-dark);">
+              <div class="panel-header">Figura 2 · Distribuição dos Modelos de Implantação</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama em leque dos modelos de implantação">
+                  <defs>
+                    <marker id="arr-f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker>
+                  </defs>
+                  <rect x="140" y="16" width="540" height="74" rx="12" fill="#1D6FA8" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="410" y="48" text-anchor="middle" font-size="18" font-weight="700" fill="#FFFFFF">Infraestrutura de Computação em Nuvem</text>
+                  <text x="410" y="72" text-anchor="middle" font-size="13" fill="#DCEEF9">Escolha baseada em governança, conectividade e custo</text>
+
+                  <line x1="225" y1="90" x2="105" y2="178" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f2)"/>
+                  <line x1="335" y1="90" x2="309" y2="178" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f2)"/>
+                  <line x1="485" y1="90" x2="513" y2="178" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f2)"/>
+                  <line x1="595" y1="90" x2="717" y2="178" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f2)"/>
+
+                  <!-- Card 1 -->
+                  <rect x="12" y="180" width="186" height="224" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="105" y="216" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Nuvem</text>
+                  <text x="105" y="237" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Pública</text>
+                  <text x="105" y="274" text-anchor="middle" font-size="13" font-weight="500" fill="#3D515E">AWS · Azure · GCP</text>
+                  <text x="105" y="296" text-anchor="middle" font-size="13" fill="#6E8391">Compartilhada</text>
+                  <rect x="34" y="346" width="142" height="32" rx="16" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.6"/>
+                  <text x="105" y="366" text-anchor="middle" font-size="11" font-weight="700" fill="#124970">MULTI-TENANT</text>
+
+                  <!-- Card 2 -->
+                  <rect x="216" y="180" width="186" height="224" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="309" y="216" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Nuvem</text>
+                  <text x="309" y="237" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Privada</text>
+                  <text x="309" y="274" text-anchor="middle" font-size="13" font-weight="500" fill="#3D515E">On-Premises</text>
+                  <text x="309" y="296" text-anchor="middle" font-size="13" fill="#6E8391">Uso exclusivo</text>
+                  <rect x="238" y="346" width="142" height="32" rx="16" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.6"/>
+                  <text x="309" y="366" text-anchor="middle" font-size="11" font-weight="700" fill="#124970">DEDICADA</text>
+
+                  <!-- Card 3 -->
+                  <rect x="420" y="180" width="186" height="224" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="513" y="216" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Nuvem</text>
+                  <text x="513" y="237" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Híbrida</text>
+                  <text x="513" y="274" text-anchor="middle" font-size="13" font-weight="500" fill="#3D515E">Privada + Pública</text>
+                  <text x="513" y="296" text-anchor="middle" font-size="13" fill="#6E8391">Via VPN / Link</text>
+                  <rect x="442" y="346" width="142" height="32" rx="16" fill="#EAF4FB" stroke="#1D6FA8" stroke-width="1.6"/>
+                  <text x="513" y="366" text-anchor="middle" font-size="11" font-weight="700" fill="#124970">INTEGRADA</text>
+
+                  <!-- Card 4 -->
+                  <rect x="624" y="180" width="186" height="224" rx="12" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="717" y="216" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Estratégia</text>
+                  <text x="717" y="237" text-anchor="middle" font-size="17" font-weight="700" fill="#0F1D26">Multicloud</text>
+                  <text x="717" y="274" text-anchor="middle" font-size="13" font-weight="500" fill="#3D515E">2+ Provedores</text>
+                  <text x="717" y="296" text-anchor="middle" font-size="13" fill="#6E8391">Alta resiliência</text>
+                  <rect x="646" y="346" width="142" height="32" rx="16" fill="none" stroke="#6E8391" stroke-width="1.6" stroke-dasharray="5 3"/>
+                  <text x="717" y="366" text-anchor="middle" font-size="11" font-weight="700" fill="#6E8391">SEM LOCK-IN</text>
+
+                  <line x1="12" y1="430" x2="810" y2="430" stroke="#E2EBF0" stroke-width="1.5"/>
+                  <text x="12" y="458" font-size="13" fill="#3D515E"><tspan font-weight="700">Multi-tenant:</tspan> múltiplos clientes compartilham o mesmo hardware físico com isolamento lógico via virtualização.</text>
+                  <text x="12" y="484" font-size="13" fill="#6E8391">Multicloud (tracejado): estratégia complementar sobre duas ou mais nuvens públicas, não um modelo isolado do NIST.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem</span><span class="num">05</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 06: REDES NA NUVEM VPC/SDN/NFV + FIGURA 3 ==================== -->
+      <section class="slide" data-title="Redes na Nuvem: VPC, SDN e NFV" data-tag="Nuvem · Figura 3" data-bar="linear-gradient(90deg, #1B7791, #1A7A89)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1B7791, #1A7A89);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-blue"><span class="dot" style="background:#1A798D"></span>Computação em Nuvem</span>
+            <span class="slide-type">Redes na Nuvem · Diagrama Anotado</span>
+          </div>
+          <h1 class="slide-title">Redes na Nuvem: VPC, SDN e NFV</h1>
+          <p class="slide-subtitle">Como o tráfego é isolado, roteado e protegido por software dentro de provedores globais.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Em data centers de nuvem, não se configura cabo por cabo para cada cliente. Tecnologias como VPC, SDN e NFV permitem criar topologias completas — sub-redes, firewalls, rotas e balanceadores — inteiramente via software.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#1A798D; --card-border:var(--blue-border);">
+                  <h3>VPC (Virtual Private Cloud)</h3>
+                  <p>Segmenta logicamente uma rede privada na nuvem pública com faixas IP (CIDR), sub-redes públicas/privadas e tabelas de rotas.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#1A798D; --card-border:var(--blue-border);">
+                  <h3>SDN e NFV em Conjunto</h3>
+                  <p>SDN separa o plano de controle (cérebro) do plano de dados; NFV substitui equipamentos físicos dedicados por software virtualizado.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--blue-dark);">
+              <div class="panel-header">Figura 3 · Anatomia de uma Rede em Nuvem (VPC + SDN/NFV)</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomia de VPC com sub-redes e plano SDN NFV">
+                  <defs>
+                    <marker id="arr-f3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker>
+                  </defs>
+                  <rect x="12" y="16" width="186" height="32" rx="6" fill="#1D6FA8"/>
+                  <text x="105" y="37" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#FFFFFF">VPC 10.0.0.0/16</text>
+
+                  <rect x="12" y="48" width="412" height="376" rx="10" fill="#F3F9FD" stroke="#1E2D38" stroke-width="2"/>
+
+                  <rect x="34" y="72" width="368" height="92" rx="8" fill="#FFFFFF" stroke="#1D6FA8" stroke-width="1.8"/>
+                  <text x="50" y="102" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700" fill="#124970">Sub-rede Pública (10.0.1.0/24)</text>
+                  <text x="50" y="132" font-size="13" fill="#3D515E">Internet Gateway → Load Balancer · NAT</text>
+
+                  <line x1="218" y1="164" x2="218" y2="192" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f3)"/>
+
+                  <rect x="34" y="194" width="368" height="92" rx="8" fill="#FFFFFF" stroke="#178866" stroke-width="1.8"/>
+                  <text x="50" y="224" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700" fill="#0F5943">Sub-rede Privada (10.0.2.0/24)</text>
+                  <text x="50" y="254" font-size="13" fill="#3D515E">Servidores App · Banco de Dados (sem IP público)</text>
+
+                  <rect x="34" y="312" width="368" height="90" rx="8" fill="#1D6FA8" stroke="#1E2D38" stroke-width="1.8"/>
+                  <text x="50" y="344" font-size="15" font-weight="700" fill="#FFFFFF">Controlador SDN + Funções NFV</text>
+                  <text x="50" y="374" font-size="13" fill="#DCEEF9">Rotas programáveis · Firewall virtual · Security Groups</text>
+
+                  <!-- Connectors to callouts -->
+                  <line x1="424" y1="118" x2="482" y2="118" stroke="#1E2D38" stroke-width="2"/>
+                  <line x1="424" y1="240" x2="482" y2="240" stroke="#1E2D38" stroke-width="2"/>
+                  <line x1="424" y1="357" x2="482" y2="357" stroke="#1E2D38" stroke-width="2"/>
+
+                  <!-- Callout 1 -->
+                  <rect x="482" y="72" width="328" height="92" rx="8" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <path d="M490,72 H518 V164 H490 A8,8 0 0 1 482,156 V80 A8,8 0 0 1 490,72 Z" fill="#1D6FA8"/>
+                  <text x="500" y="124" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="700" fill="#FFFFFF">1</text>
+                  <text x="532" y="99" font-size="15" font-weight="700" fill="#0F1D26">Borda e Acesso Externo</text>
+                  <text x="532" y="122" font-size="12.5" fill="#3D515E">Recebe conexões da internet via IGW</text>
+                  <text x="532" y="140" font-size="12.5" fill="#3D515E">e distribui o tráfego com balanceador.</text>
+
+                  <!-- Callout 2 -->
+                  <rect x="482" y="194" width="328" height="92" rx="8" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <path d="M490,194 H518 V286 H490 A8,8 0 0 1 482,278 V202 A8,8 0 0 1 490,194 Z" fill="#1D6FA8"/>
+                  <text x="500" y="246" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="700" fill="#FFFFFF">2</text>
+                  <text x="532" y="221" font-size="15" font-weight="700" fill="#0F1D26">Isolamento de Dados</text>
+                  <text x="532" y="244" font-size="12.5" fill="#3D515E">Servidores internos protegidos sem</text>
+                  <text x="532" y="262" font-size="12.5" fill="#3D515E">exposição direta de IP público.</text>
+
+                  <!-- Callout 3 -->
+                  <rect x="482" y="312" width="328" height="92" rx="8" fill="#FFFFFF" stroke="#1E2D38" stroke-width="2"/>
+                  <path d="M490,312 H518 V404 H490 A8,8 0 0 1 482,396 V320 A8,8 0 0 1 490,312 Z" fill="#1D6FA8"/>
+                  <text x="500" y="364" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="700" fill="#FFFFFF">3</text>
+                  <text x="532" y="339" font-size="15" font-weight="700" fill="#0F1D26">Rede Definida por Software</text>
+                  <text x="532" y="362" font-size="12.5" fill="#3D515E">SDN centraliza regras de roteamento;</text>
+                  <text x="532" y="380" font-size="12.5" fill="#3D515E">NFV virtualiza firewalls e NAT.</text>
+
+                  <text x="12" y="468" font-size="13" fill="#6E8391">Dica de Redes: o tráfego entre a sub-rede pública e privada é filtrado por Security Groups (firewall stateful virtualizado).</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem</span><span class="num">06</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 07: DESEMPENHO, SEGURANÇA E CUSTOS ==================== -->
+      <section class="slide" data-title="Desempenho, Segurança e Custos" data-tag="Nuvem · Transição" data-bar="linear-gradient(90deg, #1A7A8A, #197D83)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1A7A8A, #197D83);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-blue"><span class="dot" style="background:#1A7B86"></span>Computação em Nuvem</span>
+            <span class="slide-type">Operação · Redes &amp; Segurança</span>
+          </div>
+          <h1 class="slide-title">Desempenho, Segurança e Custos</h1>
+          <p class="slide-subtitle">Fatores críticos de rede e governança para operar aplicações em nuvem com confiabilidade.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Migrar serviços para a nuvem traz agilidade, mas exige atenção a três pilares práticos: qualidade dos enlaces de rede até o usuário final, divisão clara de responsabilidades de segurança e controle contínuo do consumo sob demanda.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#1A7B86; --card-border:var(--blue-border);">
+                  <h3>Latência, Banda e CDNs</h3>
+                  <p>Escolher regiões próximas ao público e usar CDNs (Content Delivery Networks) aproxima o conteúdo e reduz atrasos na WAN.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#1A7B86; --card-border:var(--blue-border);">
+                  <h3>FinOps e Controle de Custos</h3>
+                  <p>Recursos ociosos ou tráfego de saída (egress) mal dimensionado geram custos extras; alertas e auto-scaling mantêm eficiência.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--blue-dark);">
+              <div class="panel-header">Pontos Críticos na Operação em Nuvem</div>
+              <div class="panel-body">
+                <div class="num-list">
+                  <div class="num-row"><div class="num-badge blue">01</div><div class="row-content"><h4>Modelo de Responsabilidade Compartilhada</h4><p>Provedor protege data center físico e hypervisor; cliente protege dados, senhas (IAM), criptografia e portas abertas.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">02</div><div class="row-content"><h4>Disponibilidade e Zonas (Multi-AZ)</h4><p>Replicar serviços em múltiplas zonas de disponibilidade mantém a aplicação no ar mesmo se um data center falhar.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">03</div><div class="row-content"><h4>Criptografia em Trânsito e em Repouso</h4><p>Uso obrigatório de TLS/HTTPS na rede pública e criptografia de discos/backups contra interceptação.</p></div></div>
+                  <div class="num-row"><div class="num-badge blue">04</div><div class="row-content"><h4>Dependência de Conectividade</h4><p>Quedas no link de internet local interrompem o acesso à nuvem — redes corporativas adotam links redundantes.</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem</span><span class="num">07</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 08: DIVISÓRIA PARTE 02 ==================== -->
+      <section class="slide" data-title="Parte 02: Virtualização de SO" data-tag="Divisória · Virtualização" data-bar="linear-gradient(90deg, #197D82, #18807B)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #197D82, #18807B);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-green"><span class="dot" style="background:#197E7E"></span>Parte 02 · Virtualização de SO</span>
+            <span class="slide-type">Divisória · Roteiro</span>
+          </div>
+          <h1 class="slide-title">Parte 02: Virtualização de SO</h1>
+          <p class="slide-subtitle">A tecnologia de base que abstrai o hardware físico e torna possível a computação em nuvem.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Agora descemos para a camada que sustenta servidores modernos e data centers: a virtualização de sistemas operacionais. Vamos ver como hypervisors e containers isolam ambientes e como funcionam as redes virtuais na prática.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#197E7E; --card-border:var(--green-border);">
+                  <h3>Ponte entre Nuvem e Hardware</h3>
+                  <p>Sem virtualização, provedores de nuvem não conseguiriam fatiar um único servidor físico entre dezenas de clientes isolados.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#197E7E; --card-border:var(--green-border);">
+                  <h3>Aplicação Direta em Redes</h3>
+                  <p>Além de servidores, a virtualização é essencial em laboratórios de roteamento, testes de segurança e switches virtuais.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--green-border); --panel-tint:var(--green-tint); --panel-dark:var(--green-dark);">
+              <div class="panel-header">Roteiro da Parte 02 (4 Tópicos)</div>
+              <div class="panel-body">
+                <div class="num-list">
+                  <div class="num-row"><div class="num-badge green">01</div><div class="row-content"><h4>Conceito e Arquitetura em Camadas</h4><p>Como o Hypervisor (VMM) abstrai CPU, RAM, disco e NICs.</p></div></div>
+                  <div class="num-row"><div class="num-badge green">02</div><div class="row-content"><h4>Hypervisors Tipo 1, Tipo 2 e Containers</h4><p>Comparativo visual das três arquiteturas lado a lado.</p></div></div>
+                  <div class="num-row"><div class="num-badge green">03</div><div class="row-content"><h4>Redes Virtuais: vSwitch, Bridge, NAT e Host-Only</h4><p>Diagrama de fluxo de pacotes entre VMs, host e internet.</p></div></div>
+                  <div class="num-row"><div class="num-badge green">04</div><div class="row-content"><h4>Benefícios e Desafios Operacionais</h4><p>Consolidação, live migration, snapshots vs. overhead e VM sprawl.</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Virtualização de Sistemas Operacionais</span><span class="num">08</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 09: VIRTUALIZAÇÃO CONCEITO + FIGURA 4 ==================== -->
+      <section class="slide" data-title="O que é Virtualização de SO?" data-tag="Virtualização · Figura 4" data-bar="linear-gradient(90deg, #18807B, #188274)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #18807B, #188274);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-green"><span class="dot" style="background:#188177"></span>Virtualização de SO</span>
+            <span class="slide-type">Conceito · Arquitetura</span>
+          </div>
+          <h1 class="slide-title">O que é Virtualização de SO?</h1>
+          <p class="slide-subtitle">Desacoplamento lógico entre o hardware físico e os sistemas operacionais em execução.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">A virtualização cria uma camada de software — chamada Hypervisor ou VMM (Virtual Machine Monitor) — que divide os recursos de um único computador físico em múltiplas máquinas virtuais (VMs) independentes, cada uma com seu próprio sistema operacional.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#188177; --card-border:var(--green-border);">
+                  <h3>Abstração de Recursos Físicos</h3>
+                  <p>CPU (Intel VT-x / AMD-V), memória RAM, disco e placas de rede são virtualizados e distribuídos dinamicamente para cada VM.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#188177; --card-border:var(--green-border);">
+                  <h3>Encapsulamento e Isolamento</h3>
+                  <p>Cada máquina virtual fica encapsulada em arquivos isolados: falhas em um sistema convidado não derrubam o host nem as demais VMs.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--green-border); --panel-tint:var(--green-tint); --panel-dark:var(--green-dark);">
+              <div class="panel-header">Figura 4 · Arquitetura em Camadas da Virtualização</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Arquitetura em camadas da virtualização">
+                  <defs>
+                    <marker id="arr-f4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker>
+                  </defs>
+                  <!-- VM 01 -->
+                  <rect x="16" y="18" width="248" height="200" rx="14" fill="#F2FAF7" stroke="#1E2D38" stroke-width="1.8"/>
+                  <rect x="32" y="32" width="76" height="26" rx="13" fill="#E7F6F1"/><text x="70" y="49" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0F5943">VM 01</text>
+                  <rect x="32" y="72" width="216" height="54" rx="8" fill="#FFF" stroke="#178866" stroke-width="1.4"/><text x="140" y="104" text-anchor="middle" font-size="15" font-weight="600" fill="#0F1D26">Servidor Web</text>
+                  <rect x="32" y="138" width="216" height="56" rx="8" fill="#E7F6F1" stroke="#BEE3D6" stroke-width="1.2"/><text x="140" y="171" text-anchor="middle" font-size="13.5" font-weight="500" fill="#0F5943">SO Convidado · Linux</text>
+                  <line x1="140" y1="218" x2="140" y2="258" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f4)"/>
+
+                  <!-- VM 02 -->
+                  <rect x="286" y="18" width="248" height="200" rx="14" fill="#F2FAF7" stroke="#1E2D38" stroke-width="1.8"/>
+                  <rect x="302" y="32" width="76" height="26" rx="13" fill="#E7F6F1"/><text x="340" y="49" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0F5943">VM 02</text>
+                  <rect x="302" y="72" width="216" height="54" rx="8" fill="#FFF" stroke="#178866" stroke-width="1.4"/><text x="410" y="104" text-anchor="middle" font-size="15" font-weight="600" fill="#0F1D26">Banco de Dados</text>
+                  <rect x="302" y="138" width="216" height="56" rx="8" fill="#E7F6F1" stroke="#BEE3D6" stroke-width="1.2"/><text x="410" y="171" text-anchor="middle" font-size="13.5" font-weight="500" fill="#0F5943">SO Convidado · Linux</text>
+                  <line x1="410" y1="218" x2="410" y2="258" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f4)"/>
+
+                  <!-- VM 03 -->
+                  <rect x="556" y="18" width="248" height="200" rx="14" fill="#F2FAF7" stroke="#1E2D38" stroke-width="1.8"/>
+                  <rect x="572" y="32" width="76" height="26" rx="13" fill="#E7F6F1"/><text x="610" y="49" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0F5943">VM 03</text>
+                  <rect x="572" y="72" width="216" height="54" rx="8" fill="#FFF" stroke="#178866" stroke-width="1.4"/><text x="680" y="104" text-anchor="middle" font-size="15" font-weight="600" fill="#0F1D26">Serviço Interno</text>
+                  <rect x="572" y="138" width="216" height="56" rx="8" fill="#E7F6F1" stroke="#BEE3D6" stroke-width="1.2"/><text x="680" y="171" text-anchor="middle" font-size="13.5" font-weight="500" fill="#0F5943">SO Convidado · Windows</text>
+                  <line x1="680" y1="218" x2="680" y2="258" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f4)"/>
+
+                  <!-- Hypervisor -->
+                  <rect x="16" y="260" width="788" height="92" rx="14" fill="#178866" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="410" y="298" text-anchor="middle" font-size="21" font-weight="700" fill="#FFFFFF">Hypervisor  (Virtual Machine Monitor — VMM)</text>
+                  <text x="410" y="328" text-anchor="middle" font-size="14" fill="#D9F4EC">Escalonamento de CPU · Gerência de Memória · Switch Virtual (vSwitch)</text>
+
+                  <line x1="410" y1="352" x2="410" y2="384" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f4)"/>
+
+                  <!-- Hardware -->
+                  <rect x="16" y="386" width="788" height="82" rx="14" fill="#E7F6F1" stroke="#178866" stroke-width="2"/>
+                  <text x="410" y="420" text-anchor="middle" font-size="19" font-weight="700" fill="#0F5943">Hardware Físico (Servidor Host)</text>
+                  <text x="410" y="447" text-anchor="middle" font-size="14" fill="#3D515E">CPU (VT-x / AMD-V) · Memória RAM · Armazenamento · NIC Física</text>
+
+                  <text x="16" y="494" font-size="13" fill="#6E8391">Isolamento: cada VM enxerga um hardware virtual exclusivo, mesmo compartilhando o mesmo equipamento físico.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Virtualização de Sistemas Operacionais</span><span class="num">09</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 10: HYPERVISORS & CONTAINERS + FIGURA 5 ==================== -->
+      <section class="slide" data-title="Hypervisors Tipo 1, Tipo 2 e Containers" data-tag="Virtualização · Figura 5" data-bar="linear-gradient(90deg, #188373, #17866D)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #188373, #17866D);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-green"><span class="dot" style="background:#178470"></span>Virtualização de SO</span>
+            <span class="slide-type">Arquiteturas · Comparativo Visual</span>
+          </div>
+          <h1 class="slide-title">Hypervisors Tipo 1, Tipo 2 e Containers</h1>
+          <p class="slide-subtitle">As três principais arquiteturas de virtualização usadas em data centers, nuvem e laboratórios.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">A diferença entre as abordagens está em qual camada acontece a virtualização. Hypervisors Tipo 1 rodam direto no hardware; Tipo 2 dependem de um SO hospedeiro; já os Containers compartilham o mesmo kernel do sistema operacional.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#178470; --card-border:var(--green-border);">
+                  <h3>Hypervisor Tipo 1 vs. Tipo 2</h3>
+                  <p>Tipo 1 (VMware ESXi, KVM, Hyper-V) oferece máxima performance em servidores; Tipo 2 (VirtualBox, VMware Workstation) facilita estudos.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#178470; --card-border:var(--green-border);">
+                  <h3>Virtualização em Nível de SO (Containers)</h3>
+                  <p>Docker, Podman e LXC usam namespaces e cgroups sobre o kernel do host — inicializam em segundos com consumo mínimo de RAM.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--green-border); --panel-tint:var(--green-tint); --panel-dark:var(--green-dark);">
+              <div class="panel-header">Figura 5 · Comparativo das 3 Pilhas Arquiteturais</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparativo das 3 pilhas: Hypervisor Tipo 1, Tipo 2 e Containers">
+                  <!-- Headers -->
+                  <rect x="14" y="14" width="248" height="52" rx="10" fill="#E7F6F1"/>
+                  <text x="138" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#0F5943">Tipo 1 (Bare-Metal)</text>
+                  <text x="138" y="54" text-anchor="middle" font-size="12" fill="#3D515E">Data centers &amp; Nuvem</text>
+
+                  <rect x="286" y="14" width="248" height="52" rx="10" fill="#E7F6F1"/>
+                  <text x="410" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#0F5943">Tipo 2 (Hosted)</text>
+                  <text x="410" y="54" text-anchor="middle" font-size="12" fill="#3D515E">Estações &amp; Lab.</text>
+
+                  <rect x="558" y="14" width="248" height="52" rx="10" fill="#E7F6F1"/>
+                  <text x="682" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#0F5943">Containers (SO)</text>
+                  <text x="682" y="54" text-anchor="middle" font-size="12" fill="#3D515E">Microsserviços</text>
+
+                  <!-- Stack 1 (4 layers) -->
+                  <rect x="14" y="154" width="119" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/><text x="73.5" y="187" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">App 1</text>
+                  <rect x="143" y="154" width="119" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/><text x="202.5" y="187" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">App 2</text>
+                  <rect x="14" y="220" width="119" height="56" rx="8" fill="#F2FAF7" stroke="#178866" stroke-width="1.6"/><text x="73.5" y="253" text-anchor="middle" font-size="13" font-weight="600" fill="#0F5943">SO 1</text>
+                  <rect x="143" y="220" width="119" height="56" rx="8" fill="#F2FAF7" stroke="#178866" stroke-width="1.6"/><text x="202.5" y="253" text-anchor="middle" font-size="13" font-weight="600" fill="#0F5943">SO 2</text>
+                  <rect x="14" y="286" width="248" height="56" rx="8" fill="#178866" stroke="#1E2D38" stroke-width="1.8"/><text x="138" y="319" text-anchor="middle" font-size="14" font-weight="700" fill="#FFF">Hypervisor Tipo 1</text>
+                  <rect x="14" y="352" width="248" height="56" rx="8" fill="#EBF2F5" stroke="#1E2D38" stroke-width="1.8"/><text x="138" y="385" text-anchor="middle" font-size="14" font-weight="600" fill="#1F3B4A">Hardware Físico</text>
+
+                  <!-- Stack 2 (5 layers) -->
+                  <rect x="286" y="88" width="119" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/><text x="345.5" y="121" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">App 1</text>
+                  <rect x="415" y="88" width="119" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/><text x="474.5" y="121" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">App 2</text>
+                  <rect x="286" y="154" width="119" height="56" rx="8" fill="#F2FAF7" stroke="#178866" stroke-width="1.6"/><text x="345.5" y="187" text-anchor="middle" font-size="13" font-weight="600" fill="#0F5943">SO 1</text>
+                  <rect x="415" y="154" width="119" height="56" rx="8" fill="#F2FAF7" stroke="#178866" stroke-width="1.6"/><text x="474.5" y="187" text-anchor="middle" font-size="13" font-weight="600" fill="#0F5943">SO 2</text>
+                  <rect x="286" y="220" width="248" height="56" rx="8" fill="#178866" stroke="#1E2D38" stroke-width="1.8"/><text x="410" y="253" text-anchor="middle" font-size="14" font-weight="700" fill="#FFF">Hypervisor Tipo 2</text>
+                  <rect x="286" y="286" width="248" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.8"/><text x="410" y="319" text-anchor="middle" font-size="14" font-weight="600" fill="#3D515E">SO Hospedeiro</text>
+                  <rect x="286" y="352" width="248" height="56" rx="8" fill="#EBF2F5" stroke="#1E2D38" stroke-width="1.8"/><text x="410" y="385" text-anchor="middle" font-size="14" font-weight="600" fill="#1F3B4A">Hardware Físico</text>
+
+                  <!-- Stack 3 (4 layers) -->
+                  <rect x="558" y="154" width="119" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/><text x="617.5" y="187" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">App 1</text>
+                  <rect x="687" y="154" width="119" height="56" rx="8" fill="#FFF" stroke="#1E2D38" stroke-width="1.6"/><text x="746.5" y="187" text-anchor="middle" font-size="13" font-weight="600" fill="#0F1D26">App 2</text>
+                  <rect x="558" y="220" width="248" height="56" rx="8" fill="#178866" stroke="#1E2D38" stroke-width="1.8"/><text x="682" y="253" text-anchor="middle" font-size="14" font-weight="700" fill="#FFF">Container Engine</text>
+                  <rect x="558" y="286" width="248" height="56" rx="8" fill="#E7F6F1" stroke="#178866" stroke-width="1.8"/><text x="682" y="319" text-anchor="middle" font-size="14" font-weight="600" fill="#0F5943">SO Host (Kernel)</text>
+                  <rect x="558" y="352" width="248" height="56" rx="8" fill="#EBF2F5" stroke="#1E2D38" stroke-width="1.8"/><text x="682" y="385" text-anchor="middle" font-size="14" font-weight="600" fill="#1F3B4A">Hardware Físico</text>
+
+                  <line x1="14" y1="432" x2="806" y2="432" stroke="#E2EBF0" stroke-width="1.5"/>
+                  <text x="14" y="458" font-size="13" fill="#3D515E"><tspan font-weight="700">Destaque verde:</tspan> camada responsável pelo isolamento. Containers eliminam o SO convidado duplicado,</text>
+                  <text x="14" y="482" font-size="13" fill="#6E8391">reduzindo drasticamente o consumo de RAM, enquanto VMs garantem isolamento completo de kernel.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Virtualização de Sistemas Operacionais</span><span class="num">10</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 11: REDES VIRTUAIS + FIGURA 6 ==================== -->
+      <section class="slide" data-title="Virtualização na Prática de Redes" data-tag="Virtualização · Figura 6" data-bar="linear-gradient(90deg, #17866D, #178867)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #17866D, #178867);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-green"><span class="dot" style="background:#178769"></span>Virtualização de SO</span>
+            <span class="slide-type">Redes Virtuais · Topologia</span>
+          </div>
+          <h1 class="slide-title">Virtualização na Prática de Redes</h1>
+          <p class="slide-subtitle">Como o vSwitch e os modos Bridge, NAT e Host-Only conectam máquinas virtuais à rede.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Dentro do hypervisor, cada máquina virtual recebe uma placa de rede virtual (vNIC) ligada a um switch em software (vSwitch, como Open vSwitch). O modo de rede escolhido determina quem consegue alcançar a VM e se ela acessa a internet.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#178769; --card-border:var(--green-border);">
+                  <h3>Modo Bridge vs. Modo NAT</h3>
+                  <p>Bridge coloca a VM direto na LAN física com IP próprio; NAT isola a VM em rede interna e traduz o tráfego pelo IP do host.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#178769; --card-border:var(--green-border);">
+                  <h3>Host-Only / Rede Interna</h3>
+                  <p>Cria um segmento fechado apenas entre VMs e o hospedeiro, sem acesso externo — ideal para laboratórios de firewall e roteamento.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--green-border); --panel-tint:var(--green-tint); --panel-dark:var(--green-dark);">
+              <div class="panel-header">Figura 6 · Fluxo de Rede: Bridge, NAT e Host-Only</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Topologia vSwitch, Bridge, NAT e Host-Only">
+                  <defs>
+                    <marker id="arr-gr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#178866"/></marker>
+                    <marker id="arr-bl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1D6FA8"/></marker>
+                    <marker id="arr-al" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#B84A39"/></marker>
+                    <marker id="arr-f6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker>
+                  </defs>
+                  <!-- Host Box -->
+                  <rect x="12" y="24" width="224" height="378" rx="14" fill="#F2FAF7" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="124" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#0F5943">HOST FÍSICO</text>
+
+                  <rect x="34" y="74" width="180" height="56" rx="10" fill="#FFF" stroke="#178866" stroke-width="1.8"/>
+                  <text x="124" y="107" text-anchor="middle" font-size="14" font-weight="700" fill="#0F1D26">VM 1 (vNIC)</text>
+
+                  <rect x="34" y="152" width="180" height="56" rx="10" fill="#FFF" stroke="#178866" stroke-width="1.8"/>
+                  <text x="124" y="185" text-anchor="middle" font-size="14" font-weight="700" fill="#0F1D26">VM 2 (vNIC)</text>
+
+                  <line x1="124" y1="208" x2="124" y2="256" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f6)"/>
+                  <path d="M214,102 H226 V280 H214" fill="none" stroke="#1E2D38" stroke-width="1.6"/>
+
+                  <rect x="34" y="258" width="180" height="74" rx="10" fill="#178866" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="124" y="290" text-anchor="middle" font-size="17" font-weight="700" fill="#FFFFFF">vSwitch</text>
+                  <text x="124" y="313" text-anchor="middle" font-size="12" fill="#D9F4EC">Switch Virtual</text>
+                  <text x="124" y="366" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#0F5943">NIC Física do Host</text>
+
+                  <!-- Bridge -->
+                  <path d="M236,276 H296 V76 H410" fill="none" stroke="#178866" stroke-width="2.2" marker-end="url(#arr-gr)"/>
+                  <rect x="412" y="28" width="398" height="96" rx="12" fill="#FFF" stroke="#178866" stroke-width="2"/>
+                  <rect x="430" y="42" width="174" height="24" rx="12" fill="#E7F6F1"/><text x="517" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#0F5943">BRIDGE · MODO PONTE</text>
+                  <text x="430" y="88" font-size="14" font-weight="600" fill="#0F1D26">IP próprio na LAN física (ex.: 192.168.1.45)</text>
+                  <text x="430" y="109" font-size="12.5" fill="#3D515E">Visível para todos os dispositivos da rede local.</text>
+
+                  <!-- NAT -->
+                  <path d="M236,295 H322 V210 H410" fill="none" stroke="#1D6FA8" stroke-width="2.2" marker-end="url(#arr-bl)"/>
+                  <rect x="412" y="162" width="398" height="96" rx="12" fill="#1D6FA8" stroke="#1E2D38" stroke-width="2"/>
+                  <text x="430" y="188" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#DCEEF9">NAT · TRADUÇÃO PELO HOST</text>
+                  <text x="430" y="216" font-size="15" font-weight="700" fill="#FFFFFF">Acessa a internet usando o IP do Host</text>
+                  <text x="430" y="239" font-size="12.5" fill="#DCEEF9">Rede interna privada; conexões externas bloqueadas.</text>
+
+                  <!-- Host-Only (dashed + X) -->
+                  <path d="M236,318 H322 V344 H410" fill="none" stroke="#B84A39" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arr-al)"/>
+                  <path d="M352,332 L374,356 M374,332 L352,356" stroke="#B84A39" stroke-width="3"/>
+                  <rect x="412" y="296" width="398" height="96" rx="12" fill="#FDF0ED" stroke="#B84A39" stroke-width="2"/>
+                  <text x="430" y="322" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#B84A39">HOST-ONLY · ISOLADA</text>
+                  <text x="430" y="350" font-size="15" font-weight="700" fill="#B84A39">Comunicação apenas entre VMs e Host</text>
+                  <text x="430" y="373" font-size="12.5" fill="#3D515E">Sem acesso à internet — ideal para testes seguros.</text>
+
+                  <line x1="12" y1="430" x2="810" y2="430" stroke="#E2EBF0" stroke-width="1.5"/>
+                  <text x="12" y="462" font-size="13" fill="#6E8391">Em produção, vSwitches também aplicam VLANs (802.1Q) para segmentar tráfego de diferentes VMs no mesmo cabo físico.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Virtualização de Sistemas Operacionais</span><span class="num">11</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 12: BENEFÍCIOS E DESAFIOS ==================== -->
+      <section class="slide" data-title="Benefícios e Desafios da Virtualização" data-tag="Virtualização · Balanço" data-bar="linear-gradient(90deg, #178868, #178866)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #178868, #178866);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-green"><span class="dot" style="background:#178866"></span>Virtualização de SO</span>
+            <span class="slide-type">Análise · Prós e Contras</span>
+          </div>
+          <h1 class="slide-title">Benefícios e Desafios da Virtualização</h1>
+          <p class="slide-subtitle">Ganhos de eficiência obtidos com virtualização e os cuidados operacionais indispensáveis.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">A adoção de máquinas virtuais e containers transformou a gestão de servidores e laboratórios de redes. Ainda assim, consolidar múltiplos serviços no mesmo hardware requer planejamento de desempenho, redundância e governança.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:#178866; --card-border:var(--green-border);">
+                  <h3>Consolidação e Economia</h3>
+                  <p>Reduz servidores físicos ociosos, diminuindo consumo de energia, espaço em rack e custos de refrigeração no data center.</p>
+                </div>
+                <div class="h-card" style="--card-accent:#178866; --card-border:var(--green-border);">
+                  <h3>Risco de Ponto Único de Falha</h3>
+                  <p>Se um host físico parar sem cluster de alta disponibilidade (HA), todas as VMs nele hospedadas ficam indisponíveis.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--green-border); --panel-tint:var(--green-tint); --panel-dark:var(--green-dark);">
+              <div class="panel-header">Balanço Técnico: Ganhos vs. Pontos de Atenção</div>
+              <div class="panel-body">
+                <div class="num-list">
+                  <div class="num-row"><span class="tag-pill pro">PRÓ</span><div class="row-content"><h4>Isolamento e Snapshots Rápidos</h4><p>Testes de rede ou atualizações podem ser revertidos em segundos sem afetar os demais ambientes.</p></div></div>
+                  <div class="num-row"><span class="tag-pill pro">PRÓ</span><div class="row-content"><h4>Portabilidade e Live Migration</h4><p>VMs encapsuladas em arquivos podem ser migradas entre hosts físicos em execução com mínima parada.</p></div></div>
+                  <div class="num-row"><span class="tag-pill warn">ATENÇÃO</span><div class="row-content"><h4>Overhead de CPU, Memória e E/S</h4><p>A camada de abstração exige hardware com extensões de virtualização e dimensionamento correto de RAM.</p></div></div>
+                  <div class="num-row"><span class="tag-pill warn">ATENÇÃO</span><div class="row-content"><h4>Complexidade de Rede e VM Sprawl</h4><p>Criar VMs sem controle esgota recursos e multiplica regras de vSwitch, VLANs e firewalls virtuais.</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Virtualização de Sistemas Operacionais</span><span class="num">12</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 13: INTEGRAÇÃO E CONCLUSÃO + FIGURA 7 ==================== -->
+      <section class="slide" data-title="Como os Dois Conceitos se Conectam" data-tag="Integração · Figura 7" data-bar="linear-gradient(90deg, #1D6FA8, #178866)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1D6FA8, #178866);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-uni"><span class="dot" style="background:#1D6FA8"></span>Visão Integrada · Conclusão</span>
+            <span class="slide-type">Fechamento · Fluxo Completo</span>
+          </div>
+          <h1 class="slide-title">Como os Dois Conceitos se Conectam</h1>
+          <p class="slide-subtitle">A virtualização cria a base flexível; a computação em nuvem entrega essa base em escala pela rede.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Embora muitas vezes citados juntos, virtualização e nuvem cumprem papéis complementares. A virtualização é a tecnologia que abstrai e isola o hardware físico; a computação em nuvem orquestra essa camada e a disponibiliza como serviço elástico via internet.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:var(--blue); --card-border:var(--blue-border);">
+                  <h3>Computação em Nuvem (Modelo de Entrega)</h3>
+                  <p>Foco em autoatendimento, elasticidade global, cobrança por uso e acesso via rede (IaaS, PaaS, SaaS sobre VPC/SDN).</p>
+                </div>
+                <div class="h-card" style="--card-accent:var(--green); --card-border:var(--green-border);">
+                  <h3>Virtualização de SO (Base Tecnológica)</h3>
+                  <p>Foco em dividir hardware físico em VMs, containers e switches virtuais isolados — funciona local ou dentro da nuvem.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--uni-dark);">
+              <div class="panel-header">Figura 7 · Integração da Base Física até o Usuário</div>
+              <div class="panel-body diagram-body">
+                <svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fluxo completo em 4 camadas da base física à nuvem">
+                  <defs>
+                    <marker id="arr-f7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1E2D38"/></marker>
+                  </defs>
+                  <!-- Step 1 -->
+                  <rect x="30" y="18" width="760" height="78" rx="12" fill="#F2FAF7" stroke="#178866" stroke-width="2"/>
+                  <circle cx="68" cy="57" r="19" fill="#178866"/><text x="68" y="63" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700" fill="#FFF">1</text>
+                  <text x="106" y="48" font-size="19" font-weight="700" fill="#0F5943">Hardware Físico</text>
+                  <text x="106" y="74" font-size="14" fill="#3D515E">Servidores, Storage e NICs do Data Center</text>
+                  <line x1="410" y1="96" x2="410" y2="128" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f7)"/>
+
+                  <!-- Step 2 -->
+                  <rect x="30" y="130" width="760" height="78" rx="12" fill="#178866" stroke="#1E2D38" stroke-width="2"/>
+                  <circle cx="68" cy="169" r="19" fill="#FFF"/><text x="68" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700" fill="#178866">2</text>
+                  <text x="106" y="160" font-size="19" font-weight="700" fill="#FFFFFF">Virtualização de SO</text>
+                  <text x="106" y="186" font-size="14" fill="#D9F4EC">Hypervisor (VMM) + VMs / Containers + vSwitch</text>
+                  <line x1="410" y1="208" x2="410" y2="240" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f7)"/>
+
+                  <!-- Step 3 -->
+                  <rect x="30" y="242" width="760" height="78" rx="12" fill="#EBF2F5" stroke="#1E2D38" stroke-width="2"/>
+                  <circle cx="68" cy="281" r="19" fill="#1E2D38"/><text x="68" y="287" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700" fill="#FFF">3</text>
+                  <text x="106" y="272" font-size="19" font-weight="700" fill="#1F3B4A">Orquestração e Redes Virtuais</text>
+                  <text x="106" y="298" font-size="14" fill="#3D515E">VPCs, Controlador SDN, Firewalls NFV e Auto-Scaling</text>
+                  <line x1="410" y1="320" x2="410" y2="352" stroke="#1E2D38" stroke-width="2" marker-end="url(#arr-f7)"/>
+
+                  <!-- Step 4 -->
+                  <rect x="30" y="354" width="760" height="78" rx="12" fill="#1D6FA8" stroke="#1E2D38" stroke-width="2"/>
+                  <circle cx="68" cy="393" r="19" fill="#FFF"/><text x="68" y="399" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700" fill="#1D6FA8">4</text>
+                  <text x="106" y="384" font-size="19" font-weight="700" fill="#FFFFFF">Serviços de Computação em Nuvem</text>
+                  <text x="106" y="410" font-size="14" fill="#DCEEF9">Entrega sob demanda via Internet (IaaS · PaaS · SaaS)</text>
+
+                  <line x1="30" y1="458" x2="790" y2="458" stroke="#E2EBF0" stroke-width="1.5"/>
+                  <text x="410" y="490" text-anchor="middle" font-size="16" font-weight="700" fill="#0F1D26">Obrigado pela atenção! · Espaço aberto para perguntas e discussão.</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem &amp; Virtualização de SO</span><span class="num">13</span></div>
+        </div>
+      </section>
+
+      <!-- ==================== SLIDE 14: REFERÊNCIAS BIBLIOGRÁFICAS ==================== -->
+      <section class="slide" data-title="Referências Bibliográficas" data-tag="ABNT · NBR 6023" data-bar="linear-gradient(90deg, #1D6FA8, #178866)">
+        <div class="top-bar" style="background: linear-gradient(90deg, #1D6FA8, #178866);"></div>
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <span class="pill pill-uni"><span class="dot" style="background:#1D6FA8"></span>Referências Bibliográficas</span>
+            <span class="slide-type">Padrão ABNT · NBR 6023</span>
+          </div>
+          <h1 class="slide-title">Referências Bibliográficas</h1>
+          <p class="slide-subtitle">Normas técnicas e obras clássicas consultadas na elaboração deste trabalho acadêmico.</p>
+
+          <div class="conceito-grid">
+            <div class="col-left">
+              <p class="lead-text">Todo o conteúdo técnico e os diagramas conceituais desta apresentação foram fundamentados na definição oficial do NIST para computação em nuvem e nas principais bibliografias adotadas em cursos de Redes e Sistemas Operacionais.</p>
+              <div class="left-cards">
+                <div class="h-card" style="--card-accent:var(--blue); --card-border:var(--blue-border);">
+                  <h3>Computação em Nuvem e Redes</h3>
+                  <p>Baseado na publicação NIST SP 800-145 e nas obras de Kurose &amp; Ross (8ª ed.) e Tanenbaum, Feamster &amp; Wetherall (6ª ed.).</p>
+                </div>
+                <div class="h-card" style="--card-accent:var(--green); --card-border:var(--green-border);">
+                  <h3>Virtualização e Sistemas Operacionais</h3>
+                  <p>Fundamentado em Tanenbaum &amp; Bos (5ª ed., 2024) e Silberschatz, Galvin &amp; Gagne (9ª ed.), cobrindo hypervisors e isolamento.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-panel" style="--panel-border:var(--blue-border); --panel-tint:var(--blue-tint); --panel-dark:var(--uni-dark);">
+              <div class="panel-header">Fontes Consultadas (ABNT NBR 6023)</div>
+              <div class="panel-body">
+                <div class="num-list">
+                  <div class="num-row"><div class="num-badge blue">01</div><p class="ref-text">MELL, Peter; GRANCE, Timothy. <strong>The NIST Definition of Cloud Computing</strong>. Special Publication 800-145. Gaithersburg: NIST, 2011. DOI: 10.6028/NIST.SP.800-145.</p></div>
+                  <div class="num-row"><div class="num-badge blue">02</div><p class="ref-text">KUROSE, James F.; ROSS, Keith W. <strong>Redes de computadores e a internet</strong>: uma abordagem top-down. 8. ed. São Paulo: Pearson Education do Brasil, 2021.</p></div>
+                  <div class="num-row"><div class="num-badge blue">03</div><p class="ref-text">TANENBAUM, Andrew S.; FEAMSTER, Nick; WETHERALL, David. <strong>Redes de computadores</strong>. 6. ed. São Paulo: Pearson, 2021.</p></div>
+                  <div class="num-row"><div class="num-badge green">04</div><p class="ref-text">TANENBAUM, Andrew S.; BOS, Herbert. <strong>Sistemas operacionais modernos</strong>. 5. ed. São Paulo: Pearson, 2024.</p></div>
+                  <div class="num-row"><div class="num-badge green">05</div><p class="ref-text">SILBERSCHATZ, Abraham; GALVIN, Peter Baer; GAGNE, Greg. <strong>Fundamentos de sistemas operacionais</strong>. 9. ed. Rio de Janeiro: LTC, 2015.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-footer"><span>Informática Básica · Computação em Nuvem &amp; Virtualização de SO</span><span class="num">14</span></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Subtle Side Arrows -->
+  <button class="edge-nav edge-prev" id="edgePrev" aria-label="Slide anterior" title="Anterior (←)">‹</button>
+  <button class="edge-nav edge-next" id="edgeNext" aria-label="Próximo slide" title="Próximo (→)">›</button>
+
+  <!-- Floating PowerPoint-Style HUD -->
+  <nav class="hud" id="hud" aria-label="Controles da apresentação">
+    <a class="hud-btn" href="index.html" title="Voltar para Trabalho J" style="text-decoration:none;">&larr; <span class="hud-label">Voltar</span></a>
+    <span class="hud-sep"></span>
+    <button class="hud-btn" id="btnPrev" title="Slide anterior (←)">‹ <span class="hud-label">Anterior</span></button>
+    <div class="hud-progress-wrap">
+      <span class="hud-counter" id="counter">01 / 14</span>
+      <div class="hud-track" id="progressTrack" title="Clique para navegar">
+        <div class="hud-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <button class="hud-btn primary" id="btnNext" title="Próximo slide (→ ou Espaço)"><span class="hud-label">Próximo</span> ›</button>
+    <span class="hud-sep"></span>
+    <button class="hud-btn" id="btnGrid" title="Grade de slides (G)">⊞ <span class="hud-label">Slides</span></button>
+    <button class="hud-btn" id="btnFs" title="Tela cheia (F)">⛶ <span class="hud-label">Tela cheia</span></button>
+  </nav>
+
+  <!-- Slide Overview Grid Modal -->
+  <div class="grid-modal" id="gridModal" role="dialog" aria-modal="true" aria-label="Visão geral dos slides">
+    <div class="grid-modal-head">
+      <h2>Todos os Slides (14)</h2>
+      <button class="grid-close" id="btnGridClose">Fechar (Esc)</button>
+    </div>
+    <div class="grid-cards" id="gridCards"></div>
+  </div>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const total = slides.length;
+      const stage = document.getElementById('stage');
+      const hud = document.getElementById('hud');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+      const edgePrev = document.getElementById('edgePrev');
+      const edgeNext = document.getElementById('edgeNext');
+      const counter = document.getElementById('counter');
+      const progressFill = document.getElementById('progressFill');
+      const progressTrack = document.getElementById('progressTrack');
+      const btnGrid = document.getElementById('btnGrid');
+      const gridModal = document.getElementById('gridModal');
+      const gridCards = document.getElementById('gridCards');
+      const btnGridClose = document.getElementById('btnGridClose');
+      const btnFs = document.getElementById('btnFs');
+
+      let current = 0;
+      let idleTimer = null;
+
+      function fitStage() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const isMobile = vw <= 960 || (vh > vw && vw <= 1024);
+        if (isMobile) {
+          stage.style.transform = '';
+          return;
+        }
+        const scale = Math.min(vw / 1920, vh / 1080);
+        stage.style.transform = `scale(${scale})`;
+      }
+
+      function goTo(index, updateHash = true) {
+        const next = Math.max(0, Math.min(total - 1, index));
+        if (next === current && slides[current].classList.contains('active')) {
+          syncUI();
+          return;
+        }
+        const forward = next > current;
+        slides.forEach((el, i) => {
+          el.classList.remove('active', 'prev-out');
+          if (i < next) el.classList.add('prev-out');
+        });
+        slides[next].classList.add('active');
+        slides[next].scrollTop = 0;
+        current = next;
+        if (updateHash) history.replaceState(null, '', `#slide-${current + 1}`);
+        syncUI();
+      }
+
+      function syncUI() {
+        const num = String(current + 1).padStart(2, '0');
+        const tot = String(total).padStart(2, '0');
+        counter.textContent = `${num} / ${tot}`;
+        progressFill.style.width = `${((current + 1) / total) * 100}%`;
+        btnPrev.disabled = edgePrev.disabled = current === 0;
+        btnNext.disabled = edgeNext.disabled = current === total - 1;
+        // Shift Next button hue gently from blue to green as you advance!
+        const nextBtnColor = current >= 7 ? '#178866' : '#1D6FA8';
+        btnNext.style.background = nextBtnColor;
+        document.querySelectorAll('.grid-thumb').forEach((el, i) => {
+          el.classList.toggle('current', i === current);
+        });
+      }
+
+      function buildGrid() {
+        gridCards.innerHTML = '';
+        slides.forEach((sl, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'grid-thumb' + (i === current ? ' current' : '');
+          btn.innerHTML = `
+            <div class="grid-thumb-bar" style="background:${sl.dataset.bar || '#1D6FA8'}"></div>
+            <div class="grid-thumb-body">
+              <div class="grid-thumb-num">SLIDE ${String(i + 1).padStart(2, '0')}</div>
+              <div class="grid-thumb-title">${sl.dataset.title || ''}</div>
+              <div class="grid-thumb-tag">${sl.dataset.tag || ''}</div>
+            </div>`;
+          btn.addEventListener('click', () => {
+            goTo(i);
+            gridModal.classList.remove('open');
+          });
+          gridCards.appendChild(btn);
+        });
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.().catch(() => {});
+        }
+      }
+
+      function pokeHud() {
+        hud.classList.remove('idle');
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          if (!gridModal.classList.contains('open')) hud.classList.add('idle');
+        }, 3200);
+      }
+
+      btnPrev.addEventListener('click', () => goTo(current - 1));
+      btnNext.addEventListener('click', () => goTo(current + 1));
+      edgePrev.addEventListener('click', () => goTo(current - 1));
+      edgeNext.addEventListener('click', () => goTo(current + 1));
+
+      progressTrack.addEventListener('click', (e) => {
+        const rect = progressTrack.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        goTo(Math.min(total - 1, Math.floor(ratio * total)));
+      });
+
+      btnGrid.addEventListener('click', () => {
+        buildGrid();
+        gridModal.classList.add('open');
+      });
+      btnGridClose.addEventListener('click', () => gridModal.classList.remove('open'));
+      gridModal.addEventListener('click', (e) => {
+        if (e.target === gridModal) gridModal.classList.remove('open');
+      });
+
+      btnFs.addEventListener('click', toggleFullscreen);
+      document.addEventListener('fullscreenchange', () => {
+        const label = btnFs.querySelector('.hud-label');
+        if (label) label.textContent = document.fullscreenElement ? 'Sair' : 'Tela cheia';
+        fitStage();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        pokeHud();
+        if (gridModal.classList.contains('open')) {
+          if (e.key === 'Escape' || e.key.toLowerCase() === 'g') gridModal.classList.remove('open');
+          return;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          goTo(current - 1);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          goTo(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          goTo(total - 1);
+        } else if (e.key.toLowerCase() === 'f') {
+          toggleFullscreen();
+        } else if (e.key.toLowerCase() === 'g') {
+          buildGrid();
+          gridModal.classList.add('open');
+        }
+      });
+
+      // Touch swipe support
+      let touchX = null;
+      let touchY = null;
+      document.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          touchX = e.touches[0].clientX;
+          touchY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        if (touchX === null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        const dy = e.changedTouches[0].clientY - touchY;
+        if (Math.abs(dx) > 54 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+          if (dx < 0) goTo(current + 1);
+          else goTo(current - 1);
+        }
+        touchX = touchY = null;
+      }, { passive: true });
+
+      window.addEventListener('mousemove', pokeHud, { passive: true });
+      window.addEventListener('resize', fitStage);
+
+      // Initialize from hash if present
+      const m = location.hash.match(/^#slide-(\d+)$/);
+      const startIdx = m ? Math.max(0, Math.min(total - 1, parseInt(m[1], 10) - 1)) : 0;
+      fitStage();
+      buildGrid();
+      goTo(startIdx, false);
+      pokeHud();
+    })();
+  </script>
+</body>
+</html>

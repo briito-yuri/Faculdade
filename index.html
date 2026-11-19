@@ -28,10 +28,12 @@
         :root:not([data-theme="light"]) { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
         :root:not([data-theme="light"]) .card.suico { --blue: #7d93ff; --blue-wash: #1b2140; }
         :root:not([data-theme="light"]) .card.botanico { --bot-bg: #232625; --bot-sage: #3A3F3B; --bot-line: #40453F; --bot-ink: #E2DED4; --bot-text: #B9B6AD; --bot-accent: #9BB08C; --bot-on-accent: #1D2219; --bot-wash: #2C302D; }
+        :root:not([data-theme="light"]) .card.cloud { --cl-bg: #15222E; --cl-wash: #173046; --cl-border: #254865; --cl-ink: #EAF2F7; --cl-text: #BDD0DD; --cl-accent: #4BA8E6; --cl-kicker-bg: #173046; --cl-kicker-ink: #8CCCF7; }
     }
     :root[data-theme="dark"] { --paper: #161616; --ink: #ededed; --wash: #242424; --line: #c9c9c9; --muted: #a3a3a3; --desk: #0b0b0b; --sign-text: #7a5a00; color-scheme: dark; }
     :root[data-theme="dark"] .card.suico { --blue: #7d93ff; --blue-wash: #1b2140; }
     :root[data-theme="dark"] .card.botanico { --bot-bg: #232625; --bot-sage: #3A3F3B; --bot-line: #40453F; --bot-ink: #E2DED4; --bot-text: #B9B6AD; --bot-accent: #9BB08C; --bot-on-accent: #1D2219; --bot-wash: #2C302D; }
+    :root[data-theme="dark"] .card.cloud { --cl-bg: #15222E; --cl-wash: #173046; --cl-border: #254865; --cl-ink: #EAF2F7; --cl-text: #BDD0DD; --cl-accent: #4BA8E6; --cl-kicker-bg: #173046; --cl-kicker-ink: #8CCCF7; }
 
     /* No amarelo de placa o texto continua preto, em qualquer tema */
     .card-note, strong.accent, .tag, .kicker .label { --ink: #111111; --line: #333333; --muted: #555555; --wash: #f3f3f3; --paper: #ffffff; color: var(--ink); }
@@ -236,6 +238,58 @@
     }
     .card.botanico:hover .badge { background: var(--bot-ink); color: var(--bot-bg); }
 
+    /* CARD NO ESTILO PRÓPRIO DE TRABALHO J (Cloud Blue -> Emerald Green) */
+    .card.cloud {
+        --cl-bg: #F7FAFB;
+        --cl-wash: #EAF4FB;
+        --cl-border: #C5DFEF;
+        --cl-ink: #0F1D26;
+        --cl-text: #334652;
+        --cl-accent: #1D6FA8;
+        --cl-kicker-bg: #EAF4FB;
+        --cl-kicker-ink: #124970;
+        position: relative;
+        overflow: hidden;
+        background: var(--cl-bg);
+        border: 1.5px solid var(--cl-border);
+        border-radius: 16px;
+        color: var(--cl-ink);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    .card.cloud::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #1D6FA8, #178866);
+    }
+    .card.cloud:hover { background: var(--cl-wash); border-color: var(--cl-accent); }
+    .card.cloud:focus-visible { outline-color: var(--cl-accent); }
+    .card.cloud .cl-head {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+        padding-top: 4px;
+    }
+    .card.cloud .cl-num {
+        padding: 4px 12px; border-radius: 999px;
+        background: linear-gradient(135deg, #1D6FA8, #178866); color: #FFFFFF;
+        font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    }
+    .card.cloud .cl-kicker {
+        padding: 4px 11px; border-radius: 999px;
+        background: var(--cl-kicker-bg); color: var(--cl-kicker-ink);
+        font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .card.cloud h3 { font-size: clamp(21px, 3vw, 26px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; color: var(--cl-ink); }
+    .card.cloud p { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--cl-text); }
+    .card.cloud .card-footer { border-top: 1px solid var(--cl-border); }
+    .card.cloud .badge {
+        border-radius: 999px; background: linear-gradient(90deg, #1D6FA8, #178866); color: #FFFFFF;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+        padding: 8px 16px;
+    }
+    .card.cloud:hover .badge { filter: brightness(1.08); }
+
     /* CARD AINDA NÃO DISPONÍVEL */
     .card.is-soon { border-style: dashed; color: var(--muted); pointer-events: none; }
     .card.is-soon .num { background: var(--muted); }
@@ -343,6 +397,21 @@
                     <span class="badge">EM BREVE</span>
                 </div>
             </div>
+
+            <!-- CARD TEMPORÁRIO: TRABALHO J (estilo próprio Cloud & Virtualização) -->
+            <a href="TrabalhoJ/index.html" class="card cloud">
+                <div class="cl-head">
+                    <span class="cl-num">05</span>
+                    <span class="cl-kicker">Nuvem &amp; Virtualização</span>
+                </div>
+                <div>
+                    <h3>Trabalho J</h3>
+                    <p>Cartilha de estudo responsiva e slides interativos da apresentação sobre Computação em Nuvem e Virtualização de SO.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="badge">ACESSAR TRABALHO &rarr;</span>
+                </div>
+            </a>
         </div>
     </div>
 

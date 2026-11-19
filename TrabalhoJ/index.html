@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalho J - Faculdade</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+    <style>
+    /* PALETA PRÓPRIA — CLOUD & VIRTUALIZAÇÃO (azul-nuvem #1D6FA8 -> verde-esmeralda #178866) */
+    :root {
+        --canvas: #F3F8FB;
+        --surface: #FFFFFF;
+        --ink: #0F1D26;
+        --ink-body: #334652;
+        --ink-muted: #5F7482;
+        --divider: #DCE7EE;
+        --blue: #1D6FA8;
+        --blue-dark: #124970;
+        --blue-soft: #EAF4FB;
+        --blue-border: #C5DFEF;
+        --green: #178866;
+        --green-dark: #0F5943;
+        --green-soft: #E7F6F1;
+        --green-border: #BEE3D6;
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --canvas: #0E1720;
+            --surface: #15222E;
+            --ink: #EAF2F7;
+            --ink-body: #BDD0DD;
+            --ink-muted: #8FA8B8;
+            --divider: #243646;
+            --blue: #4BA8E6;
+            --blue-dark: #8CCCF7;
+            --blue-soft: #173046;
+            --blue-border: #254865;
+            --green: #2CC093;
+            --green-dark: #7CE5C3;
+            --green-soft: #14362D;
+            --green-border: #1F5445;
+            color-scheme: dark;
+        }
+    }
+    :root[data-theme="dark"] {
+        --canvas: #0E1720;
+        --surface: #15222E;
+        --ink: #EAF2F7;
+        --ink-body: #BDD0DD;
+        --ink-muted: #8FA8B8;
+        --divider: #243646;
+        --blue: #4BA8E6;
+        --blue-dark: #8CCCF7;
+        --blue-soft: #173046;
+        --blue-border: #254865;
+        --green: #2CC093;
+        --green-dark: #7CE5C3;
+        --green-soft: #14362D;
+        --green-border: #1F5445;
+        color-scheme: dark;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; overflow-wrap: break-word; }
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-accent {
+        height: 6px;
+        width: 100%;
+        background: linear-gradient(90deg, #1D6FA8, #178866);
+        flex-shrink: 0;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+        flex: 1 0 auto;
+    }
+    @media (min-width: 768px) {
+        .container { padding: 48px 32px 56px; }
+    }
+
+    .topo {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        min-height: 40px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: filter 0.15s;
+    }
+    .back-link:hover { filter: brightness(1.08); }
+
+    .tema-btn {
+        margin-left: auto;
+        padding: 9px 16px;
+        min-height: 40px;
+        cursor: pointer;
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--ink);
+        border: 1.5px solid var(--blue-border);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 700;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .tema-btn:hover { background: var(--blue-soft); border-color: var(--blue); }
+
+    header.hero {
+        position: relative;
+        overflow: hidden;
+        background: var(--surface);
+        border: 1.5px solid var(--blue-border);
+        border-radius: 20px;
+        padding: 26px 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 28px rgba(15, 29, 38, 0.06);
+    }
+    header.hero::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #1D6FA8, #178866);
+    }
+    @media (min-width: 768px) {
+        header.hero { padding: 34px 36px; }
+    }
+
+    .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: var(--blue-dark);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+    }
+    .kicker-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1D6FA8, #178866);
+    }
+
+    h1 {
+        font-size: clamp(28px, 6.5vw, 44px);
+        line-height: 1.12;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0 0 10px 0;
+    }
+
+    p.subtitle {
+        max-width: 48em;
+        margin: 0;
+        color: var(--ink-body);
+        font-size: clamp(14.5px, 2.2vw, 16.5px);
+        line-height: 1.6;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+            "num   body"
+            "badge badge";
+        gap: 14px 18px;
+        align-items: start;
+        background: var(--surface);
+        border: 1.5px solid var(--blue-border);
+        border-radius: 16px;
+        padding: 20px 18px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 6px 20px rgba(15, 29, 38, 0.05);
+        transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    }
+    .card.green { border-color: var(--green-border); }
+
+    @media (min-width: 640px) {
+        .card {
+            grid-template-columns: auto 1fr auto;
+            grid-template-areas: "num body badge";
+            align-items: center;
+            gap: 20px;
+            padding: 24px 26px;
+        }
+    }
+
+    .card:hover { border-color: var(--blue); background: var(--blue-soft); transform: translateY(-1px); }
+    .card.green:hover { border-color: var(--green); background: var(--green-soft); }
+    .card:focus-visible, .back-link:focus-visible, .tema-btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+    .card .num {
+        grid-area: num;
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #FFFFFF;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 700;
+    }
+    .card.green .num { background: var(--green); }
+
+    .card .body { grid-area: body; min-width: 0; }
+
+    .card h3 {
+        font-size: clamp(18px, 2.8vw, 22px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.22;
+        margin: 0 0 4px 0;
+    }
+
+    .card .sub {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--blue-dark);
+    }
+    .card.green .sub { color: var(--green-dark); }
+
+    .card p {
+        color: var(--ink-body);
+        font-size: 14.5px;
+        line-height: 1.58;
+        margin: 0;
+    }
+
+    .card .meta {
+        margin-top: 10px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+    }
+
+    .badge {
+        grid-area: badge;
+        justify-self: start;
+        padding: 9px 16px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #FFFFFF;
+        font-size: 12.5px;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: filter 0.15s;
+    }
+    .card.green .badge { background: var(--green); }
+    .card:hover .badge { filter: brightness(1.08); }
+
+    footer {
+        width: 100%;
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 0 16px 24px;
+    }
+    @media (min-width: 768px) {
+        footer { padding: 0 32px 40px; }
+    }
+    footer .inner {
+        border-top: 1.5px solid var(--divider);
+        padding-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+    }
+    </style>
+</head>
+<body>
+    <div class="top-accent" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="topo">
+            <a href="../index.html" class="back-link">&larr; Voltar ao painel principal</a>
+            <button type="button" class="tema-btn">Tema claro/escuro</button>
+        </div>
+
+        <header class="hero">
+            <div class="kicker"><span class="kicker-dot"></span><span>Informática Básica · Prof. Jeyniglis Matos</span></div>
+            <h1>Trabalho J</h1>
+            <p class="subtitle">Materiais da apresentação sobre <strong>Computação em Nuvem e Virtualização de Sistemas Operacionais</strong> — cartilha de estudo responsiva e slides interativos prontos para abrir no celular ou computador.</p>
+        </header>
+
+        <div class="card-grid">
+            <a href="CartilhaNuvemVirtualizacao.html" class="card">
+                <span class="num">01</span>
+                <div class="body">
+                    <h3>Cartilha de Estudo</h3>
+                    <p class="sub">Foco nos Slides 04 e 05 + roteiro de fala e perguntas do professor</p>
+                    <p>Guia completo e responsivo cobrindo toda a apresentação: modelos de serviço (IaaS, PaaS, SaaS), modelos de implantação (Pública, Privada, Híbrida e Multicloud), redes na nuvem (VPC/SDN/NFV), virtualização de SO, diagramas e respostas prontas.</p>
+                    <p class="meta">6 blocos · Diagramas SVG · Roteiro &amp; Q&amp;A</p>
+                </div>
+                <span class="badge">ABRIR CARTILHA &rarr;</span>
+            </a>
+
+            <a href="SlidesNuvemVirtualizacao.html" class="card green">
+                <span class="num">02</span>
+                <div class="body">
+                    <h3>Slides da Apresentação</h3>
+                    <p class="sub">Deck interativo de 14 slides (desktop 16:9 e modo fluido no celular)</p>
+                    <p>Apresentação completa com navegação por teclado, toque/swipe, visão em grade e modo tela cheia — adaptada para leitura confortável tanto na tela grande quanto no celular.</p>
+                    <p class="meta">14 slides · Interativo · Responsivo</p>
+                </div>
+                <span class="badge">ABRIR SLIDES &rarr;</span>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="inner">
+            <span>Yuri H. Santos</span>
+            <span>Sistemas de Informação // CESMAC</span>
+        </div>
+    </footer>
+
+<script>
+    document.querySelector('.tema-btn').addEventListener('click', function () {
+        var r = document.documentElement;
+        var escuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        r.dataset.theme = escuro ? 'light' : 'dark';
+        try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    });
+</script>
+</body>
+</html>
